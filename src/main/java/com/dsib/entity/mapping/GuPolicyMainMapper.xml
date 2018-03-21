@@ -1,0 +1,894 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GuPolicyMainMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyMain">
+		<id column="BUSINESSNO" property="businessNo" jdbcType="VARCHAR" />
+		<result column="PROPOSALNO" property="proposalNo" jdbcType="VARCHAR" />
+		<result column="POLICYNO" property="policyNo" jdbcType="VARCHAR" />
+		<result column="PREVIOUSPOLICYNO" property="previousPolicyNo"
+			jdbcType="VARCHAR" />
+		<result column="PAYBILLNO" property="payBillNo" jdbcType="VARCHAR" />
+		<result column="CLASSCODE" property="classCode" jdbcType="VARCHAR" />
+		<result column="RISKCODE" property="riskCode" jdbcType="VARCHAR" />
+		<result column="PLANCODE" property="planCode" jdbcType="VARCHAR" />
+		<result column="APPLICODE" property="appliCode" jdbcType="VARCHAR" />
+		<result column="APPLINAME" property="appliName" jdbcType="VARCHAR" />
+		<result column="APPLIADDRESS" property="appliAddress" jdbcType="VARCHAR" />
+		<result column="INSUREDCODE" property="insuredCode" jdbcType="VARCHAR" />
+		<result column="INSUREDNAME" property="insuredName" jdbcType="VARCHAR" />
+		<result column="INSUREDADDRESS" property="insuredAddress"
+			jdbcType="VARCHAR" />
+		<result column="STARTDATE" property="startDate" jdbcType="TIMESTAMP" />
+		<result column="ENDDATE" property="endDate" jdbcType="TIMESTAMP" />
+		<result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+		<result column="SUMAMOUNT" property="sumAmount" jdbcType="DECIMAL" />
+		<result column="DISCOUNT" property="disCount" jdbcType="DECIMAL" />
+		<result column="SUMDISCOUNT" property="sumDiscount" jdbcType="DECIMAL" />
+		<result column="SPREADSHEETPREMIUM" property="spreadsheetPremium"
+			jdbcType="DECIMAL" />
+		<result column="ACTUALPREMIUM" property="actualPremium"
+			jdbcType="DECIMAL" />
+		<result column="SUMPREMIUM" property="sumPremium" jdbcType="DECIMAL" />
+		<result column="SUMSUBPREM" property="sumSubPrem" jdbcType="DECIMAL" />
+		<result column="ARGUESOLUTION" property="argueSolution"
+			jdbcType="VARCHAR" />
+		<result column="ARBITBOARDNAME" property="arbitBoardName"
+			jdbcType="VARCHAR" />
+		<result column="ENDORSETIMES" property="endorseTimes" jdbcType="DECIMAL" />
+		<result column="INSURETIMES" property="insureTimes" jdbcType="DECIMAL" />
+		<result column="OPERATORCODE" property="operatorCode" jdbcType="VARCHAR" />
+		<result column="OPERATEDATE" property="operateDate" jdbcType="TIMESTAMP" />
+		<result column="SIGNDATE" property="signDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATORCODE" property="updatorCode" jdbcType="VARCHAR" />
+		<result column="UPDATEDATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="UNDERWRITECODE" property="underWriteCode"
+			jdbcType="VARCHAR" />
+		<result column="UNDERWRITENAME" property="underWriteName"
+			jdbcType="VARCHAR" />
+		<result column="UNDERWRITEENDDATE" property="underWriteEndDate"
+			jdbcType="TIMESTAMP" />
+		<result column="UNDERDIRECTIONS" property="underDirections"
+			jdbcType="VARCHAR" />
+		<result column="UNDERWRITEFLAG" property="underWriteFlag"
+			jdbcType="VARCHAR" />
+		<result column="PAYFLAG" property="payFlag" jdbcType="VARCHAR" />
+		<result column="RENEWALFLAG" property="renewalFlag" jdbcType="VARCHAR" />
+		<result column="INSURERCODE" property="insurerCode" jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="VARCHAR" />
+		<result column="COUNTY" property="county" jdbcType="VARCHAR" />
+		<result column="CORRECTPREMIUM" property="correctPremium"
+			jdbcType="DECIMAL" />
+		<result column="CORRECTNO" property="correctNo" jdbcType="VARCHAR" />
+		<result column="CORRECTDATE" property="correctDate" jdbcType="TIMESTAMP" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="ACCIDENTPREVENTFEE" property="accidentPreventFee"
+			jdbcType="DECIMAL" />
+		<result column="SPECIALPROVISIONS" property="specialprovisions"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, PROPOSALNO, POLICYNO, PREVIOUSPOLICYNO,
+		PAYBILLNO, CLASSCODE,
+		RISKCODE,
+		PLANCODE, APPLICODE, APPLINAME,
+		APPLIADDRESS, INSUREDCODE, INSUREDNAME,
+		INSUREDADDRESS,
+		STARTDATE,
+		ENDDATE, CURRENCY, SUMAMOUNT, DISCOUNT, SUMDISCOUNT,
+		SPREADSHEETPREMIUM,
+		ACTUALPREMIUM, SUMPREMIUM, SUMSUBPREM,
+		ARGUESOLUTION, ARBITBOARDNAME, ENDORSETIMES,
+		INSURETIMES, OPERATORCODE,
+		OPERATEDATE, SIGNDATE, UPDATORCODE,
+		UPDATEDATE, UNDERWRITECODE,
+		UNDERWRITENAME, UNDERWRITEENDDATE, UNDERDIRECTIONS, UNDERWRITEFLAG,
+		PAYFLAG,
+		RENEWALFLAG,
+		INSURERCODE, PROVINCE, CITY, COUNTY,
+		CORRECTPREMIUM, CORRECTNO, CORRECTDATE, FLAG,
+		REMARK,
+		ACCIDENTPREVENTFEE, SPECIALPROVISIONS
+	</sql>
+	<select id="getGuPolicyMain" parameterType="Pagination"
+		resultType="GuPolicyMain">
+		SELECT * FROM GUPOLICYMAIN
+	</select>
+	<!-- 查询企业是否有已经生效的保单 -->
+	<select id="selectRenewalFlag" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyMain">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM GUPOLICYMAIN
+		<where>
+			<if test="operatorCode!=null &amp;&amp; operatorCode!=''">
+				AND OPERATORCODE=#{operatorCode}
+			</if>
+			<if test="underWriteFlag!=null &amp;&amp; underWriteFlag!=''">
+				AND UNDERWRITEFLAG=#{underWriteFlag}
+			</if>
+			<if test="payFlag!=null &amp;&amp; payFlag!=''">
+				AND PAYFLAG=#{payFlag}
+			</if>
+			AND POLICYNO is not null
+			order by endDate
+		</where>
+	</select>
+	<!-- 综合报表 -->
+	<select id="exportJuck" resultType="java.util.Map" parameterType="com.dsib.entity.GuPolicyMain">
+		SELECT 
+			(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERNAME,
+			COUNT(DISTINCT GM.APPLINAME) COMPANYSUM,
+			COUNT(GM.BUSINESSNO) POLICYSUM,
+			SUM(GM.SPREADSHEETPREMIUM) ZONGBAOFEI
+		FROM
+			GUPOLICYMAIN GM
+		<where>
+		 GM.UNDERWRITEFLAG='3' AND GM.PAYFLAG='1' AND GM.POLICYNO IS NOT NULL 
+			<if test="flag!=null &amp;&amp; flag!=''">
+				AND GM.FLAG = '1'
+			</if>
+			<if test="underWriteFlag!=null &amp;&amp; underWriteFlag!=''">
+				AND GM.FLAG = '0'
+			</if>
+			<if test="payFlag!=null &amp;&amp; payFlag!=''">
+				AND GM.FLAG IS NULL
+			</if>
+			<if test="insurerCode!=null &amp;&amp; insurerCode!=''">
+				AND GM.INSURERCODE=#{insurerCode}
+			</if>
+			<if test="appliName!=null &amp;&amp; appliName!=''">
+				AND to_char(GM.SIGNDATE,'yyyy-mm-dd')&gt;=#{appliName}
+			</if>
+			<if test="insuredName!=null &amp;&amp; insuredName!=''">
+				AND to_char(GM.SIGNDATE,'yyyy-mm-dd')&lt;#{insuredName}
+			</if>
+			<if test="province != null and province != ''">
+				AND GM.PROVINCE = #{province }
+			</if>
+			<if test="city != null and city != ''">
+				AND GM.CITY = #{city }
+			</if>
+			<if test="county != null and county != ''">
+				AND GM.COUNTY = #{county }
+			</if>
+			GROUP BY GM.INSURERCODE
+		</where>
+	</select>
+	<!-- selectByiddd -->
+	<select id="selectByiddd" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		SELECT
+		GM.*
+		FROM GUPOLICYMAIN GM, GUPOLICYEMPLOYEE GE
+		WHERE GM.BUSINESSNO=GE.BUSINESS_NO
+		AND GE.PEP_IDENTITY_NO = #{widedaima,jdbcType=VARCHAR}
+		AND GM.UNDERWRITEFLAG='3'
+		AND GM.PAYFLAG='1'
+		AND GM.POLICYNO is not null
+		order by GM.endDate
+	</select>
+	<!-- 查询企业是否有保单或投保单 -->
+	<select id="checkPolicyHas" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyMain">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM GUPOLICYMAIN WHERE APPLICODE=#{appliCode} AND (UNDERWRITEFLAG='5' 
+		OR UNDERWRITEFLAG='2' OR UNDERWRITEFLAG='1' OR (UNDERWRITEFLAG='3' AND PAYFLAG='1' AND ENDDATE>SYSDATE) OR (UNDERWRITEFLAG='3' AND PAYFLAG='0'))
+			
+	</select>
+	<!-- 	经纪公司查询被保险人是否有有效保单 -->
+	<select id="isHavePolicyByIdentityNumber" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+			 GM.POLICYNO
+		FROM
+			GUPOLICYMAIN GM , GUPOLICYINSURED GI
+		WHERE
+			GI.BUSINESSNO = GM.BUSINESSNO
+			AND GI.IDENTITYNUMBER = #{identityNumber}
+			AND GI.SERIESNO = '2'
+			AND (
+			GM.UNDERWRITEFLAG IN('1','2','5')
+		OR (
+			GM.UNDERWRITEFLAG = '3'
+			AND GM.PAYFLAG = '1'
+			AND GM.ENDDATE > SYSDATE
+			)
+		OR (
+			GM.UNDERWRITEFLAG = '3'
+			AND GM.PAYFLAG = '0'
+			)
+)
+		
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYMAIN
+		where BUSINESSNO =
+		#{businessNo,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		GUPOLICYMAIN
+		where BUSINESSNO = #{businessNo,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyMain">
+		insert into GUPOLICYMAIN
+		(BUSINESSNO, PROPOSALNO, POLICYNO,
+		PREVIOUSPOLICYNO, PAYBILLNO,
+		CLASSCODE,
+		RISKCODE, PLANCODE, APPLICODE,
+		APPLINAME, APPLIADDRESS,
+		INSUREDCODE,
+		INSUREDNAME, INSUREDADDRESS, STARTDATE,
+		ENDDATE, CURRENCY,
+		SUMAMOUNT,
+		DISCOUNT, SUMDISCOUNT, SPREADSHEETPREMIUM,
+		ACTUALPREMIUM,
+		SUMPREMIUM, SUMSUBPREM,
+		ARGUESOLUTION, ARBITBOARDNAME, ENDORSETIMES,
+		INSURETIMES, OPERATORCODE, OPERATEDATE,
+		SIGNDATE, UPDATORCODE,
+		UPDATEDATE,
+		UNDERWRITECODE, UNDERWRITENAME, UNDERWRITEENDDATE,
+		UNDERDIRECTIONS, UNDERWRITEFLAG, PAYFLAG,
+		RENEWALFLAG, INSURERCODE,
+		PROVINCE,
+		CITY, COUNTY, CORRECTPREMIUM,
+		CORRECTNO, CORRECTDATE, FLAG,
+		REMARK, ACCIDENTPREVENTFEE, SPECIALPROVISIONS
+		)
+		values
+		(#{businessNo,jdbcType=VARCHAR}, #{proposalNo,jdbcType=VARCHAR},
+		#{policyNo,jdbcType=VARCHAR},
+		#{previousPolicyNo,jdbcType=VARCHAR},
+		#{payBillNo,jdbcType=VARCHAR}, #{classCode,jdbcType=VARCHAR},
+		#{riskCode,jdbcType=VARCHAR}, #{planCode,jdbcType=VARCHAR},
+		#{appliCode,jdbcType=VARCHAR},
+		#{appliName,jdbcType=VARCHAR},
+		#{appliAddress,jdbcType=VARCHAR}, #{insuredCode,jdbcType=VARCHAR},
+		#{insuredName,jdbcType=VARCHAR}, #{insuredAddress,jdbcType=VARCHAR},
+		#{startDate,jdbcType=DATE},
+		#{endDate,jdbcType=DATE},
+		#{currency,jdbcType=VARCHAR}, #{sumAmount,jdbcType=DECIMAL},
+		#{disCount,jdbcType=DECIMAL}, #{sumDiscount,jdbcType=DECIMAL},
+		#{spreadsheetPremium,jdbcType=DECIMAL},
+		#{actualPremium,jdbcType=DECIMAL}, #{sumPremium,jdbcType=DECIMAL},
+		#{sumSubPrem,jdbcType=DECIMAL},
+		#{argueSolution,jdbcType=VARCHAR},
+		#{arbitBoardName,jdbcType=VARCHAR}, #{endorseTimes,jdbcType=DECIMAL},
+		#{insureTimes,jdbcType=DECIMAL}, #{operatorCode,jdbcType=VARCHAR},
+		#{operateDate,jdbcType=DATE},
+		#{signDate,jdbcType=DATE},
+		#{updatorCode,jdbcType=VARCHAR}, #{updateDate,jdbcType=DATE},
+		#{underWriteCode,jdbcType=VARCHAR},
+		#{underWriteName,jdbcType=VARCHAR},
+		#{underWriteEndDate,jdbcType=DATE},
+		#{underDirections,jdbcType=VARCHAR},
+		#{underWriteFlag,jdbcType=VARCHAR}, #{payFlag,jdbcType=VARCHAR},
+		#{renewalFlag,jdbcType=VARCHAR}, #{insurerCode,jdbcType=VARCHAR},
+		#{province,jdbcType=VARCHAR},
+		#{city,jdbcType=VARCHAR},
+		#{county,jdbcType=VARCHAR}, #{correctPremium,jdbcType=DECIMAL},
+		#{correctNo,jdbcType=VARCHAR}, #{correctDate,jdbcType=DATE},
+		#{flag,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR},
+		#{accidentPreventFee,jdbcType=DECIMAL},
+		#{specialprovisions,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyMain">
+		insert into GUPOLICYMAIN
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessNo != null">
+				BUSINESSNO,
+			</if>
+			<if test="proposalNo != null">
+				PROPOSALNO,
+			</if>
+			<if test="policyNo != null">
+				POLICYNO,
+			</if>
+			<if test="previousPolicyNo != null">
+				PREVIOUSPOLICYNO,
+			</if>
+			<if test="payBillNo != null">
+				PAYBILLNO,
+			</if>
+			<if test="classCode != null">
+				CLASSCODE,
+			</if>
+			<if test="riskCode != null">
+				RISKCODE,
+			</if>
+			<if test="planCode != null">
+				PLANCODE,
+			</if>
+			<if test="appliCode != null">
+				APPLICODE,
+			</if>
+			<if test="appliName != null">
+				APPLINAME,
+			</if>
+			<if test="appliAddress != null">
+				APPLIADDRESS,
+			</if>
+			<if test="insuredCode != null">
+				INSUREDCODE,
+			</if>
+			<if test="insuredName != null">
+				INSUREDNAME,
+			</if>
+			<if test="insuredAddress != null">
+				INSUREDADDRESS,
+			</if>
+			<if test="startDate != null">
+				STARTDATE,
+			</if>
+			<if test="endDate != null">
+				ENDDATE,
+			</if>
+			<if test="currency != null">
+				CURRENCY,
+			</if>
+			<if test="sumAmount != null">
+				SUMAMOUNT,
+			</if>
+			<if test="disCount != null">
+				DISCOUNT,
+			</if>
+			<if test="sumDiscount != null">
+				SUMDISCOUNT,
+			</if>
+			<if test="spreadsheetPremium != null">
+				SPREADSHEETPREMIUM,
+			</if>
+			<if test="actualPremium != null">
+				ACTUALPREMIUM,
+			</if>
+			<if test="sumPremium != null">
+				SUMPREMIUM,
+			</if>
+			<if test="sumSubPrem != null">
+				SUMSUBPREM,
+			</if>
+			<if test="argueSolution != null">
+				ARGUESOLUTION,
+			</if>
+			<if test="arbitBoardName != null">
+				ARBITBOARDNAME,
+			</if>
+			<if test="endorseTimes != null">
+				ENDORSETIMES,
+			</if>
+			<if test="insureTimes != null">
+				INSURETIMES,
+			</if>
+			<if test="operatorCode != null">
+				OPERATORCODE,
+			</if>
+			<if test="operateDate != null">
+				OPERATEDATE,
+			</if>
+			<if test="signDate != null">
+				SIGNDATE,
+			</if>
+			<if test="updatorCode != null">
+				UPDATORCODE,
+			</if>
+			<if test="updateDate != null">
+				UPDATEDATE,
+			</if>
+			<if test="underWriteCode != null">
+				UNDERWRITECODE,
+			</if>
+			<if test="underWriteName != null">
+				UNDERWRITENAME,
+			</if>
+			<if test="underWriteEndDate != null">
+				UNDERWRITEENDDATE,
+			</if>
+			<if test="underDirections != null">
+				UNDERDIRECTIONS,
+			</if>
+			<if test="underWriteFlag != null">
+				UNDERWRITEFLAG,
+			</if>
+			<if test="payFlag != null">
+				PAYFLAG,
+			</if>
+			<if test="renewalFlag != null">
+				RENEWALFLAG,
+			</if>
+			<if test="insurerCode != null">
+				INSURERCODE,
+			</if>
+			<if test="province != null">
+				PROVINCE,
+			</if>
+			<if test="city != null">
+				CITY,
+			</if>
+			<if test="county != null">
+				COUNTY,
+			</if>
+			<if test="correctPremium != null">
+				CORRECTPREMIUM,
+			</if>
+			<if test="correctNo != null">
+				CORRECTNO,
+			</if>
+			<if test="correctDate != null">
+				CORRECTDATE,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="accidentPreventFee != null">
+				ACCIDENTPREVENTFEE,
+			</if>
+			<if test="specialprovisions != null">
+				SPECIALPROVISIONS,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessNo != null">
+				#{businessNo,jdbcType=VARCHAR},
+			</if>
+			<if test="proposalNo != null">
+				#{proposalNo,jdbcType=VARCHAR},
+			</if>
+			<if test="policyNo != null">
+				#{policyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="previousPolicyNo != null">
+				#{previousPolicyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="payBillNo != null">
+				#{payBillNo,jdbcType=VARCHAR},
+			</if>
+			<if test="classCode != null">
+				#{classCode,jdbcType=VARCHAR},
+			</if>
+			<if test="riskCode != null">
+				#{riskCode,jdbcType=VARCHAR},
+			</if>
+			<if test="planCode != null">
+				#{planCode,jdbcType=VARCHAR},
+			</if>
+			<if test="appliCode != null">
+				#{appliCode,jdbcType=VARCHAR},
+			</if>
+			<if test="appliName != null">
+				#{appliName,jdbcType=VARCHAR},
+			</if>
+			<if test="appliAddress != null">
+				#{appliAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredCode != null">
+				#{insuredCode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredName != null">
+				#{insuredName,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredAddress != null">
+				#{insuredAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="startDate != null">
+				#{startDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endDate != null">
+				#{endDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="currency != null">
+				#{currency,jdbcType=VARCHAR},
+			</if>
+			<if test="sumAmount != null">
+				#{sumAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="disCount != null">
+				#{disCount,jdbcType=DECIMAL},
+			</if>
+			<if test="sumDiscount != null">
+				#{sumDiscount,jdbcType=DECIMAL},
+			</if>
+			<if test="spreadsheetPremium != null">
+				#{spreadsheetPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualPremium != null">
+				#{actualPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="sumPremium != null">
+				#{sumPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="sumSubPrem != null">
+				#{sumSubPrem,jdbcType=DECIMAL},
+			</if>
+			<if test="argueSolution != null">
+				#{argueSolution,jdbcType=VARCHAR},
+			</if>
+			<if test="arbitBoardName != null">
+				#{arbitBoardName,jdbcType=VARCHAR},
+			</if>
+			<if test="endorseTimes != null">
+				#{endorseTimes,jdbcType=DECIMAL},
+			</if>
+			<if test="insureTimes != null">
+				#{insureTimes,jdbcType=DECIMAL},
+			</if>
+			<if test="operatorCode != null">
+				#{operatorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="operateDate != null">
+				#{operateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="signDate != null">
+				#{signDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatorCode != null">
+				#{updatorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="updateDate != null">
+				#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="underWriteCode != null">
+				#{underWriteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteName != null">
+				#{underWriteName,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteEndDate != null">
+				#{underWriteEndDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="underDirections != null">
+				#{underDirections,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteFlag != null">
+				#{underWriteFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="payFlag != null">
+				#{payFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="renewalFlag != null">
+				#{renewalFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="insurerCode != null">
+				#{insurerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="county != null">
+				#{county,jdbcType=VARCHAR},
+			</if>
+			<if test="correctPremium != null">
+				#{correctPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="correctNo != null">
+				#{correctNo,jdbcType=VARCHAR},
+			</if>
+			<if test="correctDate != null">
+				#{correctDate,jdbcType=DATE},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="accidentPreventFee != null">
+				#{accidentPreventFee,jdbcType=DECIMAL},
+			</if>
+			<if test="specialprovisions != null">
+				#{specialprovisions,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyMain">
+		update GUPOLICYMAIN
+		<set>
+			<if test="proposalNo != null">
+				PROPOSALNO = #{proposalNo,jdbcType=VARCHAR},
+			</if>
+			<if test="policyNo != null">
+				POLICYNO = #{policyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="previousPolicyNo != null">
+				PREVIOUSPOLICYNO = #{previousPolicyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="payBillNo != null">
+				PAYBILLNO = #{payBillNo,jdbcType=VARCHAR},
+			</if>
+			<if test="classCode != null">
+				CLASSCODE = #{classCode,jdbcType=VARCHAR},
+			</if>
+			<if test="riskCode != null">
+				RISKCODE = #{riskCode,jdbcType=VARCHAR},
+			</if>
+			<if test="planCode != null">
+				PLANCODE = #{planCode,jdbcType=VARCHAR},
+			</if>
+			<if test="appliCode != null">
+				APPLICODE = #{appliCode,jdbcType=VARCHAR},
+			</if>
+			<if test="appliName != null">
+				APPLINAME = #{appliName,jdbcType=VARCHAR},
+			</if>
+			<if test="appliAddress != null">
+				APPLIADDRESS = #{appliAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredCode != null">
+				INSUREDCODE = #{insuredCode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredName != null">
+				INSUREDNAME = #{insuredName,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredAddress != null">
+				INSUREDADDRESS = #{insuredAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="startDate != null">
+				STARTDATE = #{startDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endDate != null">
+				ENDDATE = #{endDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="currency != null">
+				CURRENCY = #{currency,jdbcType=VARCHAR},
+			</if>
+			<if test="sumAmount != null">
+				SUMAMOUNT = #{sumAmount,jdbcType=DECIMAL},
+			</if>
+			<if test="disCount != null">
+				DISCOUNT = #{disCount,jdbcType=DECIMAL},
+			</if>
+			<if test="sumDiscount != null">
+				SUMDISCOUNT = #{sumDiscount,jdbcType=DECIMAL},
+			</if>
+			<if test="spreadsheetPremium != null">
+				SPREADSHEETPREMIUM =
+				#{spreadsheetPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualPremium != null">
+				ACTUALPREMIUM = #{actualPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="sumPremium != null">
+				SUMPREMIUM = #{sumPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="sumSubPrem != null">
+				SUMSUBPREM = #{sumSubPrem,jdbcType=DECIMAL},
+			</if>
+			<if test="argueSolution != null">
+				ARGUESOLUTION = #{argueSolution,jdbcType=VARCHAR},
+			</if>
+			<if test="arbitBoardName != null">
+				ARBITBOARDNAME = #{arbitBoardName,jdbcType=VARCHAR},
+			</if>
+			<if test="endorseTimes != null">
+				ENDORSETIMES = #{endorseTimes,jdbcType=DECIMAL},
+			</if>
+			<if test="insureTimes != null">
+				INSURETIMES = #{insureTimes,jdbcType=DECIMAL},
+			</if>
+			<if test="operatorCode != null">
+				OPERATORCODE = #{operatorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="operateDate != null">
+				OPERATEDATE = #{operateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="signDate != null">
+				SIGNDATE = #{signDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatorCode != null">
+				UPDATORCODE = #{updatorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="updateDate != null">
+				UPDATEDATE = #{updateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="underWriteCode != null">
+				UNDERWRITECODE = #{underWriteCode,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteName != null">
+				UNDERWRITENAME = #{underWriteName,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteEndDate != null">
+				UNDERWRITEENDDATE = #{underWriteEndDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="underDirections != null">
+				UNDERDIRECTIONS = #{underDirections,jdbcType=VARCHAR},
+			</if>
+			<if test="underWriteFlag != null">
+				UNDERWRITEFLAG = #{underWriteFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="payFlag != null">
+				PAYFLAG = #{payFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="renewalFlag != null">
+				RENEWALFLAG = #{renewalFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="insurerCode != null">
+				INSURERCODE = #{insurerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				PROVINCE = #{province,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				CITY = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="county != null">
+				COUNTY = #{county,jdbcType=VARCHAR},
+			</if>
+			<if test="correctPremium != null">
+				CORRECTPREMIUM = #{correctPremium,jdbcType=DECIMAL},
+			</if>
+			<if test="correctNo != null">
+				CORRECTNO = #{correctNo,jdbcType=VARCHAR},
+			</if>
+			<if test="correctDate != null">
+				CORRECTDATE = #{correctDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="accidentPreventFee != null">
+				ACCIDENTPREVENTFEE =
+				#{accidentPreventFee,jdbcType=DECIMAL},
+			</if>
+			<if test="specialprovisions != null">
+				SPECIALPROVISIONS =
+				#{specialprovisions,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessNo,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyMain">
+		update
+		GUPOLICYMAIN
+		set PROPOSALNO = #{proposalNo,jdbcType=VARCHAR},
+		POLICYNO = #{policyNo,jdbcType=VARCHAR},
+		PREVIOUSPOLICYNO =
+		#{previousPolicyNo,jdbcType=VARCHAR},
+		PAYBILLNO =
+		#{payBillNo,jdbcType=VARCHAR},
+		CLASSCODE =
+		#{classCode,jdbcType=VARCHAR},
+		RISKCODE = #{riskCode,jdbcType=VARCHAR},
+		PLANCODE = #{planCode,jdbcType=VARCHAR},
+		APPLICODE =
+		#{appliCode,jdbcType=VARCHAR},
+		APPLINAME =
+		#{appliName,jdbcType=VARCHAR},
+		APPLIADDRESS =
+		#{appliAddress,jdbcType=VARCHAR},
+		INSUREDCODE =
+		#{insuredCode,jdbcType=VARCHAR},
+		INSUREDNAME =
+		#{insuredName,jdbcType=VARCHAR},
+		INSUREDADDRESS =
+		#{insuredAddress,jdbcType=VARCHAR},
+		STARTDATE =
+		#{startDate,jdbcType=DATE},
+		ENDDATE = #{endDate,jdbcType=DATE},
+		CURRENCY = #{currency,jdbcType=VARCHAR},
+		SUMAMOUNT =
+		#{sumAmount,jdbcType=DECIMAL},
+		DISCOUNT = #{disCount,jdbcType=DECIMAL},
+		SUMDISCOUNT = #{sumDiscount,jdbcType=DECIMAL},
+		SPREADSHEETPREMIUM =
+		#{spreadsheetPremium,jdbcType=DECIMAL},
+		ACTUALPREMIUM =
+		#{actualPremium,jdbcType=DECIMAL},
+		SUMPREMIUM =
+		#{sumPremium,jdbcType=DECIMAL},
+		SUMSUBPREM =
+		#{sumSubPrem,jdbcType=DECIMAL},
+		ARGUESOLUTION =
+		#{argueSolution,jdbcType=VARCHAR},
+		ARBITBOARDNAME =
+		#{arbitBoardName,jdbcType=VARCHAR},
+		ENDORSETIMES =
+		#{endorseTimes,jdbcType=DECIMAL},
+		INSURETIMES =
+		#{insureTimes,jdbcType=DECIMAL},
+		OPERATORCODE =
+		#{operatorCode,jdbcType=VARCHAR},
+		OPERATEDATE =
+		#{operateDate,jdbcType=DATE},
+		SIGNDATE = #{signDate,jdbcType=DATE},
+		UPDATORCODE = #{updatorCode,jdbcType=VARCHAR},
+		UPDATEDATE =
+		#{updateDate,jdbcType=DATE},
+		UNDERWRITECODE =
+		#{underWriteCode,jdbcType=VARCHAR},
+		UNDERWRITENAME =
+		#{underWriteName,jdbcType=VARCHAR},
+		UNDERWRITEENDDATE =
+		#{underWriteEndDate,jdbcType=DATE},
+		UNDERDIRECTIONS =
+		#{underDirections,jdbcType=VARCHAR},
+		UNDERWRITEFLAG =
+		#{underWriteFlag,jdbcType=VARCHAR},
+		PAYFLAG =
+		#{payFlag,jdbcType=VARCHAR},
+		RENEWALFLAG =
+		#{renewalFlag,jdbcType=VARCHAR},
+		INSURERCODE =
+		#{insurerCode,jdbcType=VARCHAR},
+		PROVINCE =
+		#{province,jdbcType=VARCHAR},
+		CITY = #{city,jdbcType=VARCHAR},
+		COUNTY =
+		#{county,jdbcType=VARCHAR},
+		CORRECTPREMIUM =
+		#{correctPremium,jdbcType=DECIMAL},
+		CORRECTNO =
+		#{correctNo,jdbcType=VARCHAR},
+		CORRECTDATE =
+		#{correctDate,jdbcType=DATE},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK =
+		#{remark,jdbcType=VARCHAR},
+		ACCIDENTPREVENTFEE =
+		#{accidentPreventFee,jdbcType=DECIMAL},
+		SPECIALPROVISIONS =
+		#{specialprovisions,jdbcType=VARCHAR}
+		where BUSINESSNO =
+		#{businessNo,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByBusinessNo" parameterType="com.dsib.entity.GuPolicyMain">
+		UPDATE GUPOLICYMAIN
+		SET
+		ACTUALPREMIUM =
+		#{actualPremium,jdbcType=DECIMAL},
+		PAYFLAG =
+		#{payFlag,jdbcType=VARCHAR}
+		<where> BUSINESSNO = #{businessNo,jdbcType=VARCHAR}</where>
+	</update>
+	<!-- 根据businessNo查询标的信息 -->
+	<select id="selectGuPolicyEmployee" parameterType="string" resultType="com.dsib.entity.GuPolicyEmployee">
+		SELECT
+		*
+		FROM
+		GUPOLICYEMPLOYEE
+		WHERE
+		BUSINESS_NO=#{businessNo}
+	</select>
+	<!-- 根据保单号查询一条main表信息 -->
+	<select id="selectByPolicyNo" parameterType="string" resultType="com.dsib.entity.GuPolicyMain">
+		SELECT * FROM GUPOLICYMAIN WHERE POLICYNO = #{policyNo}
+	</select>
+	<!-- 根据businessNo查询出投保的企业信息 -->
+	<select id="selectGgUserCorp" parameterType="string" resultType="com.dsib.entity.GgUserCorp">
+		SELECT * FROM GGUSERCORP
+		WHERE USERCODE = (SELECT APPLICODE FROM GUPOLICYMAIN WHERE BUSINESSNO=#{str})
+	</select>
+	<!-- 根据 上面的标的信息遍历的IDcard，查询每个被保险人的信息列表-->
+	<select id="selectGgEmployee" parameterType="string" resultType="com.dsib.entity.GgEmployee">
+		SELECT * FROM GGEMPLOYEE WHERE IDENTITYNO = #{identityNo}
+	</select>
+	<select id="selectGuPolicyEmployeeCount" parameterType="string" resultType="integer">
+		SELECT COUNT(BUSINESS_NO) PEP_NO FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO = #{identityNo}
+	</select>
+	<select id="selectGuPolicyAdjustRate" parameterType="string" resultType="com.dsib.entity.GuPolicyAdjustRate">
+		SELECT * FROM GUPOLICYADJUSTRATE WHERE BUSINESSNO = #{businessno}
+	</select>
+	<select id="selectGuPolicyItemKind" parameterType="string" resultType="com.dsib.entity.GuPolicyItemKind">
+		SELECT * FROM GUPOLICYITEMKIND WHERE BUSINESSNO = #{businessNo}
+	</select>
+	<select id="selectGuPolicyLimit" parameterType="string" resultType="com.dsib.entity.GuPolicyLimit">
+		SELECT * FROM GUPOLICYLIMIT WHERE BUSINESSNO = #{businessNo}
+	</select>
+	
+</mapper>

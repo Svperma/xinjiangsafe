@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GcClaimMapper">
+	<select id="getLossSum" parameterType="map" resultType="map">
+		SELECT SUM(PAYAMOUNT)/10000 payAmount FROM GCCLAIM
+		<where>
+			STATUS='6'
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertGcClaimSelective" parameterType="GcClaim">
+	INSERT INTO GCCLAIM
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="baoAnNo != null">
+			BAOANNO,
+		</if>
+		<if test="peiAnNo != null">
+			PEIANNO,
+		</if>
+		<if test="policyNo != null">
+			POLICYNO,
+		</if>
+		<if test="lossAmount != null">
+			LOSSAMOUNT,
+		</if>
+		<if test="lossCause != null">
+			LOSSCAUSE,
+		</if>
+		<if test="lossDate != null">
+			LOSSDATE,
+		</if>
+		<if test="riskCode != null">
+			RISKCODE,
+		</if>
+		<if test="businessNo != null">
+			BUSINESSNO,
+		</if>
+		<if test="lossLocaiton != null">
+			LOSSLOCAITON,
+		</if>
+		<if test="createrCode != null">
+			CREATERCODE,
+		</if>
+		<if test="createDate != null">
+			CREATEDATE,
+		</if>
+		<if test="upDatorCode != null">
+			UPDATORCODE,
+		</if>
+		<if test="upDateDate != null">
+			UPDATEDATE,
+		</if>
+		<if test="status != null">
+			STATUS,
+		</if>
+		<if test="remark != null">
+			REMARK,
+		</if>
+		<if test="flag != null">
+			FLAG,
+		</if>
+		<if test="province != null">
+			PROVINCE,
+		</if>
+		<if test="city != null">
+			CITY,
+		</if>
+		<if test="county != null">
+			COUNTY,
+		</if>
+		<if test="payAmount != null">
+			PAYAMOUNT,
+		</if>
+		<if test="insurerCode != null">
+			INSURERCODE,
+		</if>
+		<if test="closeDate != null">
+			CLOSEDATE,
+		</if>
+		<if test="userCode != null">
+			USERCODE,
+		</if>
+		<if test="baoanDate != null">
+			BAOANDATE,
+		</if>
+		<if test="lossDetail != null">
+			LOSSDETAIL,
+		</if>
+		<if test="linkName != null">
+			LINKNAME,
+		</if>
+		<if test="linkPhone != null">
+			LINKPHONE,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="baoAnNo != null">
+			#{baoAnNo},
+		</if>
+		<if test="peiAnNo != null">
+			#{peiAnNo},
+		</if>
+		<if test="policyNo != null">
+			#{policyNo},
+		</if>
+		<if test="lossAmount != null">
+			#{lossAmount},
+		</if>
+		<if test="lossCause != null">
+			#{lossCause},
+		</if>
+		<if test="lossDate != null">
+			#{lossDate},
+		</if>
+		<if test="riskCode != null">
+			#{riskCode},
+		</if>
+		<if test="businessNo != null">
+			#{businessNo},
+		</if>
+		<if test="lossLocaiton != null">
+			#{lossLocaiton},
+		</if>
+		<if test="createrCode != null">
+			#{createrCode},
+		</if>
+		<if test="createDate != null">
+			#{createDate},
+		</if>
+		<if test="upDatorCode != null">
+			#{upDatorCode},
+		</if>
+		<if test="upDateDate != null">
+			#{upDateDate},
+		</if>
+		<if test="status != null">
+			#{status},
+		</if>
+		<if test="remark != null">
+			#{remark},
+		</if>
+		<if test="flag != null">
+			#{flag},
+		</if>
+		<if test="province != null">
+			#{province},
+		</if>
+		<if test="city != null">
+			#{city},
+		</if>
+		<if test="county != null">
+			#{county},
+		</if>
+		<if test="payAmount != null">
+			#{payAmount},
+		</if>
+		<if test="insurerCode != null">
+			#{insurerCode},
+		</if>
+		<if test="closeDate != null">
+			#{closeDate},
+		</if>
+		<if test="userCode != null">
+			#{userCode},
+		</if>
+		<if test="baoanDate != null">
+			#{baoanDate},
+		</if>
+		<if test="lossDetail != null">
+			#{lossDetail},
+		</if>
+		<if test="linkName != null">
+			#{linkName},
+		</if>
+		<if test="linkPhone != null">
+			#{linkPhone},
+		</if>
+	</trim>
+</insert>
+	
+
+	
+	
+</mapper>

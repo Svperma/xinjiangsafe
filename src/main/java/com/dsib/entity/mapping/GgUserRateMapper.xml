@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgUserRateMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgUserRate">
+		<id column="USERCODE" property="usercode" jdbcType="VARCHAR" />
+		<id column="RATETYPE" property="ratetype" jdbcType="VARCHAR" />
+		<result column="RATE" property="rate" jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		USERCODE, RATETYPE, RATE, FLAG, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgUserRateKey">
+		select
+		<include refid="Base_Column_List" />
+		from GGUSERRATE
+		where USERCODE = #{usercode,jdbcType=VARCHAR}
+		and RATETYPE = #{ratetype,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgUserRateKey">
+		delete from GGUSERRATE
+		where USERCODE = #{usercode,jdbcType=VARCHAR}
+		and RATETYPE = #{ratetype,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgUserRate">
+		insert into GGUSERRATE (USERCODE, RATETYPE, RATE,
+		FLAG, REMARK)
+		values (#{usercode,jdbcType=VARCHAR}, #{ratetype,jdbcType=VARCHAR},
+		#{rate,jdbcType=VARCHAR},
+		#{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgUserRate">
+		insert into GGUSERRATE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="usercode != null">
+				USERCODE,
+			</if>
+			<if test="ratetype != null">
+				RATETYPE,
+			</if>
+			<if test="rate != null">
+				RATE,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="usercode != null">
+				#{usercode,jdbcType=VARCHAR},
+			</if>
+			<if test="ratetype != null">
+				#{ratetype,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				#{rate,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgUserRate">
+		update GGUSERRATE
+		<set>
+			<if test="rate != null">
+				RATE = #{rate,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where USERCODE = #{usercode,jdbcType=VARCHAR}
+		and RATETYPE = #{ratetype,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgUserRate">
+		update GGUSERRATE
+		set RATE = #{rate,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where USERCODE = #{usercode,jdbcType=VARCHAR}
+		and RATETYPE = #{ratetype,jdbcType=VARCHAR}
+	</update>
+</mapper>

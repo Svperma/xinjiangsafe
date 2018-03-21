@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgEvaluateDangersMapper">
+
+	<!-- 风险评估列表__分页 -->
+	<select id="getUserCorpInfo" parameterType="Pagination"
+		resultType="map">
+	<!-- 	SELECT
+		DISTINCT(A.USERCODE) USERCODE,A.COMPANYNAME,A.LINKNAME,A.MOBILE,A.CLASSSIZE,A.RISKLEVEL,
+		AL."CONTENT",AL.EVALUATDATE,
+		B.RECIPIENT
+		FROM GGEVALUATEDANGERS
+		AL,GGUSERCORP A
+		LEFT JOIN (SELECT DISTINCT GN.RECIPIENT FROM GGNOTICE
+		GN WHERE GN.STATUS='1' AND GN.PUBLISHER=#{queryCondition.userCode}) B
+		ON B.RECIPIENT = A.USERCODE
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND A.PROVINCE=#{queryCondition.province}</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''"> 
+			AND A.CITY=#{queryCondition.city}</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+			 AND A.COUNTY=#{queryCondition.county}</if>
+			<if
+				test="queryCondition.riskLevel != null and queryCondition.riskLevel != ''"> AND A.RISKLEVEL=#{queryCondition.riskLevel}</if>
+			<if test="queryCondition.status != null and queryCondition.status != ''">
+			 AND AL.STATUS=#{queryCondition.status}</if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				 AND A.COMPANYNAME LIKE '%${queryCondition.companyName }%'</if>
+			开始日期要比评估日期小 &gt; 代表大于号
+			<if
+				test="queryCondition.startEvaluatDate != null and queryCondition.startEvaluatDate != ''">
+				AND TO_CHAR (AL.EVALUATDATE,'yyyy-MM-dd') &gt; =
+				#{queryCondition.startEvaluatDate}
+			</if>
+			结束日期要比评估日期大 &lt; 代表小于号
+			<if
+				test="queryCondition.endEvaluatDate != null and queryCondition.endEvaluatDate != ''">
+				AND TO_CHAR (AL.EVALUATDATE,'yyyy-MM-dd') &lt; =
+				#{queryCondition.endEvaluatDate}
+			</if>
+			AND AL.USERIND='1'
+			AND AL."EVALUATION"='1'
+			AND AL.ENDEVALUATDATE >
+			SYSDATE
+			AND A.USERCODE = AL.USERCODE
+			ORDER BY AL.EVALUATDATE DESC 
+			
+			
+		</where>
+		-->
+		
+	<!-- 	SELECT
+			*
+		FROM
+			(
+				SELECT
+					GUC.LINKNAME,
+					GUC.TELEPHONE MOBILE,
+					GUC.USERCODE,
+					GUC.PROVINCE,
+					GUC.CITY,
+					GUC.COUNTY,
+					GED.STATUS,
+					GUC.COMPANYNAME,
+					GED.EVALUATDATE,
+					GED. CONTENT
+				FROM
+					GGUSERCORP GUC
+				LEFT JOIN GGEVALUATEDANGERS GED ON GUC.USERCODE = GED.USERCODE
+			) AL -->
+
+		SELECT
+			AL.USERCODE,
+			AL.COMPANYNAME,
+			AL.LINKNAME,
+			AL.TELEPHONE MOBILE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = AL.PROVINCE AND CODETYPE = 'Province') PROVINCE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = AL.CITY AND CODETYPE = 'City') CITY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = AL.COUNTY AND CODETYPE = 'County') COUNTY
+		FROM
+			(
+				SELECT
+					GUC.*
+				FROM
+					GGUSERCORP GUC
+					<if test="queryCondition.status != null or queryCondition.startEvaluatDate != null">
+						RIGHT
+					</if>
+					<if test="queryCondition.status == null and queryCondition.startEvaluatDate == null">
+						LEFT
+					</if>
+				 JOIN (
+					SELECT
+						USERCODE,
+						COUNT (0)
+					FROM
+						GGEVALUATEDANGERS
+						<where>
+							1=1
+							<if test="queryCondition.status != null and queryCondition.status != ''">
+							 AND STATUS=#{queryCondition.status}
+							</if>
+							<!-- 			开始日期要比评估日期小 &gt; 代表大于号 -->
+							<if test="queryCondition.startEvaluatDate != null and queryCondition.startEvaluatDate != ''">
+								AND TO_CHAR (EVALUATDATE,'yyyy-MM-dd') &gt; =
+								#{queryCondition.startEvaluatDate}
+							</if>
+							<!-- 			结束日期要比评估日期大 &lt; 代表小于号 -->
+							<if test="queryCondition.endEvaluatDate != null and queryCondition.endEvaluatDate != ''">
+								AND TO_CHAR (EVALUATDATE,'yyyy-MM-dd') &lt; =
+								#{queryCondition.endEvaluatDate}
+							</if>
+						</where>
+						GROUP BY USERCODE
+		) GED ON GUC.USERCODE = GED.USERCODE
+		) AL
+		<where>
+			1=1
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND AL.PROVINCE=#{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''"> 
+				AND AL.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+			 	AND AL.COUNTY=#{queryCondition.county}
+			</if>
+			<if test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND AL.COMPANYNAME LIKE '%${queryCondition.companyName }%'
+			</if>
+		</where>
+		ORDER BY AL.COMPANYNAME
+	</select>
+	<!-- 多表查询 __评估内容 -->
+	<select id="getCorpBy_userCode" parameterType="Pagination"
+		resultType="map">
+		SELECT
+			GU.USERCODE,GU.RISKLEVEL,GU.STANDARDLEVEL,GU.COMPANYNAME,GE.USERIND,GE.DOCADDRESS
+		FROM GGUSERCORP GU ,
+		GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			AND GU.USERCODE=#{queryCondition.userCode}
+			AND GU.USERCODE = GE.USERCODE
+			AND GE."EVALUATION"='1'
+			ORDER BY GE.USERIND
+		</where>
+	</select>
+
+	<!-- 查询未评估企业 -->
+	<select id="selectdangerSourceNotDetails" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GU.USERCODE,GU.COMPANYNAME,GU.CLASSCODE,GU.LINKNAME,GU.MOBILE,GU.BUSINESSLICENSENO,
+		GU.SAFETYLICENSENO,GU.CORPRATION,GU.EMCOUNT FROM GGUSERCORP GU
+		WHERE
+		NOT EXISTS(SELECT USERCODE FROM GGEVALUATEDANGERS WHERE
+		USERCODE=GU.USERCODE
+		AND USERIND='1')
+		UNION
+		SELECT
+		GU.USERCODE,GU.COMPANYNAME,GU.CLASSCODE,GU.LINKNAME,GU.MOBILE,GU.BUSINESSLICENSENO,
+		GU.SAFETYLICENSENO,GU.CORPRATION,GU.EMCOUNT FROM GGUSERCORP
+		GU,GGEVALUATEDANGERS GE
+		WHERE 1=1
+		AND GU.USERCODE=GE.USERCODE
+		AND GE.USERIND='1'
+		AND GE.EVALUATION = '1'
+		AND
+		GE.ENDEVALUATDATE &lt; SYSDATE
+	</select>
+	<!-- 查询未评估企业的机构 -->
+	<select id="selectGovOrganDetails" parameterType="String"
+		resultType="map">
+		SELECT DISTINCT(GO.ORGCODE), GO.ORGNAME, GO.ORGOWNER, GO.REGISTRATION,
+		GO.GRADE, GO.BUSINESSTYPE, GO.LANGUAGE
+		FROM GOVORGAN GO
+		<where>
+			1=1
+			AND GO.VALIDSTATUS='1'
+			AND GO.LANGUAGE=#{classCode}
+			ORDER BY GO.ORGCODE
+		</where>
+	</select>
+	<!-- 查询未评估企业的专家 -->
+	<select id="selectGovOrganPersons" parameterType="String"
+		resultType="map">
+		SELECT GE.EXPCODE ,GE.ORGCODE ,GE.EXNAME from GOVEXPERT GE
+	</select>
+
+	<!-- 未评估企业确认 -->
+	<select id="getDangerSourceDetails" parameterType="Pagination"
+		resultType="map">
+		SELECT * FROM GGUSERCORP GU
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">AND GU.COMPANYNAME=#{queryCondition.companyName} </if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">AND GU.CLASSCODE=#{queryCondition.classCode} </if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+		</where>
+	</select>
+	<!-- 评估时更新企业表对应的信息 -->
+	<update id="updateUserCorp" parameterType="GgUserCorp">
+		UPDATE GGUSERCORP SET
+		STANDARDLEVEL=#{standardLevel}
+		,FAITHLEVEL=#{faithLevel},RISKLEVEL=#{riskLevel}
+		WHERE
+		USERCODE=#{userCode}
+	</update>
+
+	<select id="selectList" parameterType="Pagination" resultType="map">
+		SELECT DISTINCT(GER.USERCODE)
+		EUSERCODE,GU.COMPANYNAME,GU.LINKNAME,GU.USERCODE
+		USERCODE,GER."CONTENT",GER.EVALUATOR,GER.USERIND FROM
+		GGEVALUATEDANGERS GER
+		LEFT JOIN GGUSERCORP GU ON
+		GU.USERCODE=GER.USERCODE
+		WHERE GER.USERCODE=#{queryCondition.userCode}
+		AND GER.USERIND='1'
+	</select>
+	<!-- 查询企业时候已有评估 -->
+	<select id="whetherList" parameterType="Pagination" resultType="map">
+		SELECT * FROM GGEVALUATEDANGERS
+		<where>
+			1=1
+			AND EVALUATION = '1'
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND USERCODE = #{queryCondition.userCode}
+			</if>
+			<if test="queryCondition.userInd != null and queryCondition.userInd != ''">
+				AND USERIND=#{queryCondition.userInd }
+			</if>
+		</where>
+	</select>
+
+	<!-- 评估时插入评估危险源信息 -->
+	<insert id="insertEvaDanger" parameterType="GgEvaluateDangers">
+		INSERT INTO
+		GGEVALUATEDANGERS
+		(ID,USERCODE,CONTENT,EVALUATOR
+		,EVALUATDATE,USERIND,EVALUATION,STATUSCONTENT,STATUS,DOCADDRESS,
+		SOURCE,CHECKMAN,CHECKDATE,DANGERSCONDITION,ENDEVALUATDATE)
+		VALUES
+		(#{id},#{userCode},#{content},#{evaluator},#{evaluatDate},#{userInd},1,#{statusContent},#{status},#{docAddress},
+		#{source},#{checkMan},#{checkDate},#{dangersCondition},#{endEvaluatDate})
+	</insert>
+	
+	
+<!-- 	选择性添加 -->
+	<insert id="insertGgEvaluateDangersBySelective" parameterType="GgEvaluateDangers" >
+	INSERT INTO GGEVALUATEDANGERS
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			ID,
+		</if>
+		<if test="userCode != null">
+			USERCODE,
+		</if>
+		<if test="content != null">
+			CONTENT,
+		</if>
+		<if test="evaluator != null">
+			EVALUATOR,
+		</if>
+		<if test="evaluatDate != null">
+			EVALUATDATE,
+		</if>
+		<if test="completeDate != null">
+			COMPLETEDATE,
+		</if>
+		<if test="userInd != null">
+			USERIND,
+		</if>
+		<if test="status != null">
+			STATUS,
+		</if>
+		<if test="docAddress != null">
+			DOCADDRESS,
+		</if>
+		<if test="evaluaTion != null">
+			EVALUATION,
+		</if>
+		<if test="source != null">
+			SOURCE,
+		</if>
+		<if test="checkMan != null">
+			CHECKMAN,
+		</if>
+		<if test="checkDate != null">
+			CHECKDATE,
+		</if>
+		<if test="dangersCondition != null">
+			DANGERSCONDITION,
+		</if>
+		<if test="statusContent != null">
+			STATUSCONTENT,
+		</if>
+		<if test="remark != null">
+			REMARK,
+		</if>
+		<if test="flag != null">
+			FLAG,
+		</if>
+		<if test="endEvaluatDate != null">
+			ENDEVALUATDATE,
+		</if>
+		<if test="ggUserCorp != null">
+			GGUSERCORP,
+		</if>
+		<if test="list != null">
+			LIST,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="id != null">
+			#{id},
+		</if>
+		<if test="userCode != null">
+			#{userCode},
+		</if>
+		<if test="content != null">
+			#{content},
+		</if>
+		<if test="evaluator != null">
+			#{evaluator},
+		</if>
+		<if test="evaluatDate != null">
+			#{evaluatDate},
+		</if>
+		<if test="completeDate != null">
+			#{completeDate},
+		</if>
+		<if test="userInd != null">
+			#{userInd},
+		</if>
+		<if test="status != null">
+			#{status},
+		</if>
+		<if test="docAddress != null">
+			#{docAddress},
+		</if>
+		<if test="evaluaTion != null">
+			#{evaluaTion},
+		</if>
+		<if test="source != null">
+			#{source},
+		</if>
+		<if test="checkMan != null">
+			#{checkMan},
+		</if>
+		<if test="checkDate != null">
+			#{checkDate},
+		</if>
+		<if test="dangersCondition != null">
+			#{dangersCondition},
+		</if>
+		<if test="statusContent != null">
+			#{statusContent},
+		</if>
+		<if test="remark != null">
+			#{remark},
+		</if>
+		<if test="flag != null">
+			#{flag},
+		</if>
+		<if test="endEvaluatDate != null">
+			#{endEvaluatDate},
+		</if>
+		<if test="ggUserCorp != null">
+			#{ggUserCorp},
+		</if>
+		<if test="list != null">
+			#{list},
+		</if>
+	</trim>
+</insert>
+	
+	<!-- 评估时 更新 评估危险源信息 -->
+	<update id="updateEvaDanger" parameterType="GgEvaluateDangers">
+		UPDATE
+		GGEVALUATEDANGERS SET "EVALUATION" = #{evaluaTion}
+		WHERE USERCODE=#{userCode} AND USERIND=#{userInd} AND EVALUATION = '1'
+	</update>
+	
+	<update id="updateEvaDangerSelective" parameterType="GgEvaluateDangers">
+		UPDATE GGEVALUATEDANGERS 
+		<set>
+			<if test="id != null and id != ''">
+				ID = #{id},
+			</if>
+			<if test="userCode != null and userCode != ''">
+				USERCODE = #{userCode},
+			</if>
+			<if test="content != null and content != ''">
+				CONTENT = #{content},
+			</if>
+			<if test="evaluator != null and evaluator != ''">
+				EVALUATOR = #{evaluator},
+			</if>
+			<if test="evaluatDate != null">
+				EVALUATDATE = #{evaluatDate},
+			</if>
+			<if test="completeDate != null">
+				COMPLETEDATE = #{completeDate},
+			</if>
+			<if test="userInd != null and userInd != ''">
+				USERIND = #{userInd},
+			</if>
+			<if test="status != null and status != ''">
+				STATUS = #{status},
+			</if>
+			<if test="docAddress != null and docAddress != ''">
+				DOCADDRESS = #{docAddress},
+			</if>
+			<if test="evaluaTion != null and evaluaTion != ''">
+				EVALUATION = #{evaluaTion},
+			</if>
+			<if test="source != null and source != ''">
+				SOURCE = #{source},
+			</if>
+			<if test="checkMan != null and checkMan != ''">
+				CHECKMAN = #{checkMan},
+			</if>
+			<if test="checkDate != null">
+				CHECKDATE = #{checkDate},
+			</if>
+			<if test="dangersCondition != null and dangersCondition != ''">
+				DANGERSCONDITION = #{dangersCondition},
+			</if>
+			<if test="statusContent != null and statusContent != ''">
+				STATUSCONTENT = #{statusContent},
+			</if>
+			<if test="remark != null and remark != ''">
+				REMARK = #{remark},
+			</if>
+			<if test="flag != null and flag != ''">
+				FLAG = #{flag},
+			</if>
+			<if test="endEvaluatDate != null ">
+				ENDEVALUATDATE = #{endEvaluatDate},
+			</if>
+		
+		</set>
+		<where>
+			ID = #{id}
+		</where>		
+	</update>
+
+	<select id="queryList" parameterType="Pagination" resultType="map">
+		SELECT DISTINCT
+		A.USERCODE
+		USERCODE,A.COMPANYNAME,A.LINKNAME,A.MOBILE,A.RISKLEVEL,
+		AL."CONTENT",AL."EVALUATDATE", AL.COMPLETEDATE,
+		GN.SERIESNO,GN.PUBLISHTIME,GN.TITLE
+		FROM GGUSERCORP A,GGEVALUATEDANGERS
+		AL
+		LEFT JOIN GGNOTICE GN ON GN.SERIESNO=AL.USERCODE
+		<where>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">A.PROVINCE=#{queryCondition.province} AND </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">A.CITY=#{queryCondition.city} AND</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">A.COUNTY=#{queryCondition.county} AND</if>
+			<if
+				test="queryCondition.riskLevel != null and queryCondition.riskLevel != ''">A.RISKLEVEL=#{queryCondition.riskLevel} AND</if>
+			<if test="queryCondition.status != null and queryCondition.status != ''">AL.STATUS=#{queryCondition.status} AND</if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">A.COMPANYNAME LIKE '%${queryCondition.companyName }%' AND</if>
+			<if
+				test="queryCondition.evaluatDate != null and queryCondition.evaluatDate != ''">TO_CHAR
+				(AL.EVALUATDATE,'yyyy-MM-dd')=#{queryCondition.evaluatDate} AND
+			</if>
+			AL.USERIND='1' AND
+			A.USERCODE = AL.USERCODE
+			ORDER BY AL."EVALUATDATE"
+			DESC
+		</where>
+	</select>
+	<!-- 查询机构等级 -->
+	<select id="getGrage" parameterType="String" resultType="String">
+		SELECT CODECNAME FROM GGCODE GD
+
+		<where>
+			1=1
+			<if test="codeType != null and codeType != ''">
+				AND CODETYPE=#{codeType}
+			</if>
+			<if test="codeCode != null and codeCode != ''">
+				AND CODECODE = #{codeCode}
+			</if>
+		</where>
+	</select>
+	<!-- 报表下载 -->
+	<select id="getUserCorpToExc" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT A.COMPANYNAME,A.LINKNAME,A.MOBILE,
+		TO_CHAR(AL.EVALUATDATE, 'yyyy-MM-dd') "EVALUATDATE",AL."CONTENT",
+		CASE A.RISKLEVEL WHEN '1' THEN '合格'
+		ELSE '不合格'
+		END RISKLEVEL
+		FROM GGUSERCORP A,GGEVALUATEDANGERS AL
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND A.PROVINCE=#{queryCondition.province}</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''"> AND A.CITY=#{queryCondition.city}</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''"> AND A.COUNTY=#{queryCondition.county}</if>
+			<if
+				test="queryCondition.riskLevel != null and queryCondition.riskLevel != ''"> AND A.RISKLEVEL=#{queryCondition.riskLevel}</if>
+			<if test="queryCondition.status != null and queryCondition.status != ''"> AND AL.STATUS=#{queryCondition.status}</if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''"> AND A.COMPANYNAME LIKE '%${queryCondition.companyName }%'</if>
+			<!-- 开始日期要比评估日期小 &gt; 代表大于号 -->
+			<if
+				test="queryCondition.startEvaluatDate != null and queryCondition.startEvaluatDate != ''">
+				AND TO_CHAR (AL.EVALUATDATE,'yyyy-MM-dd') &gt; =
+				#{queryCondition.startEvaluatDate}
+			</if>
+			<!-- 结束日期要比评估日期大 &lt; 代表小于号 -->
+			<if
+				test="queryCondition.endEvaluatDate != null and queryCondition.endEvaluatDate != ''">
+				AND TO_CHAR (AL.EVALUATDATE-1,'yyyy-MM-dd') &lt; =
+				#{queryCondition.endEvaluatDate}
+			</if>
+			AND AL.USERIND='1'
+			AND AL."EVALUATION"='1'
+			AND AL.ENDEVALUATDATE >
+			SYSDATE
+			AND A.USERCODE = AL.USERCODE
+			ORDER BY AL.EVALUATDATE DESC
+		</where>
+	</select>
+	
+	<select id="selectiveEvaluateDangers" parameterType="GgEvaluateDangers" resultType="GgEvaluateDangers">
+		select * from GgEvaluateDangers 
+		<where>
+			1 = 1
+			<if test="id != null and id != ''">
+				AND ID = #{id}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				AND USERCODE = #{userCode}
+			</if>
+			<if test="content != null and content != ''">
+				AND CONTENT = #{content}
+			</if>
+			<if test="evaluator != null and evaluator != ''">
+				AND EVALUATOR = #{evaluator}
+			</if>
+			<if test="evaluatDate != null and evaluatDate != ''">
+				AND EVALUATDATE = #{evaluatDate}
+			</if>
+			<if test="completeDate != null and completeDate != ''">
+				AND COMPLETEDATE = #{completeDate}
+			</if>
+			<if test="userInd != null and userInd != ''">
+				AND USERIND = #{userInd}
+			</if>
+			<if test="status != null and status != ''">
+				AND STATUS = #{status}
+			</if>
+			<if test="docAddress != null and docAddress != ''">
+				AND DOCADDRESS = #{docAddress}
+			</if>
+			<if test="evaluaTion != null and evaluaTion != ''">
+				AND EVALUATION = #{evaluaTion}
+			</if>
+			<if test="source != null and source != ''">
+				AND SOURCE = #{source}
+			</if>
+			<if test="checkMan != null and checkMan != ''">
+				AND CHECKMAN = #{checkMan}
+			</if>
+			<if test="checkDate != null and checkDate != ''">
+				AND CHECKDATE = #{checkDate}
+			</if>
+			<if test="dangersCondition != null and dangersCondition != ''">
+				AND DANGERSCONDITION = #{dangersCondition}
+			</if>
+			<if test="statusContent != null and statusContent != ''">
+				AND STATUSCONTENT = #{statusContent}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="flag != null and flag != ''">
+				AND FLAG = #{flag}
+			</if>
+			<if test="endEvaluatDate != null and endEvaluatDate != ''">
+				AND ENDEVALUATDATE = #{endEvaluatDate}
+			</if>
+			
+		</where>
+	</select>
+
+
+</mapper>

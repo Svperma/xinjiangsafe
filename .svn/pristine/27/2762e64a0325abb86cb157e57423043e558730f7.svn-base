@@ -1,0 +1,161 @@
+package com.dsib.entity;
+
+import java.util.Date;
+
+public class GgSubscribe {
+
+	private String id;
+	private String userCode;// 企业代码
+	private String userName;// 企业名称
+	private String province;// 省
+	private String city;// 市
+	private String county;// 区县
+	private String address;// 具体地址
+	private String linkName;// 联系人
+	private String telePhone;// 手机号
+	private String mobile;// 座机号
+	private String orgCode;// 机构代码
+	private String orgName;// 机构名称
+	private Date subScribeDate;// 预约时间
+	private Date evaluatDate;// 评估时间
+	private String evaluatTion;// 评估状态：0未评估，1已评估
+	private String remark;
+	private String flag;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public void setCounty(String county) {
+		this.county = county;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
+	public String getTelePhone() {
+		return telePhone;
+	}
+
+	public void setTelePhone(String telePhone) {
+		this.telePhone = telePhone;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getOrgCode() {
+		return orgCode;
+	}
+
+	public void setOrgCode(String orgCode) {
+		this.orgCode = orgCode;
+	}
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
+	public Date getSubScribeDate() {
+		return subScribeDate;
+	}
+
+	public void setSubScribeDate(Date subScribeDate) {
+		this.subScribeDate = subScribeDate;
+	}
+
+	public Date getEvaluatDate() {
+		return evaluatDate;
+	}
+
+	public void setEvaluatDate(Date evaluatDate) {
+		this.evaluatDate = evaluatDate;
+	}
+
+	public String getEvaluatTion() {
+		return evaluatTion;
+	}
+
+	public void setEvaluatTion(String evaluatTion) {
+		this.evaluatTion = evaluatTion;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+
+}

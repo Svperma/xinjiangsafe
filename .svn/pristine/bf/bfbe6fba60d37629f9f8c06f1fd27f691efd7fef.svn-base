@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+<title>订单流水查询</title>
+
+</head>
+
+
+
+<body>
+
+
+
+<form name="form1" method="post" action="queryOrderFlow.jsp">
+
+起始日期：&nbsp;&nbsp;<input name="startDate" /> 	&nbsp;&nbsp;  格式:yyyyMMdd <font color = "red" size = "4">*</font>
+
+<br />
+
+<br />
+
+结束日期：&nbsp;&nbsp;<input name="endDate"   />	&nbsp;&nbsp;  格式:yyyyMMdd <font color = "red" size = "4">*</font>
+
+<br />
+
+<br />
+
+付款账号：&nbsp;&nbsp;<input name="payAcc"	/>
+
+<br />
+
+<br />
+
+收款账号：&nbsp;&nbsp;<input name="recAcc"  />
+
+<br />
+
+<br />
+
+商户编号：&nbsp;&nbsp;<input name="merchantNo" />
+
+<br />
+
+<br />
+
+转账查询：&nbsp;&nbsp;<input name="tranType" />	&nbsp;&nbsp; 100：买家付款 / 200：协议付款 / 010：卖家退款 / 001：中间商保证金交割 /002：中间商保证金退款
+
+<br />
+
+<br />
+
+交易状态: &nbsp;&nbsp;<input name="tranStatus" /> &nbsp;&nbsp; 0: 所有 / 1: 待授权 / 2：授权拒绝 / 3：处理中 / 4：处理成功 / 5：处理失败
+
+<br />
+
+<br />
+
+页码索引: &nbsp;&nbsp;<input name="pageNo" />    &nbsp;&nbsp;默认为第1页
+
+<br />
+<br />
+
+<input type="submit"  />
+
+</form>
+
+
+
+</body>
+
+</html>
+

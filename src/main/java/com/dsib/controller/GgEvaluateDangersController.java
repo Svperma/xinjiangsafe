@@ -1,0 +1,761 @@
+package com.dsib.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.dsib.common.ConditionAdapter;
+import com.dsib.common.Pagination;
+import com.dsib.entity.GGovexpert;
+import com.dsib.entity.GgCode;
+import com.dsib.entity.GgEvaluateDangers;
+import com.dsib.entity.GgNotice;
+import com.dsib.entity.GgUser;
+import com.dsib.entity.GgUserCorp;
+import com.dsib.entity.GovOrgan;
+import com.dsib.service.GcClaimService;
+import com.dsib.service.GgCodeService;
+import com.dsib.service.GgEvaluateDangersService;
+import com.dsib.service.GgNoticeService;
+import com.dsib.service.GgUserCorpService;
+import com.dsib.service.GgovExpertService;
+import com.dsib.service.GovOrganService;
+import com.dsib.service.GuPolicyMainService;
+import com.dsib.util.FileUtil;
+import com.dsib.util.StringUtil;
+
+@Controller
+@RequestMapping("/evaluateDangers")
+@SessionAttributes("pagination")
+public class GgEvaluateDangersController extends BaseController {
+	@Resource(name = "ggEvaluateDangersService")
+	private GgEvaluateDangersService ggEvaluateDangersService;
+	@Resource(name = "govOrganService")
+	private GovOrganService govOrganService;
+	@Resource(name = "ggovExpertService")
+	private GgovExpertService govExpertService;
+	@Resource(name = "ggUserCorpService")
+	private GgUserCorpService corpService;
+	@Resource(name = "ggCodeService")
+	private GgCodeService ggCodeService;
+	@Resource(name = "GuPolicyMainService")
+	private GuPolicyMainService guPolicyMainService;
+	@Resource(name = "gcClaimService")
+	private GcClaimService claimService;
+	@Resource(name = "ggNoticeService")
+	private GgNoticeService ggNoticeService;
+
+	/**
+	 * 查询风险评估信息列表-分页
+	 * 
+	 * @author husiletu
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping("/select_riskRatingInfo")
+	public ModelAndView userCorpInfo() {
+		Enumeration attributeNames = session.getAttributeNames();
+		while(attributeNames.hasMoreElements()) {
+			Object nextElement = attributeNames.nextElement();
+			Object attribute = session.getAttribute((String) nextElement);
+			System.out.println( nextElement + "===>" + JSON.toJSONString(attribute));
+		}
+		System.out.println("-------------------");
+		GgCode code = (GgCode) session.getAttribute("city");
+		System.out.println(JSON.toJSONString(code));
+		
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GgNotice ggNotice = new GgNotice();
+		// 获取登录对象
+		GgUser ggUser = (GgUser) session.getAttribute("ggUser");
+		// 获取用户权限等级
+		String comLevel = ggUser.getComLevel();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("province", null);
+		map.put("city", null);
+		map.put("county", null);
+		if ("1".equals(comLevel)) {
+			map.put("province", ggUser.getProvince());
+		} else if ("2".equals(comLevel)) {
+			map.put("province", ggUser.getProvince());
+			map.put("city", ggUser.getCity());
+		} else if ("3".equals(comLevel)) {
+			map.put("province", ggUser.getProvince());
+			map.put("city", ggUser.getCity());
+			map.put("county", ggUser.getCounty());
+		}
+		map.put("userCode", ggUser.getUserCode());
+		pagination.setQueryCondition(map);
+
+		List<Map<String, Object>> list_corp = ggEvaluateDangersService
+				.getUserCorpInfo(pagination);
+		pagination.setResultList(list_corp);
+
+		mad.setViewName("/jianguan/jsp/leftinclude");
+		mad.addObject("pagination", pagination);
+		return mad;
+	}
+
+	/**
+	 * 分页"查询"风险评估信息列表
+	 * 
+	 * @author husiletu
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/get_riskRatingInfo", method = RequestMethod.GET, produces = "application/*;chartset=UTF-8")
+	public ModelAndView userCorpInfo(HttpSession session) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GgUser gguser = (GgUser) session.getAttribute("ggUser");
+		try {
+			String province = request.getParameter("hidden_province1");
+			String city = request.getParameter("hidden_city1");
+			String county = request.getParameter("hidden_county1");
+			String riskLevel = request.getParameter("riskLevel");
+			String status = request.getParameter("status");
+			String companyName = request.getParameter("companyName");
+			String startEvaluatDate = request.getParameter("startEvaluatDate");
+			String endEvaluatDate = request.getParameter("endEvaluatDate");
+			Map<Object, Object> map = new HashMap<Object, Object>();
+			map.put("province", province);
+			map.put("city", city);
+			map.put("county", county);
+//			map.put("riskLevel", riskLevel.equals("风险状况") ? "" : riskLevel);
+			map.put("status", status.trim().equals("整改进度") ? "" : status.trim());
+			map.put("companyName", companyName.equals("请输入需要查询的企业名") ? ""
+					: companyName);
+			map.put("startEvaluatDate", startEvaluatDate.equals("请输入开始日期") ? ""
+					: startEvaluatDate);
+			map.put("endEvaluatDate", endEvaluatDate.equals("请输入截止日期") ? ""
+					: endEvaluatDate);
+			map.put("userCode", gguser.getUserCode());
+			pagination.setQueryCondition(map);
+			List<Map<String, Object>> list_corp = ggEvaluateDangersService
+					.getUserCorpInfo(pagination);
+			pagination.setResultList(list_corp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		mad.setViewName("/jianguan/jsp/dangerSafety");
+		mad.addObject("pagination", pagination);
+		return mad;
+	}
+
+	/**
+	 * 风险评估内容信息查看
+	 * 
+	 * @author husiletu
+	 * @param ggusercorp
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping(value = "/riskRating/details", method = RequestMethod.GET)
+	public ModelAndView riskRatingInfoDetails(HttpSession session,
+			@RequestParam(value = "userCode") String userCode) {
+		ModelAndView mav = new ModelAndView();
+		Pagination pagination = new Pagination();
+		Map<String, Object> pm = new HashMap<String, Object>();
+		pm.put("userCode", userCode);
+		pagination.setQueryCondition(pm);
+		List<Map<String, Object>> list_userCorp = ggEvaluateDangersService
+				.getCorpBy_userCode(pagination);
+//		session.setAttribute("evaSource",
+//				list_userCorp.isEmpty() ? new GgUserCorp() : list_userCorp.get(0));
+		Map<String, Object> map = new HashMap<String,Object>();
+		if(list_userCorp.isEmpty()) {
+			String companyName = request.getParameter("companyName");
+			map.put("COMPANYNAME", companyName);
+		}else {
+			map = list_userCorp.get(0);
+		}
+		
+		session.setAttribute("evaSource",map);
+		pagination.setResultList(list_userCorp);
+		mav.setViewName("/jianguan/jsp/evaluateReport");
+		mav.addObject("pagination", pagination);
+		return mav;
+	}
+	
+	
+
+
+	/**
+	 * 企业未评估信息查询
+	 * 
+	 * @author husiletu
+	 * @param ggusercorp
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping(value = "/dangerSourceNotDetails", method = RequestMethod.GET)
+	public ModelAndView dangerSourceNotDetails(Pagination pagination) {
+		ModelAndView mad = new ModelAndView();
+
+		Map<String, String> map = new HashMap<String, String>();
+		pagination.setQueryCondition(map);
+		List<Map<String, Object>> list = ggEvaluateDangersService
+				.selectdangerSourceNotDetails(pagination);
+		pagination.setResultList(list);
+		mad.setViewName("/jianguan/jsp/dangerSourceNotDetail");
+		mad.addObject("pagination", pagination);
+		return mad;
+
+	}
+
+	/**
+	 * 给未评估的企业进行评估
+	 * 
+	 * @author husiletu
+	 * @param session
+	 * @param userCode
+	 * @param companyName
+	 * @param size
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping(value = "/dangerSourceCountersign", method = RequestMethod.GET)
+	public ModelAndView dangerSourceCountersign(
+			HttpSession session,
+			@RequestParam(value = "userCode", required = false) String userCode,
+			@RequestParam(value = "companyName", required = false) String companyName,
+			@RequestParam(value = "classCode", required = false) String classCode) {
+		ModelAndView mav = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GGovexpert govExpert = new GGovexpert();
+		Map<String, Object> pm = new HashMap<String, Object>();
+		String str= companyName;
+		byte[] bytes;
+		try {
+			bytes = str.getBytes("UTF-8");
+			companyName=new String(bytes,"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		pm.put("userCode", userCode);
+		pm.put("companyName", companyName);
+		pm.put("classCode", classCode);
+		pagination.setQueryCondition(pm);
+		List<Map<String, Object>> list_userCorp = ggEvaluateDangersService
+				.getDangerSourceDetails(pagination);
+
+//		List<Map<String, Object>> Map_govOrgan = ggEvaluateDangersService
+//				.selectGovOrganDetails(classCode);
+		GovOrgan organKey = new GovOrgan();
+		GgUser user = (GgUser) session.getAttribute("ggUser");
+		organKey.setProvince(user.getProvince());
+//		organKey.setLangUage(classCode);
+		List<GovOrgan> Map_govOrgan = govOrganService.selectGovorgan4Code(organKey);
+
+		List<Map<String, Object>> Map_govExpert = ggEvaluateDangersService
+				.selectGovOrganPersons(govExpert);
+
+//		session.setAttribute("userCorpDangerSource",
+//				list_userCorp == null ? new GgUserCorp() : list_userCorp.get(0));
+		session.setAttribute("userCorpDangerSource",
+				list_userCorp.isEmpty() ? new HashMap<String, Object>() : list_userCorp.get(0));
+//		session.setAttribute("map_govOrgan",
+//				Map_govOrgan == null ? new GovOrgan() : Map_govOrgan);
+		session.setAttribute("map_govOrgan",
+				Map_govOrgan.isEmpty() ? new HashMap<String, Object>() : Map_govOrgan);
+		session.setAttribute("Map_govExpert",
+				Map_govExpert.isEmpty() ? new HashMap<String, Object>() : Map_govExpert);
+		pagination.setResultList(list_userCorp);
+		mav.setViewName("/jianguan/jsp/dangerSourceCondition");
+		mav.addObject("pagination", pagination);
+		mav.addObject("Map_govOrgan", Map_govOrgan);
+		mav.addObject("Map_govExpert", Map_govExpert);
+		return mav;
+	}
+
+	@RequestMapping(value = "/insertInveStigate", method = RequestMethod.GET)
+	public ModelAndView insertInveStigate(
+			@RequestParam(value = "userCode", required = false) String userCode) {
+		ModelAndView mav = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GGovexpert govExpert = new GGovexpert();
+		Map<String, Object> pm = new HashMap<String, Object>();
+		GgUser gguser = (GgUser) session.getAttribute("ggUser");
+		pm.put("userCode", gguser.getUserCode());
+		pagination.setQueryCondition(pm);
+		List<Map<String, Object>> list_userCorp = ggEvaluateDangersService
+				.getDangerSourceDetails(pagination);
+		String classCode = (String) list_userCorp.get(0).get("CLASSCODE");
+		List<Map<String, Object>> Map_govOrgan = ggEvaluateDangersService
+				.selectGovOrganDetails(classCode);
+
+		List<Map<String, Object>> Map_govExpert = ggEvaluateDangersService
+				.selectGovOrganPersons(govExpert);
+
+		session.setAttribute("userCorpDangerSource",
+				list_userCorp == null ? new GgUserCorp() : list_userCorp.get(0));
+		session.setAttribute("map_govOrgan",
+				Map_govOrgan == null ? new GovOrgan() : Map_govOrgan);
+		session.setAttribute("Map_govExpert",
+				Map_govExpert == null ? new GovOrgan() : Map_govExpert);
+		pagination.setResultList(list_userCorp);
+		mav.setViewName("/qiye/investigate/insertInveStigate");
+		mav.addObject("pagination", pagination);
+		mav.addObject("Map_govOrgan", Map_govOrgan);
+		mav.addObject("Map_govExpert", Map_govExpert);
+		return mav;
+	}
+
+	/**
+	 * @author HSLT
+	 * @param obj
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getGare")
+	public void getGare(@RequestBody JSONObject obj,
+			HttpServletResponse response) throws Exception {
+		String orgname = obj.getString("orgname");
+		String grade = obj.getString("grade");
+		GovOrgan govOrgan = new GovOrgan();
+		if (orgname != null && !"".equals(orgname)) {
+			govOrgan.setOrgCode(orgname);
+		}
+		List<GovOrgan> govOrgans = govOrganService
+				.selectGovorgan4Code(govOrgan);
+		String govOrganList = "";
+
+		govOrganList = JSON.toJSONString(govOrgans);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		try {
+			PrintWriter write = response.getWriter();
+			write.write(govOrganList);
+			write.flush();
+			write.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @author hslt
+	 * @param obj
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/getPersons")
+	public void getPersons(@RequestBody JSONObject obj,
+			HttpServletResponse response) throws Exception {
+		String orgname = obj.getString("orgname");
+		GGovexpert govExpert = new GGovexpert();
+		if (orgname != null && !"".equals(orgname)) {
+			govExpert.setOrgcode(orgname);
+		}
+		List<GGovexpert> govExperts = govExpertService
+				.selectGovExperts(govExpert);
+		String govExpertList = "";
+
+		govExpertList = JSON.toJSONString(govExperts);
+
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		try {
+			PrintWriter write = response.getWriter();
+			write.write(govExpertList);
+			write.flush();
+			write.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 未评估企业进行评估保存方法
+	 * 
+	 * @author husiletu
+	 * @param ggusercorp
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping(value = "/riskRatingInsert", method = RequestMethod.POST)
+	public ModelAndView riskRatingInsertDetails(GgUserCorp ggusercorp,
+			GgEvaluateDangers ggEvaluateDangers, GovOrgan govOrgan,
+			MultipartFile evaluationData) {
+		ModelAndView mav = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GgUser ggUser = (GgUser) session.getAttribute("ggUser");
+		String userInd = ggUser.getUserInd();
+
+		try {
+			String userCode = request.getParameter("userCode");// 企业代码
+			String companyName = request.getParameter("COMPANYNAME");// 企业名称
+			String classCode = request.getParameter("CLASSCODE");// 企业类型
+			String source = request.getParameter("source");// 危险源
+			String content = request.getParameter("content");// 评估概述
+			String riskLevel = request.getParameter("riskLevel");// 综合评定
+			String evaluatDate = request.getParameter("EvaDate");// 评估时间
+			String statusContent = request.getParameter("statusContent");// 整改意见
+			String orgCode = request.getParameter("orgname");// 评估机构
+			String grade = request.getParameter("grade");// 机构等级
+			String person = request.getParameter("hfexample");// 机构负责人
+			String registrAtion = request.getParameter("registration");// 注册证号
+			/** 生成一个32位的随机数ID */
+			String uuid = StringUtil.getUUID();
+			// 保存评估资料数据
+			String path = FileUtil.uploadFile(evaluationData, request);
+			SimpleDateFormat evadate = new SimpleDateFormat("yyyy-MM-dd");
+			Date evaluaDate = evadate.parse(evaluatDate);
+
+			Map<String, Object> pm = new HashMap<String, Object>();
+			pm.put("userCode", userCode);
+			if (userInd.equals("2")) {
+				pm.put("userInd", "3");
+			} else {
+				pm.put("userInd", userInd);
+			}
+			pagination.setQueryCondition(pm);
+			List<Map<String, Object>> queryList = ggEvaluateDangersService
+					.whetherList(pagination);
+			if (queryList != null && queryList.size() > 0) {
+				ggEvaluateDangers.setUserCode(userCode);
+				if (userInd.equals("2")) {
+					ggEvaluateDangers.setUserInd("3");
+				} else {
+					ggEvaluateDangers.setUserInd(userInd);
+				}
+				ggEvaluateDangers.setEvaluaTion("0");
+				ggEvaluateDangersService.updateEvaDanger(ggEvaluateDangers);
+			}
+			/** 评估危险源表 */
+			ggEvaluateDangers.setId(uuid);// 随机数id
+			ggEvaluateDangers.setUserCode(ggusercorp.getUserCode());// ggusercorp表中的usercode
+			ggEvaluateDangers.setEvaluator(orgCode);// 页面的orgowner评估人
+			ggEvaluateDangers.setEvaluatDate(evaluaDate);// 格式化后的评估时间
+			ggEvaluateDangers.setContent(content);// 评估概述
+			if (userInd.equals("2")) {
+				ggEvaluateDangers.setUserInd("3");// 评估人类型-1政府2企业3保险公司4第三方
+			} else {
+				ggEvaluateDangers.setUserInd(userInd);// 评估人类型-1政府2企业3保险公司4第三方
+			}
+			ggEvaluateDangers.setStatus("0");// 整改状态，默认为0（未整改）
+			ggEvaluateDangers.setStatusContent(statusContent);// 整改内容
+			ggEvaluateDangers.setDocAddress(path);
+			ggEvaluateDangers.setEvaluaTion("1");// 1新数据0是旧数据
+
+			ggEvaluateDangers.setSource(source);
+			ggEvaluateDangers.setCheckMan(person);// 页面的orgowner评估人
+			ggEvaluateDangers.setCheckDate(evaluaDate);// 格式化后的评估时间
+			ggEvaluateDangers.setDangersCondition("1");// 1新数据0是旧数据
+			// 评估截止日期自动加三年年
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(evaluaDate);
+			calendar.add(calendar.YEAR, +3);
+			ggEvaluateDangers.setEndEvaluatDate(calendar.getTime());
+
+			ggEvaluateDangersService.insertEvaDanger(ggEvaluateDangers);
+
+			if (userInd.equals("1")) {
+				// 获取用户权限等级
+				String comLevel = ggUser.getComLevel();
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("province", null);
+				map.put("city", null);
+				map.put("county", null);
+				if ("1".equals(comLevel)) {
+					map.put("province", ggUser.getProvince());
+				} else if ("2".equals(comLevel)) {
+					map.put("province", ggUser.getProvince());
+					map.put("city", ggUser.getCity());
+				} else if ("3".equals(comLevel)) {
+					map.put("province", ggUser.getProvince());
+					map.put("city", ggUser.getCity());
+					map.put("county", ggUser.getCounty());
+				}
+				pagination.setQueryCondition(map);
+
+				List<Map<String, Object>> list_corp = ggEvaluateDangersService
+						.getUserCorpInfo(pagination);
+				pagination.setResultList(list_corp);
+				mav.addObject("pagination", pagination);
+				mav.setViewName("/jianguan/jsp/leftinclude");
+			}
+			if (userInd.equals("2")) {
+				/**
+				 * 查询除了企业之外的三方评估机构
+				 */
+				GgCode code = new GgCode();
+				code.setCodeType("userInd");
+				code.setCodeCode(userInd);
+				List<GgCode> list_userInd = ggCodeService
+						.getGgCodeByObjOtherCompany(code);
+
+				pm = new HashMap<String, Object>();
+				pm.put("userCode", userCode);
+				pm.put("userInd", userInd);
+				pagination.setQueryCondition(pm);
+				List<GgEvaluateDangers> evaluateDangers = ggEvaluateDangersService
+						.selectEva(pagination);
+
+				pagination.setResultList(evaluateDangers);
+				mav.setViewName("/qiye/investigate/InveStigateReport");
+				mav.addObject("pagination", pagination);
+				mav.addObject("list_userInd", list_userInd);
+				session.setAttribute("evaluateDangers",
+						evaluateDangers == null ? new GgEvaluateDangers()
+								: evaluateDangers);
+				session.setAttribute("list_userInd",
+						list_userInd == null ? new GgEvaluateDangers()
+								: list_userInd);
+			}
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return mav;
+	}
+
+	/**
+	 * 导报表
+	 * 
+	 * @param response
+	 */
+	@RequestMapping("/exportToExcel")
+	public void exportExcel(HttpServletResponse response,
+			HttpServletRequest request) {
+		String province = request.getParameter("hidden_province1");
+		String city = request.getParameter("hidden_city1");
+		String county = request.getParameter("hidden_county1");
+		String riskLevel = request.getParameter("riskLevel");
+		String status = request.getParameter("status");
+		String companyName = request.getParameter("companyName");
+		String startEvaluatDate = request.getParameter("startEvaluatDate");
+		String endEvaluatDate = request.getParameter("endEvaluatDate");
+		// 查询条件
+		Map<String, Object> conditionMap = new HashMap<String, Object>();
+		conditionMap.put("province", province);
+		conditionMap.put("city", city);
+		conditionMap.put("county", county);
+		conditionMap.put("riskLevel", riskLevel);
+		conditionMap.put("status", status);
+		conditionMap.put("startEvaluatDate",
+				startEvaluatDate.equals("请输入开始日期") ? "" : startEvaluatDate);
+		conditionMap.put("endDate", endEvaluatDate.equals("请输入截止日期") ? ""
+				: endEvaluatDate);
+		conditionMap.put("companyName", companyName.equals("请输入需要查询的企业名") ? ""
+				: companyName);
+		ConditionAdapter adapter = new ConditionAdapter();
+		adapter.setQueryCondition(conditionMap);
+		// 查询保单信息
+		List<Map<String, Object>> list_corp = ggEvaluateDangersService
+				.getUserCorpToExc(adapter);
+		// 标题
+		String[] titles = new String[] { "COMPANYNAME:企业名称", "LINKNAME:联系人",
+				"MOBILE:联系方式", "EVALUATDATE:评估时间", "CONTENT:综合评估",
+				"RISKLEVEL:风险等级" };
+		// 内容
+		List<Map<String, Object>> lists = list_corp;
+		// 类型
+		Class clas = Map.class;
+		// sheet名
+		String sheetName = "安全风险信息";
+		FileUtil.exportToExcel(titles, lists, clas, sheetName, response);
+	}
+
+	/**
+	 * 安全风险 翻页
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/riskLevelContinue")
+	public ModelAndView enterpriseDetailContinue(
+			@RequestParam("pageNo") String pageNo, HttpSession session) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		pagination.setPageNo(Integer.parseInt(pageNo));
+		pagination = ggEvaluateDangersService.getRiskLevel(pagination);
+		mad.addObject("pagination", pagination);
+		mad.setViewName("/jianguan/jsp/dangerSafety");
+		return mad;
+	}
+
+	/**
+	 * 未评估企业信息 翻页
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/evaluateReportUsercorpContinue")
+	public ModelAndView evaluateReportUsercorpContinue(
+			@RequestParam("pageNo") String pageNo, HttpSession session) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		pagination.setPageNo(Integer.parseInt(pageNo));
+		pagination = ggEvaluateDangersService.getUsercorpContinue(pagination);
+		mad.addObject("pagination", pagination);
+		mad.setViewName("/jianguan/jsp/dangerSourceNotDetail");
+		return mad;
+	}
+
+	@RequestMapping("/Checking")
+	public ModelAndView Checking() {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = new Pagination();
+
+		GgUser user = (GgUser) session.getAttribute("ggUser");
+		String userCode = user.getUserCode();
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userCode", userCode);
+		pagination.setQueryCondition(map);
+		List<Map<String, Object>> checkWrite = ggEvaluateDangersService
+				.selectCheckWrite(pagination);
+		pagination.setResultList(checkWrite);
+		/* mad.addObject(checkWrite); */
+		mad.addObject("pagination", pagination);
+		session.setAttribute("checkWrite", checkWrite);
+		session.setAttribute("pagination", pagination);
+		mad.setViewName("/qiye/HiddenDanger/hiddenDangersReport");
+		return mad;
+	}
+
+	@RequestMapping("/CheckingDetails")
+	public ModelAndView CheckingDetails(@RequestParam(value = "id") String id) {
+		ModelAndView mad = new ModelAndView();
+		GgEvaluateDangers eva = new GgEvaluateDangers();
+		eva.setId(id);
+		List<GgEvaluateDangers> checkWrite = ggEvaluateDangersService
+				.selectCheckDetails(eva);
+		mad.addObject("checkWrite", checkWrite);
+		mad.setViewName("/qiye/HiddenDanger/dangersDetails");
+		return mad;
+	}
+
+	@RequestMapping(value = "/selectChecking", method = RequestMethod.GET, produces = "application/*;chartset=UTF-8")
+	public ModelAndView selectChecking() {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GgUser ggUser = (GgUser) session.getAttribute("ggUser");
+		try {
+			String startDate = request.getParameter("startDate");
+			String endDate = request.getParameter("endDate");
+			String status = request.getParameter("status");
+			Map<Object, Object> map = new HashMap<Object, Object>();
+			map.put("startDate", startDate.equals("排查开始日期") ? "" : startDate);
+			map.put("endDate", endDate.equals("排查截止日期") ? "" : endDate);
+			map.put("status", status);
+			map.put("userCode", ggUser.getUserCode());
+			pagination.setQueryCondition(map);
+			List<Map<String, Object>> list_summit = ggEvaluateDangersService
+					.selectChecking(pagination);
+			pagination.setResultList(list_summit);
+			session.setAttribute("pagination", pagination);
+			mad.setViewName("/qiye/HiddenDanger/dangers");
+			mad.addObject("pagination", pagination);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return mad;
+	}
+
+	/**
+	 * addChecking
+	 * 
+	 * @author hslt
+	 */
+	@RequestMapping(value = "/addChecking", method = RequestMethod.POST)
+	public ModelAndView addChecking(MultipartFile docAddress) {
+		ModelAndView mav = new ModelAndView();
+		Pagination pagination = new Pagination();
+		GgEvaluateDangers ggEvaluateDangers = new GgEvaluateDangers();
+		try {
+			String content = request.getParameter("content");// 排查内容
+			String statusContent = request.getParameter("statusContent");// 解决方案
+			String completeDate = request.getParameter("completeDate");// 整改日期
+			/** 生成一个32位的随机数ID */
+			String uuid = StringUtil.getUUID();
+			/** 获取当前用户 **/
+			GgUser gguser = (GgUser) session.getAttribute("ggUser");
+			String userCode = gguser.getUserCode();
+			/** 获取当前登录用户的userInd */
+			String userInd = gguser.getUserInd();
+			// 保存评估资料数据
+			String path = FileUtil.uploadFile(docAddress, request);
+			// 格式化整改日期
+			SimpleDateFormat evadate = new SimpleDateFormat("yyyy-MM-dd");
+			Date compDate = evadate.parse(completeDate);
+
+			/** 评估危险源表 */
+			ggEvaluateDangers.setId(uuid);// 随机数id
+			ggEvaluateDangers.setUserCode(userCode);// 当前用户
+			ggEvaluateDangers.setEvaluator(userCode);// 当前用户是评估人
+			/** 评估时间为录入时间 */
+			ggEvaluateDangers.setEvaluatDate(new Date());
+			ggEvaluateDangers.setContent(content);// 评估概述
+			ggEvaluateDangers.setUserInd(userInd);// 评估人类型-1政府2企业3保险公司4第三方
+			ggEvaluateDangers.setStatus("0");// 整改状态，默认为0（未整改）
+			ggEvaluateDangers.setStatusContent(statusContent);// 整改内容
+			ggEvaluateDangers.setDocAddress(path);
+			ggEvaluateDangers.setCompleteDate(compDate);// 整改日期
+
+			ggEvaluateDangersService.insertEvaDangerChecking(ggEvaluateDangers);
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("userCode", userCode);
+			pagination.setQueryCondition(map);
+			List<Map<String, Object>> checkWrite = ggEvaluateDangersService
+					.selectCheckWrite(pagination);
+			pagination.setResultList(checkWrite);
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mav.addObject("pagination", pagination);
+		mav.setViewName("/qiye/HiddenDanger/hiddenDangersReport");
+		return mav;
+	}
+
+	/**
+	 * 排查记录列表分页
+	 * 
+	 * @author hslt
+	 * @param pageNo
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/CheckingContinue")
+	public ModelAndView CheckingContinue(@RequestParam("pageNo") String pageNo,
+			HttpSession session) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		pagination.setPageNo(Integer.parseInt(pageNo));
+		pagination = ggEvaluateDangersService.CheckingContinue(pagination);
+		mad.addObject("pagination", pagination);
+		mad.setViewName("/qiye/HiddenDanger/dangers");
+		return mad;
+	}
+}

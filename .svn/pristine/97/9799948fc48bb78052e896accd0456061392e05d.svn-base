@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgCompanySumMapper" >
+  <resultMap id="BaseResultMap" type="com.dsib.entity.GgCompanySum" >
+    <id column="AREA_CODE" property="areaCode" jdbcType="VARCHAR" />
+    <result column="COMPANY_SUM" property="companySum" jdbcType="VARCHAR" />
+    <result column="LEVELS" property="levels" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    AREA_CODE, COMPANY_SUM ,LEVELS
+  </sql>
+  
+  <select id="selectCompanySum" parameterType="Pagination" resultType="map">
+  		SELECT
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GM.AREA_CODE) PROVINCE,
+		GM.AREA_CODE,GM.COMPANY_SUM FROM GGCOMPANYSUM GM
+		<where>
+			<if test="queryCondition.level != null and queryCondition.level != ''">
+			 AND GM.LEVELS = #{queryCondition.level}
+			</if>
+			<if test="queryCondition.codes != null and queryCondition.codes != ''">
+<!--  			 AND GM.AREA_CODE LIKE '#{queryCondition.codes}%'  -->
+ 			 AND GM.AREA_CODE LIKE '%'||#{queryCondition.codes }||'%' 
+			</if>
+		</where>
+</select>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from GGCOMPANYSUM
+    where AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from GGCOMPANYSUM
+    where AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dsib.entity.GgCompanySum" >
+    insert into GGCOMPANYSUM (AREA_CODE, COMPANY_SUM, LEVELS)
+    values (#{areaCode,jdbcType=VARCHAR}, #{companySum,jdbcType=VARCHAR}, #{levels,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dsib.entity.GgCompanySum" >
+    insert into GGCOMPANYSUM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="areaCode != null" >
+        AREA_CODE,
+      </if>
+      <if test="companySum != null" >
+        COMPANY_SUM,
+      </if>
+      <if test="levels != null" >
+        LEVELS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="areaCode != null" >
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="companySum != null" >
+        #{companySum,jdbcType=VARCHAR},
+      </if>
+      <if test="levels != null" >
+        #{levels,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgCompanySum" >
+    update GGCOMPANYSUM
+    <set >
+      <if test="companySum != null" >
+        COMPANY_SUM = #{companySum,jdbcType=VARCHAR},
+      </if>
+      <if test="levels != null" >
+        LEVELS = #{levels,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgCompanySum" >
+    update GGCOMPANYSUM
+    set COMPANY_SUM = #{companySum,jdbcType=VARCHAR} ,LEVELS = #{levels,jdbcType=VARCHAR}
+    where AREA_CODE = #{areaCode,jdbcType=VARCHAR}
+  </update>
+</mapper>

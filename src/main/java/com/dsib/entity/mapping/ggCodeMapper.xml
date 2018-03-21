@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgCodeMapper">
+	<select id="getGgCode" parameterType="string" resultType="GgCode">
+		SELECT
+		* FROM GGCODE WHERE CODECODE = #{codeCode}
+	</select>
+	<resultMap type="GgCode" id="codeMap">
+		<id property="companyCode" column="COMPANYCODE" />
+		<id property="codeType" column="CODETYPE" />
+		<id property="codeCode" column="CODECODE" />
+		<result property="codeCName" column="CODECNAME" />
+		<result property="codeTName" column="CODETNAME" />
+		<result property="codeEName" column="CODEENAME" />
+		<result property="creatorCode" column="CREATORCODE" />
+		<result property="createTime" column="CREATETIME" />
+		<result property="updaterCode" column="UPDATERCODE" />
+		<result property="updateTime" column="UPDATETIME" />
+		<result property="validDate" column="VALIDDATE" />
+		<result property="inValidDate" column="INVALIDDATE" />
+		<result property="validInd" column="VALIDIND" />
+		<result property="remark" column="REMARK" />
+		<result property="flag" column="FLAG" />
+		<result property="displayNo" column="DISPLAYNO" />
+	</resultMap>
+	<!-- 查询下级地区 -->
+	<select id="getGgCodeList" parameterType="string" resultMap="codeMap">
+		SELECT * FROM GGCODE
+		<where>
+			1=1
+			<if test="_parameter != null and _parameter != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="_parameter == null or _parameter == ''">
+				AND CODETYPE='Province'
+			</if>
+		</where>
+	</select>
+	<!-- 查询下级类别 -->
+	<select id="getIndustryCode" parameterType="string" resultMap="codeMap">
+		SELECT * FROM GGCODE
+		<where>
+			1=1
+			<if test="_parameter != null and _parameter != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="_parameter == null or _parameter == ''">
+				AND CODETYPE='IndustryCategories'
+			</if>
+		</where>
+	</select>
+	<select id="getGgCodeByObj" parameterType="GgCode" resultType="GgCode">
+		SELECT * FROM GGCODE
+		<where>
+			1=1
+			<if test="codeType != null and codeType != ''">
+				AND CODETYPE=#{codeType}
+			</if>
+			<if test="codeCode != null and codeCode != ''">
+				AND CODECODE = #{codeCode}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+		</where>
+	</select>
+	<select id="getGgCodeByObjOtherCompany" parameterType="GgCode"
+		resultType="GgCode">
+		SELECT * FROM GGCODE
+		<where>
+			1=1
+			<if test="codeType != null and codeType != ''">
+				AND CODETYPE=#{codeType}
+			</if>
+			<if test="codeCode != null and codeCode != ''">
+				AND CODECODE != #{codeCode}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+		</where>
+	</select>
+</mapper>

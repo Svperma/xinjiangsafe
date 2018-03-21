@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.QyMyclaimMapper">
+	<select id="getClaimInit" parameterType="Pagination" resultType="map">
+		SELECT GM.INSUREDNAME , GM.POLICYNO , GL.PEIANNO , NVL(GL.PAYAMOUNT, 0) PAYAMOUNT,
+		GL.LOSSDATE , GL.LOSSCAUSE , GM.INSURERCODE , GL.STATUS , GL.BAOANNO
+		FROM GCCLAIM GL LEFT JOIN GUPOLICYMAIN GM ON GL.POLICYNO = GM.POLICYNO
+		
+		<where>
+			GM.INSUREDCODE = #{queryCondition.INSUREDCODE } 
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.languagec == 0">
+				AND GL.STATUS != '5'
+			</if>
+			<if test="queryCondition.languagec == 1">
+				AND GL.STATUS = '5'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getClaimByLossDateAndPolicyNo" parameterType="com.dsib.entity.GcClaim" 
+												resultType="com.dsib.entity.GcClaim">
+		SELECT * FROM GCCLAIM WHERE POLICYNO = #{policyNo} AND LOSSDATE = #{lossDate}
+	</select>
+	
+	<!-- 	理赔信息初始化     	 -->
+	<select id="getClaimInitlize" parameterType="Pagination" resultType="map">
+		
+		SELECT GM.INSUREDNAME , GM.POLICYNO , GL.PEIANNO , NVL(GL.PAYAMOUNT, 0) PAYAMOUNT,
+			GL.LOSSDATE , GL.LOSSCAUSE , GM.INSURERCODE , GL.UPDATEDATE , GL.BAOANNO , GL.STATUS 
+		FROM GCCLAIM GL LEFT JOIN GUPOLICYMAIN GM ON GL.POLICYNO = GM.POLICYNO 
+		<where>
+			 GM.INSUREDCODE = #{queryCondition.INSUREDCODE }  
+			 <if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.languagec == 0">
+				AND GL.STATUS != '5'
+			</if>
+			<if test="queryCondition.languagec == 1">
+				AND GL.STATUS = '5'
+			</if>
+			 AND GL.UPDATEDATE IN (
+			SELECT MAX(GLL.UPDATEDATE) 
+			FROM GCCLAIM GLL LEFT JOIN GUPOLICYMAIN GMM ON GLL.POLICYNO =
+			GMM.POLICYNO WHERE GMM.INSUREDCODE = #{queryCondition.INSUREDCODE }  GROUP BY GLL.BAOANNO)
+		</where>
+	</select>
+
+	<select id="getBusinessno" parameterType="String" resultType="Map">
+		SELECT BUSINESSNO , STARTDATE , ENDDATE , POLICYNO , RISKCODE ,
+		PLANCODE , PROVINCE , CITY , COUNTY , INSURERCODE
+		FROM GUPOLICYMAIN
+		WHERE ENDDATE > SYSDATE AND PAYFLAG = '1' AND UNDERWRITEFLAG = '3' AND
+		INSUREDCODE = #{userCode }
+	</select>
+	<select id="selectByGuPolicyMain" parameterType="com.dsib.entity.GuPolicyMain" resultType="com.dsib.entity.GuPolicyMain">
+		SELECT 
+		POLICYNO,INSUREDCODE,INSUREDNAME,STARTDATE,ENDDATE,
+		(SELECT SUM(VALIDSTATUS) VALIDSTATUS FROM GGEMPLOYEE WHERE USERCODE = #{insuredCode }) REMARK
+		FROM GUPOLICYMAIN
+		WHERE 1=1 AND STARTDATE &lt; SYSDATE AND ENDDATE &gt; SYSDATE AND PAYFLAG = '1' AND UNDERWRITEFLAG = '3' AND
+		INSUREDCODE = #{insuredCode }
+	</select>
+
+	<select id="getClaimInsert" parameterType="GcClaim">
+		INSERT INTO GCCLAIM
+		(BAOANNO,PEIANNO,POLICYNO,LOSSAMOUNT,LOSSCAUSE,LOSSDATE,RISKCODE,BUSINESSNO,LOSSLOCAITON,
+		CREATERCODE,CREATEDATE,UPDATORCODE,UPDATEDATE,STATUS,REMARK,FLAG,PROVINCE,CITY,
+		COUNTY,PAYAMOUNT,INSURERCODE,CLOSEDATE,USERCODE,BAOANDATE,LOSSDETAIL,LINKNAME,LINKPHONE)
+		VALUES(#{baoAnNo,jdbcType=VARCHAR },#{peiAnNo,jdbcType=VARCHAR
+		},#{policyNo,jdbcType=VARCHAR },#{lossAmount,jdbcType=VARCHAR
+		},#{lossCause , jdbcType=VARCHAR },#{lossDate,jdbcType=TIMESTAMP
+		},#{riskCode,jdbcType=VARCHAR },#{businessNo,jdbcType=VARCHAR
+		},#{lossLocaiton ,jdbcType=VARCHAR},
+		#{createrCode,jdbcType=VARCHAR
+		},SYSDATE,#{upDatorCode,jdbcType=VARCHAR
+		},SYSDATE,'1','','',#{province,jdbcType=VARCHAR
+		},#{city,jdbcType=VARCHAR },
+		#{county,jdbcType=VARCHAR
+		},'',#{insurerCode,jdbcType=VARCHAR
+		},'','',SYSDATE,'',#{linkName,jdbcType=VARCHAR
+		},#{linkPhone,jdbcType=VARCHAR })
+	</select>
+	<select id="getClaimShow" parameterType="String" resultType="map">
+		SELECT GM.INSUREDNAME , GM.POLICYNO , GL.PEIANNO , NVL(GL.PAYAMOUNT, 0) PAYAMOUNT,
+		GL.LOSSDATE , 
+		GL.LOSSCAUSE , (SELECT CODECNAME FROM GGCODE WHERE
+		CODETYPE ='CICompanycode' AND
+		CODECODE = GM.INSURERCODE) INSURERCODE,
+		GL.STATUS ,
+		GP.ACCIDENTPORT , GP.DEATHPORT , GP.DISABLITY
+		FROM GCCLAIM GL LEFT JOIN GUPOLICYMAIN GM ON GL.POLICYNO =
+		GM.POLICYNO
+		LEFT JOIN GCCLAIMPROVE GP ON GL.BAOANNO = GP.BAOANNO
+		WHERE GL.BAOANNO = #{businessno }
+		ORDER BY GL.STATUS DESC
+	</select>
+	<insert id="getClaimchuan" parameterType="GcClaimProve">
+		INSERT INTO
+		GCCLAIMPROVE(BAOANNO,ACCIDENTPORT,DEATHPORT,DISABLITY)
+		VALUES(#{baoanNo,jdbcType=VARCHAR },#{accidentPort,jdbcType=VARCHAR
+		},#{deathPort,jdbcType=VARCHAR },#{disabLity,jdbcType=VARCHAR })
+	</insert>
+	<!-- 被评价保险公司的查询 -->
+	<select id="getClaimInsurance" parameterType="String"
+		resultType="map">
+		SELECT (SELECT INSURERCODE FROM GUPOLICYMAIN WHERE
+		BUSINESSNO =
+		GC.BUSINESSNO) INSURERCODE ,
+		GC.PROVINCE , GC.CITY ,
+		GC.COUNTY
+		FROM GCCLAIM GC
+		WHERE GC.BAOANNO = #{BAOANNO }
+	</select>
+	<!-- 理赔服务态度总分数 -->	<!-- 大于4分 使 服务态度标记自增 1 -->
+
+	<update id="mySerce">
+		UPDATE GGCODE SET flag = (SELECT flag+1 FROM GGCODE
+		WHERE CODETYPE = 'TalkCode' AND CODECODE = '000003') WHERE CODETYPE =
+		'TalkCode' AND CODECODE = '000001'
+	</update>
+
+	<!-- 大于4分 使保单寄送标记自增1 -->
+	<update id="myPolicy">
+		UPDATE GGCODE SET flag = (SELECT flag+1 FROM GGCODE
+		WHERE CODETYPE = 'TalkCode' AND CODECODE = '000004') WHERE CODETYPE =
+		'TalkCode' AND CODECODE = '000002'
+	</update>
+	<!-- 添加理赔评价 -->
+	<insert id="myCheckTalk" parameterType="GgEvaluate">
+		INSERT INTO GGEVALUATE
+		(SERIESNO,BEEVALUATOR , ITEM ,
+		"CONTENT" , SCORE , EVALUATOR ,
+		EVALUATETIME ,
+		ATTRIBUTEID , MARKID ,
+		REMARK , FLAG , PROVINCE , CITY ,
+		COUNTY)
+		VALUES( #{seriesNo },#{beEvaluator },'2' , #{content } ,
+		#{score } , #{evaluator } ,SYSDATE,
+		'1','' , '' , '' , #{province }
+		,#{city } , #{county })
+	</insert>
+	<select id="getClaimExcel" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT GM.INSUREDNAME , GM.POLICYNO , GL.PEIANNO , GL.PAYAMOUNT ,
+		GL.LOSSDATE ,
+		GL.LOSSCAUSE ,(SELECT CODECNAME FROM GGCODE WHERE
+		CODETYPE ='CICompanycode' AND
+		CODECODE = GM.INSURERCODE) INSURERCODE ,
+		GL.STATUS , GL.BAOANNO
+		FROM
+		GCCLAIM GL LEFT JOIN GUPOLICYMAIN GM ON
+		GL.BUSINESSNO = GM.BUSINESSNO
+		<where>
+			GM.INSUREDCODE = #{queryCondition.INSUREDCODE }
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.languagec == 0">
+				AND GL.STATUS != '5'
+			</if>
+			<if test="queryCondition.languagec == 1">
+				AND GL.STATUS = '5'
+			</if>
+		</where>
+	</select>
+	<!-- 查询历史评价内容 -->
+	<select id="historytalk" parameterType="Map" resultType="Map">
+		SELECT
+		CASE WHEN CONTENT IS NULL THEN '无评价内容' ELSE CONTENT END CONTENT ,
+		EVALUATETIME , SCORE
+		FROM GGEVALUATE
+		WHERE 
+		BEEVALUATOR =
+		#{BEEVALUATOR} AND ITEM = 2
+	</select>
+	<select id = "talkcount" parameterType = "String" resultType="map">
+		SELECT
+		 SCORE
+		
+		FROM GGEVALUATE
+		WHERE 
+		BEEVALUATOR = #{BEEVALUATOR} AND ITEM = '2'
+	</select>
+
+	<!-- 查看上传的资料是否存在 -->
+	<select id="chakan" parameterType="String" resultType="Map">
+		SELECT
+		ACCIDENTPORT , DEATHPORT , DISABLITY
+		FROM GCCLAIMPROVE
+		WHERE BAOANNO =
+		#{BAOANNO}
+	</select>
+	<update id="xiugai" parameterType="GcClaimProve">
+		UPDATE GCCLAIMPROVE SET
+		ACCIDENTPORT = #{accidentPort,jdbcType=VARCHAR} , DEATHPORT =
+		#{deathPort,jdbcType=VARCHAR} , DISABLITY =
+		#{disabLity,jdbcType=VARCHAR}
+		WHERE BAOANNO = #{BAOANNO}
+	</update>
+	<select id="selectScrop" parameterType="string" resultType="string">
+		SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE = #{userCode }
+	</select>
+	<!-- 修改报案号 -->
+	<update id="baoanNo" parameterType="GcClaim">
+		UPDATE GCCLAIM SET BAOANNO = #{baoAnNo,jdbcType=VARCHAR} WHERE　BUSINESSNO　=　#{businessNo } AND LOSSCAUSE = #{lossCause }
+	</update>
+</mapper>

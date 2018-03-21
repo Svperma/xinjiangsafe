@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgInsuranceDetailMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgInsuranceDetail">
+		<id column="riskCode" property="riskcode" jdbcType="VARCHAR" />
+		<id column="insuranceCode" property="insurancecode" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="beianName" property="beianname" jdbcType="VARCHAR" />
+		<result column="beianNo" property="beianno" jdbcType="VARCHAR" />
+		<result column="businessLicensePath" property="businesslicensepath"
+			jdbcType="VARCHAR" />
+		<result column="certificatePath" property="certificatepath"
+			jdbcType="VARCHAR" />
+		<result column="clause" property="clause" jdbcType="VARCHAR" />
+		<result column="special" property="special" jdbcType="VARCHAR" />
+		<result column="validStatus" property="validstatus" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="flag" property="flag" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.dsib.entity.GgInsuranceDetail"
+		extends="BaseResultMap">
+		<result column="productIntroduce" property="productintroduce"
+			jdbcType="CLOB" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		riskCode, insuranceCode, address, beianName, beianNo, businessLicensePath,
+		certificatePath,
+		clause, special, validStatus, remark, flag
+	</sql>
+	<sql id="Blob_Column_List">
+		productIntroduce
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs"
+		parameterType="com.dsib.entity.GgInsuranceDetailKey">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from GGINSURANCEDETAIL
+		where riskCode = #{riskcode,jdbcType=VARCHAR}
+		and insuranceCode = #{insurancecode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgInsuranceDetailKey">
+		delete from GGINSURANCEDETAIL
+		where riskCode = #{riskcode,jdbcType=VARCHAR}
+		and insuranceCode = #{insurancecode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgInsuranceDetail">
+		insert into GGINSURANCEDETAIL (riskCode, insuranceCode, address,
+		beianName, beianNo, businessLicensePath,
+		certificatePath, clause, special,
+		validStatus, remark, flag,
+		productIntroduce)
+		values (#{riskcode,jdbcType=VARCHAR}, #{insurancecode,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{beianname,jdbcType=VARCHAR}, #{beianno,jdbcType=VARCHAR}, #{businesslicensepath,jdbcType=VARCHAR},
+		#{certificatepath,jdbcType=VARCHAR}, #{clause,jdbcType=VARCHAR},
+		#{special,jdbcType=VARCHAR},
+		#{validstatus,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR},
+		#{productintroduce,jdbcType=CLOB})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgInsuranceDetail">
+		insert into GGINSURANCEDETAIL
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="riskcode != null">
+				riskCode,
+			</if>
+			<if test="insurancecode != null">
+				insuranceCode,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="beianname != null">
+				beianName,
+			</if>
+			<if test="beianno != null">
+				beianNo,
+			</if>
+			<if test="businesslicensepath != null">
+				businessLicensePath,
+			</if>
+			<if test="certificatepath != null">
+				certificatePath,
+			</if>
+			<if test="clause != null">
+				clause,
+			</if>
+			<if test="special != null">
+				special,
+			</if>
+			<if test="validstatus != null">
+				validStatus,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="flag != null">
+				flag,
+			</if>
+			<if test="productintroduce != null">
+				productIntroduce,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="insurancecode != null">
+				#{insurancecode,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="beianname != null">
+				#{beianname,jdbcType=VARCHAR},
+			</if>
+			<if test="beianno != null">
+				#{beianno,jdbcType=VARCHAR},
+			</if>
+			<if test="businesslicensepath != null">
+				#{businesslicensepath,jdbcType=VARCHAR},
+			</if>
+			<if test="certificatepath != null">
+				#{certificatepath,jdbcType=VARCHAR},
+			</if>
+			<if test="clause != null">
+				#{clause,jdbcType=VARCHAR},
+			</if>
+			<if test="special != null">
+				#{special,jdbcType=VARCHAR},
+			</if>
+			<if test="validstatus != null">
+				#{validstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="productintroduce != null">
+				#{productintroduce,jdbcType=CLOB},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgInsuranceDetail">
+		update GGINSURANCEDETAIL
+		<set>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="beianname != null">
+				beianName = #{beianname,jdbcType=VARCHAR},
+			</if>
+			<if test="beianno != null">
+				beianNo = #{beianno,jdbcType=VARCHAR},
+			</if>
+			<if test="businesslicensepath != null">
+				businessLicensePath = #{businesslicensepath,jdbcType=VARCHAR},
+			</if>
+			<if test="certificatepath != null">
+				certificatePath = #{certificatepath,jdbcType=VARCHAR},
+			</if>
+			<if test="clause != null">
+				clause = #{clause,jdbcType=VARCHAR},
+			</if>
+			<if test="special != null">
+				special = #{special,jdbcType=VARCHAR},
+			</if>
+			<if test="validstatus != null">
+				validStatus = #{validstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				flag = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="productintroduce != null">
+				productIntroduce = #{productintroduce,jdbcType=CLOB},
+			</if>
+		</set>
+		where riskCode = #{riskcode,jdbcType=VARCHAR}
+		and insuranceCode = #{insurancecode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dsib.entity.GgInsuranceDetail">
+		update GGINSURANCEDETAIL
+		set address = #{address,jdbcType=VARCHAR},
+		beianName = #{beianname,jdbcType=VARCHAR},
+		beianNo = #{beianno,jdbcType=VARCHAR},
+		businessLicensePath = #{businesslicensepath,jdbcType=VARCHAR},
+		certificatePath = #{certificatepath,jdbcType=VARCHAR},
+		clause = #{clause,jdbcType=VARCHAR},
+		special = #{special,jdbcType=VARCHAR},
+		validStatus = #{validstatus,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		flag = #{flag,jdbcType=VARCHAR},
+		productIntroduce = #{productintroduce,jdbcType=CLOB}
+		where riskCode = #{riskcode,jdbcType=VARCHAR}
+		and insuranceCode = #{insurancecode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgInsuranceDetail">
+		update GGINSURANCEDETAIL
+		set address = #{address,jdbcType=VARCHAR},
+		beianName = #{beianname,jdbcType=VARCHAR},
+		beianNo = #{beianno,jdbcType=VARCHAR},
+		businessLicensePath = #{businesslicensepath,jdbcType=VARCHAR},
+		certificatePath = #{certificatepath,jdbcType=VARCHAR},
+		clause = #{clause,jdbcType=VARCHAR},
+		special = #{special,jdbcType=VARCHAR},
+		validStatus = #{validstatus,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		flag = #{flag,jdbcType=VARCHAR}
+		where riskCode = #{riskcode,jdbcType=VARCHAR}
+		and insuranceCode = #{insurancecode,jdbcType=VARCHAR}
+	</update>
+</mapper>

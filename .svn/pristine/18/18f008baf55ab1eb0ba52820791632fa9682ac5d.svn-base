@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<BOCOMB2B>	
+	<ApiURL>https://ebank.95559.com.cn/corporbank/NsTrans</ApiURL>
+	<EnableLog>true</EnableLog>														<!--日志开关（true:表示写日志,false: 表示不写日志）-->	
+	<LogPath>D:\DSTomcat-8080\DSTomcat-8080\webapps\ROOT\trafficsafety\payment\B2B\bankcomm\log\</LogPath>
+	<CorporNo>8000415604</CorporNo>	   <!--企业客户号-->	
+	<OperateId>00001</OperateId>									<!--日志文件存放目录-->	
+	<MerchantCertFile>D:\DSTomcat-8080\DSTomcat-8080\webapps\ROOT\trafficsafety\payment\B2B\bankcomm\cert\bocomca.pfx</MerchantCertFile>		<!--测试环境商户证书文件（绝对路径）,商户上线时该证书换为商户生产证书-->	
+	<MerchantCertPassword>12345678</MerchantCertPassword> 							<!--测试环境商户证书私钥加密密码,商户上线时该密码换为商户生产证书密码-->
+	<RootCertFile>D:\DSTomcat-8080\DSTomcat-8080\webapps\ROOT\trafficsafety\payment\B2B\bankcomm\cert\root.cer</RootCertFile>					<!--测试环境根证书文件,商户上线时该根证书换为交通银行生产根证书root.cer-->
+</BOCOMB2B>
+
+

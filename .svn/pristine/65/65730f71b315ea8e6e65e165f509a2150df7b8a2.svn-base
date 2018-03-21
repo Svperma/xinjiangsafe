@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyFeeMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyFee">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<result column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<result column="POLICYNO" property="policyno" jdbcType="VARCHAR" />
+		<result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="DECIMAL" />
+		<result column="SPREADSHEETPREMIUM" property="spreadsheetpremium"
+			jdbcType="DECIMAL" />
+		<result column="ACTUALPREMIUM" property="actualpremium"
+			jdbcType="DECIMAL" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="COLUMN_9" property="column9" jdbcType="CHAR" />
+		<result column="COLUMN_10" property="column10" jdbcType="CHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, RISKCODE, POLICYNO, CURRENCY, AMOUNT, SPREADSHEETPREMIUM,
+		ACTUALPREMIUM,
+		FLAG, COLUMN_9, COLUMN_10
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYFEE
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from GUPOLICYFEE
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyFee">
+		insert into GUPOLICYFEE (BUSINESSNO, RISKCODE, POLICYNO,
+		CURRENCY, AMOUNT, SPREADSHEETPREMIUM,
+		ACTUALPREMIUM, FLAG, COLUMN_9,
+		COLUMN_10)
+		values (#{businessno,jdbcType=VARCHAR}, #{riskcode,jdbcType=VARCHAR},
+		#{policyno,jdbcType=VARCHAR},
+		#{currency,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{spreadsheetpremium,jdbcType=DECIMAL},
+		#{actualpremium,jdbcType=DECIMAL}, #{flag,jdbcType=VARCHAR},
+		#{column9,jdbcType=CHAR},
+		#{column10,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyFee">
+		insert into GUPOLICYFEE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="policyno != null">
+				POLICYNO,
+			</if>
+			<if test="currency != null">
+				CURRENCY,
+			</if>
+			<if test="amount != null">
+				AMOUNT,
+			</if>
+			<if test="spreadsheetpremium != null">
+				SPREADSHEETPREMIUM,
+			</if>
+			<if test="actualpremium != null">
+				ACTUALPREMIUM,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="column9 != null">
+				COLUMN_9,
+			</if>
+			<if test="column10 != null">
+				COLUMN_10,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="policyno != null">
+				#{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="currency != null">
+				#{currency,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="spreadsheetpremium != null">
+				#{spreadsheetpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualpremium != null">
+				#{actualpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="column9 != null">
+				#{column9,jdbcType=CHAR},
+			</if>
+			<if test="column10 != null">
+				#{column10,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyFee">
+		update GUPOLICYFEE
+		<set>
+			<if test="riskcode != null">
+				RISKCODE = #{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="policyno != null">
+				POLICYNO = #{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="currency != null">
+				CURRENCY = #{currency,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				AMOUNT = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="spreadsheetpremium != null">
+				SPREADSHEETPREMIUM = #{spreadsheetpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualpremium != null">
+				ACTUALPREMIUM = #{actualpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="column9 != null">
+				COLUMN_9 = #{column9,jdbcType=CHAR},
+			</if>
+			<if test="column10 != null">
+				COLUMN_10 = #{column10,jdbcType=CHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyFee">
+		update GUPOLICYFEE
+		set RISKCODE = #{riskcode,jdbcType=VARCHAR},
+		POLICYNO = #{policyno,jdbcType=VARCHAR},
+		CURRENCY = #{currency,jdbcType=VARCHAR},
+		AMOUNT = #{amount,jdbcType=DECIMAL},
+		SPREADSHEETPREMIUM = #{spreadsheetpremium,jdbcType=DECIMAL},
+		ACTUALPREMIUM = #{actualpremium,jdbcType=DECIMAL},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		COLUMN_9 = #{column9,jdbcType=CHAR},
+		COLUMN_10 = #{column10,jdbcType=CHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgHonorMapper">
+	<select id="selectAll" parameterType="Pagination" resultType="map">
+		SELECT * FROM GGHONOR GH
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode !=''">
+				AND GH.USERCODE = #{queryCondition.userCode}
+			</if>
+			AND GH.VALIDITY='1'
+			ORDER BY GH.VALIDITY DESC
+		</where>
+	</select>
+	<select id="selectQueryByHonorCode" parameterType="Pagination"
+		resultType="map">
+		SELECT * FROM GGHONOR GH
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode !=''">
+				AND GH.USERCODE = #{queryCondition.userCode}
+			</if>
+			<if
+				test="queryCondition.honorCode != null and queryCondition.honorCode !=''">
+				AND GH.REWARDSCLASSCODE = #{queryCondition.honorCode}
+			</if>
+			AND GH.VALIDITY='1'
+			ORDER BY GH.VALIDITY DESC
+		</where>
+	</select>
+	<update id="deleteById" parameterType="com.dsib.entity.GgHonor">
+		UPDATE GGHONOR SET VALIDITY='0'
+		<where>
+			1=1
+			AND USERCODE=#{userCode}
+			AND ID=#{id}
+		</where>
+	</update>
+	<insert id="addHonor" parameterType="com.dsib.entity.GgHonor">
+		INSERT INTO GGHONOR
+		(ID,USERCODE,HONOR,GETDATE,POSTUTIL,REWARDSCLASSCODE,VALIDITYDATE,CENTRALIZEDADDRESS,VALIDITY)
+		VALUES(#{id},#{userCode},#{honor},#{getDate,jdbcType=DATE},#{postUtil},#{rewardsClassCode},
+		#{validityDate,jdbcType=DATE},#{centralizeAddress},#{validity})
+	</insert>
+</mapper>

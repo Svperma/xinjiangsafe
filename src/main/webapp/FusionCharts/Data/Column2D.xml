@@ -1,0 +1,4 @@
+<chart  caption='保费/事故预防费' xAxisName='' yAxisName='万元' showValues='0' decimals='0' formatNumberScale='0' theme="fint">
+	<set lable="保费" value="1256"/>
+	<set lable="事故预防费" value="563"/>
+</chart>

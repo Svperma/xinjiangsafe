@@ -1,0 +1,175 @@
+package com.dsib.entity;
+
+import java.util.Date;
+
+/**
+ * 订单明细
+ * 
+ * @author xinjg
+ * 
+ */
+public class GpOrderDetail {
+
+	private String businessNo;
+	private String orderNo;
+	private String orderStatus;
+	private Date dealDate;
+	private String merchantNo;
+	private String merchantRetrieveNo;
+	private String orderCurrency;
+	private double orderAmount;
+	private String paymentSeriNo;
+	private String paymentAccountNo;
+	private String accountNo;
+	private String settleCurrency;
+	private double settleAmount;
+	private double commission;
+	private double settledAmount;
+	private String paymentSeriStatus;
+	private String paymentName;
+	private Date endDate;
+
+	public String getBusinessNo() {
+		return businessNo;
+	}
+
+	public void setBusinessNo(String businessNo) {
+		this.businessNo = businessNo;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public Date getDealDate() {
+		return dealDate;
+	}
+
+	public void setDealDate(Date dealDate) {
+		this.dealDate = dealDate;
+	}
+
+	public String getMerchantNo() {
+		return merchantNo;
+	}
+
+	public void setMerchantNo(String merchantNo) {
+		this.merchantNo = merchantNo;
+	}
+
+	public String getMerchantRetrieveNo() {
+		return merchantRetrieveNo;
+	}
+
+	public void setMerchantRetrieveNo(String merchantRetrieveNo) {
+		this.merchantRetrieveNo = merchantRetrieveNo;
+	}
+
+	public String getOrderCurrency() {
+		return orderCurrency;
+	}
+
+	public void setOrderCurrency(String orderCurrency) {
+		this.orderCurrency = orderCurrency;
+	}
+
+	public double getOrderAmount() {
+		return orderAmount;
+	}
+
+	public void setOrderAmount(double orderAmount) {
+		this.orderAmount = orderAmount;
+	}
+
+	public String getPaymentSeriNo() {
+		return paymentSeriNo;
+	}
+
+	public void setPaymentSeriNo(String paymentSeriNo) {
+		this.paymentSeriNo = paymentSeriNo;
+	}
+
+	public String getPaymentAccountNo() {
+		return paymentAccountNo;
+	}
+
+	public void setPaymentAccountNo(String paymentAccountNo) {
+		this.paymentAccountNo = paymentAccountNo;
+	}
+
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
+
+	public String getSettleCurrency() {
+		return settleCurrency;
+	}
+
+	public void setSettleCurrency(String settleCurrency) {
+		this.settleCurrency = settleCurrency;
+	}
+
+	public double getSettleAmount() {
+		return settleAmount;
+	}
+
+	public void setSettleAmount(double settleAmount) {
+		this.settleAmount = settleAmount;
+	}
+
+	public double getCommission() {
+		return commission;
+	}
+
+	public void setCommission(double commission) {
+		this.commission = commission;
+	}
+
+	public double getSettledAmount() {
+		return settledAmount;
+	}
+
+	public void setSettledAmount(double settledAmount) {
+		this.settledAmount = settledAmount;
+	}
+
+	public String getPaymentSeriStatus() {
+		return paymentSeriStatus;
+	}
+
+	public void setPaymentSeriStatus(String paymentSeriStatus) {
+		this.paymentSeriStatus = paymentSeriStatus;
+	}
+
+	public String getPaymentName() {
+		return paymentName;
+	}
+
+	public void setPaymentName(String paymentName) {
+		this.paymentName = paymentName;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+}

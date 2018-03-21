@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.QyMycheckMapper">
+
+	<select id="getMyPolicyInit" parameterType="Pagination"
+		resultType="map">
+		SELECT DISTINCT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		GM.INSURERCODE,CASE
+		WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG
+		FROM GUPOLICYMAIN GM ,GUPOLICYINSURED GI
+		<where>
+		    GM.BUSINESSNO = GI.BUSINESSNO AND 
+			(GM.INSUREDCODE = #{queryCondition.insuredname } OR GI.IDENTITYNUMBER = #{queryCondition.identifiNo })
+			AND GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1'
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.status == 1">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.status == 0">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+		</where>
+	</select>
+	<!-- 经济公司导出保单 -->
+	<select id="exportPolicy" parameterType="Pagination" resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,GM.SIGNDATE,GM.INSUREDNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GM.PROVINCE) PROVINCE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GM.CITY) CITY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GM.COUNTY) COUNTY,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE,
+		CASE WHEN GM.ENDDATE > sysdate THEN '有效' ELSE '过期' END STATUS , GM.RENEWALFLAG,
+		(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME ,
+		(CASE GM.FLAG WHEN '1' THEN '保险公司' WHEN '0' THEN '经纪公司' ELSE '企业自投' END )FLAG,
+		(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.REMARK AND CODETYPE='IndustryCategories') CLASSCODE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.FLAG AND CODETYPE='IndustryType') BUSINESSCODE,
+		CURRENCY EMCOUNT
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1' 
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<if test="queryCondition.statusT != null and queryCondition.statusT != ''">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.statusF != null and queryCondition.statusF != ''">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+		</where>
+	</select>
+	<!-- 经济公司导出批单 -->
+	<select id="exportCorrect" parameterType="Pagination" resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,GM.SIGNDATE,GM.INSUREDNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GM.PROVINCE) PROVINCE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GM.CITY) CITY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GM.COUNTY) COUNTY,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE,
+		CASE WHEN GM.ENDDATE > sysdate THEN '有效' ELSE '过期' END STATUS , GM.RENEWALFLAG,
+		(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME ,
+		(CASE GM.FLAG WHEN '1' THEN '保险公司' WHEN '0' THEN '经纪公司' ELSE '企业自投' END )FLAG,
+		(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.REMARK AND CODETYPE='IndustryCategories') CLASSCODE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.FLAG AND CODETYPE='IndustryType') BUSINESSCODE,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=GM.BUSINESSNO) EMCOUNT,
+		GM.CORRECTPREMIUM,GM.CORRECTNO,GM.CORRECTDATE,GM.SPECIALPROVISIONS
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1' 
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL AND GM.SPECIALPROVISIONS IS NOT NULL
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<if test="queryCondition.statusT != null and queryCondition.statusT != ''">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.statusF != null and queryCondition.statusF != ''">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+		</where>
+	</select>
+	<!-- SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE,CASE
+		WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME
+		,GM.FLAG,(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU,
+		GM.CORRECTPREMIUM,GM.CORRECTNO,GM.CORRECTDATE,GM.SPECIALPROVISIONS
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1' -->
+	
+	
+	
+	<!-- 经济公司查询批单 -->
+	<select id="correctQuery" parameterType="Pagination" resultType="map">
+		SELECT GR.ENDORSEMENT, GR.ENDORSEMENT , GM.BUSINESSNO, GR.FLAG , GM.INSUREDNAME , GM.POLICYNO , GM.APPLINAME , GM.STARTDATE , GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM ,  (SELECT GF.INSURANCENAME FROM GGINSURECONFIG GF WHERE GF.INSURANCECODE = GM.INSURERCODE) INSURERCODE,
+			 GR.ENDORSEDATE , GR.PAYFLAG , GR.CALCULATION , (SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU ,
+			 CASE WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME ,
+			 GM.CORRECTPREMIUM,GM.CORRECTNO,GM.CORRECTDATE,GM.SPECIALPROVISIONS
+		FROM GUPOLICYMAIN GM INNER  JOIN GUPOLICYENDORSE GR ON GM.BUSINESSNO = GR.BUSINESSNO INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1'
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL AND GM.SPECIALPROVISIONS IS NOT NULL 
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<if test="queryCondition.statusT != null and queryCondition.statusT != ''">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.statusF != null and queryCondition.statusF != ''">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+			ORDER BY GR.FLAG
+		</where>
+		
+	</select>
+	<!-- 经济公司查询保单 -->
+	<select id="getMyPolicyInitJj" parameterType="Pagination"
+		resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE INSURANCECODE = GM.INSURERCODE ) INSURERCODE,CASE
+		WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME
+		,GM.FLAG,(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1'
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<if test="queryCondition.statusT != null and queryCondition.statusT != ''">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.statusF != null and queryCondition.statusF != ''">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+			<!-- 业务员查询自己的业务 -->
+			<if test="queryCondition.yewuguishu != null and queryCondition.yewuguishu !=''">
+				AND GM.OPERATORCODE = #{queryCondition.yewuguishu }
+			</if>
+		</where>
+			ORDER BY  GM.FLAG 
+	</select>
+	<!-- 保险公司查询保单 -->
+	<select id="getMyPolicyInitPolicy" parameterType="Pagination"
+		resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		GM.INSURERCODE,CASE
+		WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME
+		,(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU,GM.FLAG
+		FROM GUPOLICYMAIN GM
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.MYUSERCODE != '' and queryCondition.MYUSERCODE != null ">
+				AND (GM.OPERATORCODE = #{queryCondition.MYUSERCODE } OR GM.INSURERCODE = #{queryCondition.INCODE ,jdbcType=VARCHAR})
+			</if>
+			<if test="queryCondition.USERLEFLAG != '' and queryCondition.USERLEFLAG != null ">
+				AND (GM.REMARK = #{queryCondition.USERLEFLAG } OR GM.INSURERCODE = #{queryCondition.INCODE ,jdbcType=VARCHAR})
+			</if>
+			<if test="queryCondition.GodLevel != '' and queryCondition.GodLevel != null ">
+				AND ((GM.REMARK IS NOT NULL AND INSURERCODE=#{queryCondition.GodLevel } AND FLAG='1') OR 
+				GM.INSURERCODE = #{queryCondition.INCODE ,jdbcType=VARCHAR})
+			</if>
+			<if test="queryCondition.MYUSERCODE1 != '' and queryCondition.MYUSERCODE1 != null ">
+				AND GM.OPERATORCODE = #{queryCondition.MYUSERCODE1 } 
+			</if>
+			<if test="queryCondition.USERLEFLAG1 != '' and queryCondition.USERLEFLAG1 != null ">
+				AND GM.REMARK = #{queryCondition.USERLEFLAG1 }
+			</if>
+			<if test="queryCondition.GodLevel1 != '' and queryCondition.GodLevel1 != null ">
+				AND GM.REMARK IS NOT NULL AND INSURERCODE=#{queryCondition.GodLevel1 } AND FLAG='1'
+			</if>
+			<if test="queryCondition.INCODE0 != '' and queryCondition.INCODE0 != null ">
+				AND GM.INSURERCODE=#{queryCondition.INCODE0 ,jdbcType=VARCHAR} AND (FLAG!='1' OR FLAG IS NULL)
+			</if>
+			<if test="queryCondition.status != '' and queryCondition.status != null ">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.status1 != '' and queryCondition.status1 != null ">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+		</where>
+	</select>
+	<insert id="myCheckTalk" parameterType="GgEvaluate">
+		INSERT INTO GGEVALUATE
+		(SERIESNO,BEEVALUATOR , ITEM ,
+		"CONTENT" , SCORE , EVALUATOR ,
+		EVALUATETIME , ATTRIBUTEID ,
+		PROVINCE , CITY , COUNTY)
+		VALUES
+		( #{seriesNo },#{beEvaluator },'1' ,
+		#{content } , #{score } , #{evaluator } ,
+		SYSDATE, '1', #{province } ,#{city } , #{county })
+	</insert>
+	<insert id="myCheckTalkInsert" parameterType="GgEvaluate">
+		INSERT INTO GGEVALUATE
+		(
+		<if test="seriesNo != null and seriesNo != ''">SERIESNO,</if>
+		<if test="beEvaluator != null and beEvaluator != ''">BEEVALUATOR,</if>
+		<if test="item != null and item != ''">ITEM,</if>
+		<if test="content != null and content != ''">CONTENT,</if>
+		<if test="score != null and score != ''">SCORE,</if>
+		<if test="evaluator != null and evaluator != ''">EVALUATOR,</if>
+		<if test="evaluateTime != null">EVALUATETIME,</if>
+		<if test="AttributeId != null and AttributeId != ''">ATTRIBUTEID,</if>
+		<if test="markId != null and markId != ''">MARKID,</if>
+		<if test="remark != null and remark != ''">REMARK,</if>
+		<if test="flag != null and flag != ''">FLAG,</if>
+		<if test="province != null and province != ''">PROVINCE,</if>
+		<if test="city != null and city != ''">CITY,</if>
+		<if test="county != null and county != ''">COUNTY</if>
+		)
+		VALUES
+		(
+		<if test="seriesNo != null and seriesNo != ''">#{seriesNo},</if>
+		<if test="beEvaluator != null and beEvaluator != ''">#{beEvaluator},</if>
+		<if test="item != null and item != ''">#{item},</if>
+		<if test="content != null and content != ''">#{content},</if>
+		<if test="score != null and score != ''">#{score},</if>
+		<if test="evaluator != null and evaluator != ''">#{evaluator},</if>
+		<if test="evaluateTime != null">#{evaluateTime},</if>
+		<if test="AttributeId != null and AttributeId != ''">#{AttributeId},</if>
+		<if test="markId != null and markId != ''">#{markId},</if>
+		<if test="remark != null and remark != ''">#{remark},</if>
+		<if test="flag != null and flag != ''">#{flag},</if>
+		<if test="province != null and province != ''">#{province},</if>
+		<if test="city != null and city != ''">#{city},</if>
+		<if test="county != null and county != ''">#{county}</if>
+		)
+	</insert>
+
+	<!-- 大于4分 使 服务态度标记自增 1 -->
+	<update id="mySerce">
+		UPDATE GGCODE SET flag = (SELECT flag+1 FROM GGCODE
+		WHERE CODETYPE = 'TalkCode' AND CODECODE = '000001') WHERE CODETYPE =
+		'TalkCode' AND CODECODE = '000001'
+	</update>
+
+	<!-- 大于4分 使保单寄送标记自增1 -->
+	<update id="myPolicy">
+		UPDATE GGCODE SET flag = (SELECT flag+1 FROM GGCODE
+		WHERE CODETYPE = 'TalkCode' AND CODECODE = '000002') WHERE CODETYPE =
+		'TalkCode' AND CODECODE = '000002'
+	</update>
+
+	<select id="myCheckAdditional" parameterType="String"
+		resultType="map">
+		SELECT GD.KINDCNAME , GD.REMARK , GM.SPREADSHEETPREMIUM
+		FROM GGKIND GD LEFT
+		JOIN GUPOLICYITEMKIND GM ON GD.KINDCODE =
+		GM.KINDCODE AND
+		GM.BUSINESSNO = #{BUSINESSNO }
+		WHERE GD.KINDCODE NOT
+		LIKE '%001'
+		ORDER
+		BY GD.KINDCODE
+	</select>
+	<!-- 去年投保单方案 -->
+	<select id="myCheckyeared" parameterType="String" resultType="map">
+		SELECT RISKCODE , PLANCODE FROM GUPOLICYMAIN
+		WHERE BUSINESSNO =
+		#{BUSINESSNO }
+	</select>
+	<!-- 报表下载 -->
+	<select id="getmyCheckExcel" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT/10000 SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE ='CICompanycode' AND
+		CODECODE = GM.INSURERCODE) INSURERCODE,
+		CASE WHEN GM.ENDDATE > sysdate
+		THEN 1 ELSE 0 END STATUS
+		FROM GUPOLICYMAIN GM
+		<where>
+			GM.INSUREDCODE = #{queryCondition.insuredname } AND GM.UNDERWRITEFLAG
+			= '3' AND GM.PAYFLAG = '1'
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.status == 1">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+			<if test="queryCondition.status == 0">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+		</where>
+	</select>
+	<select id="historytalk" parameterType="Map" resultType="Map">
+		SELECT
+		CASE WHEN CONTENT IS NULL THEN '无评价内容' ELSE CONTENT END CONTENT,
+		EVALUATETIME , SCORE
+		FROM GGEVALUATE
+		WHERE 
+		BEEVALUATOR =
+		#{BEEVALUATOR} AND ITEM = 1
+	</select>
+	<select id = "talkcount" parameterType = "String" resultType="map">
+	SELECT
+		COUNT(SERIESNO) SERIESNO, SCORE
+		FROM GGEVALUATE
+		WHERE 
+		BEEVALUATOR = #{BEEVALUATOR} AND ITEM = '1' 
+		GROUP BY SCORE
+	</select>
+	<select id = "selectInsuredCode" parameterType = "com.dsib.entity.GgEvaluate" resultType="com.dsib.entity.GgEvaluate">
+	SELECT * FROM GGEVALUATE
+		WHERE 1=1
+		<if test="evaluator != null and evaluator != ''">
+			AND EVALUATOR = #{evaluator}
+		</if>
+		<if test="beEvaluator != null and beEvaluator != ''">
+			AND BEEVALUATOR = #{beEvaluator}
+		</if>
+		<if test="item != null and item != ''">
+			AND ITEM = #{item}
+		</if>
+		ORDER BY EVALUATETIME DESC
+	</select>
+	<update id="sperialPro" parameterType="map">
+		UPDATE GUPOLICYMAIN SET SPECIALPROVISIONS = #{specialprovisions } , CORRECTDATE = #{starDate } WHERE BUSINESSNO = #{business }
+	</update>
+	
+	<insert id="endorse" parameterType="GuPolicyEndorse" >
+		INSERT INTO GUPOLICYENDORSE(BUSINESSNO,UPDATEDATE,SPECIALPROVISIONS,INSUREDCODE,ENDORSEDATE,PAYFLAG,REMARK,OPERATOR,FLAG)
+				    VALUES(#{buseiness,jdbcType=VARCHAR },#{updatedate,jdbcType=DATE},
+				    	   #{specialprovisions,jdbcType=VARCHAR },#{insuredcode,jdbcType=VARCHAR },
+				    	   #{endorsedate,jdbcType=DATE},#{payflag,jdbcType=VARCHAR },#{remark,jdbcType=VARCHAR },#{operator,jdbcType=VARCHAR },
+				    	   #{flag,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="getApplyInit" parameterType="Pagination" resultType="map">
+		SELECT  GM.BUSINESSNO ,  GM.POLICYNO , GR.SPECIALPROVISIONS , GR.ENDORSEDATE , GR.PAYFLAG , GR.CALCULATION , GR.FLAG , GR.ADVISE , GR.ENDORSEMENT
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYENDORSE GR ON GM.BUSINESSNO = GR.BUSINESSNO
+		WHERE GM.INSUREDCODE = #{queryCondition.insuredCode}
+	</select>
+	
+	<select id="getApply" parameterType="map" resultType="map">
+		SELECT  GM.BUSINESSNO , GM.POLICYNO , GR.SPECIALPROVISIONS , GR.ENDORSEDATE , GR.PAYFLAG , GR.CALCULATION , GR.FLAG , GR.ADVISE , GR.ENDORSEMENT
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYENDORSE GR ON GM.BUSINESSNO = GR.BUSINESSNO
+		WHERE GM.BUSINESSNO = #{bussino} 
+		<if test="evaluator != null and evaluator != ''">
+			AND GR.ENDORSEMENT = #{evaluator}
+		</if>
+		ORDER BY GR.UPDATEDATE DESC
+	</select>
+	<update id="auditing" parameterType="map" >
+		UPDATE GUPOLICYENDORSE 
+		SET FLAG = '1' , ADVISE = #{advice }
+		WHERE BUSINESSNO = #{businessNo } AND SPECIALPROVISIONS = #{special } 
+	</update>
+	
+	<update id="audited" parameterType="map">
+		UPDATE GUPOLICYENDORSE
+		SET FLAG = '2' , ADVISE = #{advice }
+		WHERE BUSINESSNO = #{businessNo } AND SPECIALPROVISIONS = #{special }
+	</update>
+	
+	<update id="aditnumber" parameterType="map">
+		UPDATE GUPOLICYENDORSE
+		SET  CALCULATION = #{calculation} , ENDORSEMENT = #{calculation}
+		WHERE BUSINESSNO = #{businessNo } AND SPECIALPROVISIONS = #{special }
+	</update>
+	<!-- 经纪公司确认批单支付 -->
+	<update id="defary" parameterType="map">
+		UPDATE GUPOLICYENDORSE
+		SET PAYFLAG = '2'
+		WHERE BUSINESSNO = #{businessNo } AND　ENDORSEMENT　= #{endorsement }
+	</update>
+	<select id="getMyPolicyInitJg" parameterType="Pagination"
+		resultType="map">
+		SELECT GM.BUSINESSNO , GM.POLICYNO , GM.INSUREDNAME , GM.STARTDATE ,
+		GM.ENDDATE , GM.SUMAMOUNT , GM.SPREADSHEETPREMIUM,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE INSURANCECODE = GM.INSURERCODE ) INSURERCODE,CASE
+		WHEN GM.ENDDATE > sysdate THEN 1 ELSE 0 END STATUS , GM.RENEWALFLAG,GM.FLAG
+		FROM GUPOLICYMAIN GM INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1'
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL
+			<if
+				test="queryCondition.POLICYNO != '' and queryCondition.POLICYNO != null ">
+				AND GM.POLICYNO LIKE '%'||#{queryCondition.POLICYNO }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<if test="queryCondition.statusT != null and queryCondition.statusT != ''">
+				AND GM.ENDDATE &gt; sysdate
+			</if>
+			<if test="queryCondition.statusF != null and queryCondition.statusF != ''">
+				AND GM.ENDDATE &lt; sysdate
+			</if>
+			<!-- 业务员查询自己的业务 -->
+			<if test="queryCondition.yewuguishu != null and queryCondition.yewuguishu !=''">
+				AND GM.OPERATORCODE = #{queryCondition.yewuguishu }
+			</if>
+		</where>
+			ORDER BY  GM.FLAG 
+	</select>
+</mapper>
+
+

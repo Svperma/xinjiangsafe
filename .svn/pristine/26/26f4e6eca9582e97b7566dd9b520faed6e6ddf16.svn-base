@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgKindMapper" >
+  <resultMap id="BaseResultMap" type="com.dsib.entity.GgKind" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <id column="KINDCODE" property="kindcode" jdbcType="VARCHAR" />
+    <result column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+    <result column="KINDCNAME" property="kindcname" jdbcType="VARCHAR" />
+    <result column="KINDENAME" property="kindename" jdbcType="VARCHAR" />
+    <result column="AREACODE" property="areacode" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="INSURANCECODE" property="insurancecode" jdbcType="VARCHAR" />
+    <result column="VALIDSTATUS" property="validstatus" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, KINDCODE, RISKCODE, KINDCNAME, KINDENAME, AREACODE, DESCRIPTION, INSURANCECODE, 
+    VALIDSTATUS, REMARK
+  </sql>
+  <!--获取险种费率集合  -->  
+  <select id="getGgKindList" resultMap="BaseResultMap" parameterType="com.dsib.entity.GgKind" >
+    select 
+    	<include refid="Base_Column_List" />
+    from GGKIND
+	    <where>
+	    	<if test="insurancecode!=null &amp;&amp; insurancecode!=''"> 
+ 	    	 and INSURANCECODE=#{insurancecode} 
+ 	    	</if> 
+	    	<if test="riskcode!=null &amp;&amp; riskcode!=''"> 
+ 	    	 and RISKCODE=#{riskcode} 
+ 	    	</if> 
+	    	<if test="areacode!=null &amp;&amp; areacode!=''"> 
+ 	    	 and AREACODE=#{areacode} 
+ 	    	</if> 
+	    	<if test="kindename!=null &amp;&amp; kindename!=''"> 
+ 	    	 and KINDENAME=#{kindename} 
+ 	    	</if> 
+	    </where>
+ 	    	order by KINDCODE
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.dsib.entity.GgKindKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from GGKIND
+    where ID = #{id,jdbcType=DECIMAL}
+      and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgKindKey" >
+    delete from GGKIND
+    where ID = #{id,jdbcType=DECIMAL}
+      and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dsib.entity.GgKind" >
+    insert into GGKIND (ID, KINDCODE, RISKCODE, 
+      KINDCNAME, KINDENAME, AREACODE, 
+      DESCRIPTION, INSURANCECODE, VALIDSTATUS, 
+      REMARK)
+    values (#{id,jdbcType=DECIMAL}, #{kindcode,jdbcType=VARCHAR}, #{riskcode,jdbcType=VARCHAR}, 
+      #{kindcname,jdbcType=VARCHAR}, #{kindename,jdbcType=VARCHAR}, #{areacode,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{insurancecode,jdbcType=VARCHAR}, #{validstatus,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dsib.entity.GgKind" >
+    insert into GGKIND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="kindcode != null" >
+        KINDCODE,
+      </if>
+      <if test="riskcode != null" >
+        RISKCODE,
+      </if>
+      <if test="kindcname != null" >
+        KINDCNAME,
+      </if>
+      <if test="kindename != null" >
+        KINDENAME,
+      </if>
+      <if test="areacode != null" >
+        AREACODE,
+      </if>
+      <if test="description != null" >
+        DESCRIPTION,
+      </if>
+      <if test="insurancecode != null" >
+        INSURANCECODE,
+      </if>
+      <if test="validstatus != null" >
+        VALIDSTATUS,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="kindcode != null" >
+        #{kindcode,jdbcType=VARCHAR},
+      </if>
+      <if test="riskcode != null" >
+        #{riskcode,jdbcType=VARCHAR},
+      </if>
+      <if test="kindcname != null" >
+        #{kindcname,jdbcType=VARCHAR},
+      </if>
+      <if test="kindename != null" >
+        #{kindename,jdbcType=VARCHAR},
+      </if>
+      <if test="areacode != null" >
+        #{areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="insurancecode != null" >
+        #{insurancecode,jdbcType=VARCHAR},
+      </if>
+      <if test="validstatus != null" >
+        #{validstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgKind" >
+    update GGKIND
+    <set >
+      <if test="riskcode != null" >
+        RISKCODE = #{riskcode,jdbcType=VARCHAR},
+      </if>
+      <if test="kindcname != null" >
+        KINDCNAME = #{kindcname,jdbcType=VARCHAR},
+      </if>
+      <if test="kindename != null" >
+        KINDENAME = #{kindename,jdbcType=VARCHAR},
+      </if>
+      <if test="areacode != null" >
+        AREACODE = #{areacode,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="insurancecode != null" >
+        INSURANCECODE = #{insurancecode,jdbcType=VARCHAR},
+      </if>
+      <if test="validstatus != null" >
+        VALIDSTATUS = #{validstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+      and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgKind" >
+    update GGKIND
+    set RISKCODE = #{riskcode,jdbcType=VARCHAR},
+      KINDCNAME = #{kindcname,jdbcType=VARCHAR},
+      KINDENAME = #{kindename,jdbcType=VARCHAR},
+      AREACODE = #{areacode,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      INSURANCECODE = #{insurancecode,jdbcType=VARCHAR},
+      VALIDSTATUS = #{validstatus,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+      and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+  </update>
+</mapper>

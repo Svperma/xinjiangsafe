@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgPaymentConfigMapper">
+	<select id="getPayCom" parameterType="map" resultType="GgPaymentConfig">
+		SELECT * FROM GGPAYMENTCONFIG
+		<where>
+			VALIDIND='1'
+			<if test="paymentCardType != null and paymentCardType != ''">
+				AND PAYMENTCARDTYPE = #{paymentCardType}
+			</if>
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+		</where>
+	</select>
+</mapper>

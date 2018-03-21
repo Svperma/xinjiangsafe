@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgKindPriceMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgKindPrice">
+		<id column="AREACODE" property="areacode" jdbcType="VARCHAR" />
+		<id column="INSURECODE" property="insurecode" jdbcType="VARCHAR" />
+		<id column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<id column="INDUSTRYCODE" property="industrycode" jdbcType="VARCHAR" />
+		<id column="SCALECODE" property="scalecode" jdbcType="VARCHAR" />
+		<result column="PRICE" property="price" jdbcType="DECIMAL" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		AREACODE, INSURECODE, RISKCODE, INDUSTRYCODE, SCALECODE, PRICE, FLAG, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgKindPriceKey">
+		select
+		<include refid="Base_Column_List" />
+		from GGKINDPRICE
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and INSURECODE = #{insurecode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and INDUSTRYCODE = #{industrycode,jdbcType=VARCHAR}
+		and SCALECODE = #{scalecode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgKindPriceKey">
+		delete from GGKINDPRICE
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and INSURECODE = #{insurecode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and INDUSTRYCODE = #{industrycode,jdbcType=VARCHAR}
+		and SCALECODE = #{scalecode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgKindPrice">
+		insert into GGKINDPRICE (AREACODE, INSURECODE, RISKCODE,
+		INDUSTRYCODE, SCALECODE, PRICE,
+		FLAG, REMARK)
+		values (#{areacode,jdbcType=VARCHAR}, #{insurecode,jdbcType=VARCHAR},
+		#{riskcode,jdbcType=VARCHAR},
+		#{industrycode,jdbcType=VARCHAR}, #{scalecode,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL},
+		#{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgKindPrice">
+		insert into GGKINDPRICE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="areacode != null">
+				AREACODE,
+			</if>
+			<if test="insurecode != null">
+				INSURECODE,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="industrycode != null">
+				INDUSTRYCODE,
+			</if>
+			<if test="scalecode != null">
+				SCALECODE,
+			</if>
+			<if test="price != null">
+				PRICE,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="areacode != null">
+				#{areacode,jdbcType=VARCHAR},
+			</if>
+			<if test="insurecode != null">
+				#{insurecode,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="industrycode != null">
+				#{industrycode,jdbcType=VARCHAR},
+			</if>
+			<if test="scalecode != null">
+				#{scalecode,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgKindPrice">
+		update GGKINDPRICE
+		<set>
+			<if test="price != null">
+				PRICE = #{price,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and INSURECODE = #{insurecode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and INDUSTRYCODE = #{industrycode,jdbcType=VARCHAR}
+		and SCALECODE = #{scalecode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgKindPrice">
+		update GGKINDPRICE
+		set PRICE = #{price,jdbcType=DECIMAL},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and INSURECODE = #{insurecode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and INDUSTRYCODE = #{industrycode,jdbcType=VARCHAR}
+		and SCALECODE = #{scalecode,jdbcType=VARCHAR}
+	</update>
+</mapper>

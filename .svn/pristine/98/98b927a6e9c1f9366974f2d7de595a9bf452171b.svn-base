@@ -1,0 +1,8 @@
+package com.dsib.service;
+
+import java.util.Map;
+
+public interface GcClaimService {
+
+	public Map<String, Object> getLossSum(Map<String, Object> map);
+}

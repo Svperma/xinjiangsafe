@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgAmountRateMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgAmountRate">
+		<id column="RATEID" property="rateid" jdbcType="VARCHAR" />
+		<result column="INSURECODE" property="insurecode" jdbcType="VARCHAR" />
+		<result column="AMOUNTTYPE" property="amounttype" jdbcType="VARCHAR" />
+		<result column="AMOUNT" property="amount" jdbcType="VARCHAR" />
+		<result column="RATE" property="rate" jdbcType="VARCHAR" />
+		<result column="FALG" property="falg" jdbcType="VARCHAR" />
+		<result column="REAMRK" property="reamrk" jdbcType="VARCHAR" />
+		<result column="SCALE" property="scale" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		RATEID, INSURECODE, AMOUNTTYPE, AMOUNT, RATE, FALG, REAMRK, SCALE
+	</sql>
+	<!-- 获取可以当前企业可投保的总限额 -->
+	<select id="getAmountList" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgAmountRate">
+		select
+		<include refid="Base_Column_List" />
+		from GGAMOUNTRATE
+		<where>
+			<if test="insurecode!=null &amp;&amp; insurecode!=''">
+				and INSURECODE=#{insurecode}
+			</if>
+			<if test="amount!=null &amp;&amp; amount!=''">
+				and AMOUNT=#{amount}
+			</if>
+			<if test="amounttype!=null &amp;&amp; amounttype!=''">
+				and AMOUNTTYPE=#{amounttype}
+			</if>
+			<if test="scale!=null &amp;&amp; scale!=''">
+				and SCALE=#{scale}
+			</if>
+		</where>
+	</select>
+	<!-- 获取费率 -->
+	<select id="selectByType" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgAmountRate">
+		select
+		<include refid="Base_Column_List" />
+		from GGAMOUNTRATE
+		<where>
+			<if test="insurecode!=null &amp;&amp; insurecode!=''">
+				and INSURECODE=#{insurecode}
+			</if>
+			<if test="amount!=null &amp;&amp; amount!=''">
+				and AMOUNT=#{amount}
+			</if>
+			<if test="amounttype!=null &amp;&amp; amounttype!=''">
+				and AMOUNTTYPE=#{amounttype}
+			</if>
+			<if test="scale!=null &amp;&amp; scale!=''">
+				and SCALE=#{scale}
+			</if>
+		</where>
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GGAMOUNTRATE
+		where RATEID = #{rateid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from GGAMOUNTRATE
+		where RATEID = #{rateid,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgAmountRate">
+		insert into GGAMOUNTRATE (RATEID, INSURECODE, AMOUNTTYPE,
+		AMOUNT, RATE, FALG,
+		REAMRK, SCALE)
+		values (#{rateid,jdbcType=VARCHAR}, #{insurecode,jdbcType=VARCHAR},
+		#{amounttype,jdbcType=VARCHAR},
+		#{amount,jdbcType=VARCHAR}, #{rate,jdbcType=VARCHAR}, #{falg,jdbcType=VARCHAR},
+		#{reamrk,jdbcType=VARCHAR}, #{scale,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgAmountRate">
+		insert into GGAMOUNTRATE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="rateid != null">
+				RATEID,
+			</if>
+			<if test="insurecode != null">
+				INSURECODE,
+			</if>
+			<if test="amounttype != null">
+				AMOUNTTYPE,
+			</if>
+			<if test="amount != null">
+				AMOUNT,
+			</if>
+			<if test="rate != null">
+				RATE,
+			</if>
+			<if test="falg != null">
+				FALG,
+			</if>
+			<if test="reamrk != null">
+				REAMRK,
+			</if>
+			<if test="scale != null">
+				SCALE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="rateid != null">
+				#{rateid,jdbcType=VARCHAR},
+			</if>
+			<if test="insurecode != null">
+				#{insurecode,jdbcType=VARCHAR},
+			</if>
+			<if test="amounttype != null">
+				#{amounttype,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				#{rate,jdbcType=VARCHAR},
+			</if>
+			<if test="falg != null">
+				#{falg,jdbcType=VARCHAR},
+			</if>
+			<if test="reamrk != null">
+				#{reamrk,jdbcType=VARCHAR},
+			</if>
+			<if test="scale != null">
+				#{scale,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgAmountRate">
+		update GGAMOUNTRATE
+		<set>
+			<if test="insurecode != null">
+				INSURECODE = #{insurecode,jdbcType=VARCHAR},
+			</if>
+			<if test="amounttype != null">
+				AMOUNTTYPE = #{amounttype,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				AMOUNT = #{amount,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				RATE = #{rate,jdbcType=VARCHAR},
+			</if>
+			<if test="falg != null">
+				FALG = #{falg,jdbcType=VARCHAR},
+			</if>
+			<if test="reamrk != null">
+				REAMRK = #{reamrk,jdbcType=VARCHAR},
+			</if>
+			<if test="scale != null">
+				SCALE = #{scale,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where RATEID = #{rateid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgAmountRate">
+		update GGAMOUNTRATE
+		set INSURECODE = #{insurecode,jdbcType=VARCHAR},
+		AMOUNTTYPE = #{amounttype,jdbcType=VARCHAR},
+		AMOUNT = #{amount,jdbcType=VARCHAR},
+		RATE = #{rate,jdbcType=VARCHAR},
+		FALG = #{falg,jdbcType=VARCHAR},
+		REAMRK = #{reamrk,jdbcType=VARCHAR},
+		SCALE = #{scale,jdbcType=VARCHAR}
+		where RATEID = #{rateid,jdbcType=VARCHAR}
+	</update>
+</mapper>

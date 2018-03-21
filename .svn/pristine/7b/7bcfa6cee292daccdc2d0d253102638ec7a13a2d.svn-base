@@ -1,0 +1,10 @@
+package com.dsib.dao;
+
+import java.util.Map;
+
+public interface GcClaimMapper {
+
+	public Map<String, Object> getLossSum(Map<String, Object> map)
+			throws Exception;
+	
+}

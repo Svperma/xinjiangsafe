@@ -1,0 +1,6 @@
+###上传文件配置
+ftp.ftpurl=10.1.2.24
+ftp.port=21
+ftp.username=dsib
+ftp.password=dsib1234
+servername=http\://image.jiaotongbx.cn

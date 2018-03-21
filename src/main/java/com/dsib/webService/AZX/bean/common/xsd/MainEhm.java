@@ -1,0 +1,1127 @@
+/**
+ * MainEhm.java
+ *
+ * This file was auto-generated from WSDL
+ * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
+ */
+
+package com.dsib.webService.AZX.bean.common.xsd;
+
+public class MainEhm  implements java.io.Serializable {
+    private java.lang.String actualPremium;
+
+    private java.lang.String arbitBoardName;
+
+    private java.lang.String argueSolution;
+
+    private java.lang.String city;
+
+    private java.lang.String companyNumber;
+
+    private java.lang.String county;
+
+    private java.lang.String disCount;
+
+    private java.lang.String endDate;
+
+    private java.lang.String endorseNoDate;
+
+    private java.lang.String insuredNumber;
+
+    private java.lang.String insurerCode;
+
+    private java.lang.String operateDate;
+
+    private java.lang.String operatorCode;
+
+    private java.lang.String operatorCompany;
+
+    private java.lang.String policyNo;
+
+    private java.lang.String previousPolicyNo;
+
+    private java.lang.String primaryKey;
+
+    private java.lang.String province;
+
+    private java.lang.String renewalFlag;
+
+    private java.lang.String salemanCode;
+
+    private java.lang.String salemanIdCard;
+
+    private java.lang.String salemanName;
+
+    private java.lang.String salemanPhone;
+
+    private java.lang.String signDate;
+
+    private java.lang.String specialProvisions;
+
+    private java.lang.String spreadsheetPremium;
+
+    private java.lang.String startDate;
+
+    private java.lang.String sumAmount;
+
+    private java.lang.String systemCode;
+
+    public MainEhm() {
+    }
+
+    public MainEhm(
+           java.lang.String actualPremium,
+           java.lang.String arbitBoardName,
+           java.lang.String argueSolution,
+           java.lang.String city,
+           java.lang.String companyNumber,
+           java.lang.String county,
+           java.lang.String disCount,
+           java.lang.String endDate,
+           java.lang.String endorseNoDate,
+           java.lang.String insuredNumber,
+           java.lang.String insurerCode,
+           java.lang.String operateDate,
+           java.lang.String operatorCode,
+           java.lang.String operatorCompany,
+           java.lang.String policyNo,
+           java.lang.String previousPolicyNo,
+           java.lang.String primaryKey,
+           java.lang.String province,
+           java.lang.String renewalFlag,
+           java.lang.String salemanCode,
+           java.lang.String salemanIdCard,
+           java.lang.String salemanName,
+           java.lang.String salemanPhone,
+           java.lang.String signDate,
+           java.lang.String specialProvisions,
+           java.lang.String spreadsheetPremium,
+           java.lang.String startDate,
+           java.lang.String sumAmount,
+           java.lang.String systemCode) {
+           this.actualPremium = actualPremium;
+           this.arbitBoardName = arbitBoardName;
+           this.argueSolution = argueSolution;
+           this.city = city;
+           this.companyNumber = companyNumber;
+           this.county = county;
+           this.disCount = disCount;
+           this.endDate = endDate;
+           this.endorseNoDate = endorseNoDate;
+           this.insuredNumber = insuredNumber;
+           this.insurerCode = insurerCode;
+           this.operateDate = operateDate;
+           this.operatorCode = operatorCode;
+           this.operatorCompany = operatorCompany;
+           this.policyNo = policyNo;
+           this.previousPolicyNo = previousPolicyNo;
+           this.primaryKey = primaryKey;
+           this.province = province;
+           this.renewalFlag = renewalFlag;
+           this.salemanCode = salemanCode;
+           this.salemanIdCard = salemanIdCard;
+           this.salemanName = salemanName;
+           this.salemanPhone = salemanPhone;
+           this.signDate = signDate;
+           this.specialProvisions = specialProvisions;
+           this.spreadsheetPremium = spreadsheetPremium;
+           this.startDate = startDate;
+           this.sumAmount = sumAmount;
+           this.systemCode = systemCode;
+    }
+
+
+    /**
+     * Gets the actualPremium value for this MainEhm.
+     * 
+     * @return actualPremium
+     */
+    public java.lang.String getActualPremium() {
+        return actualPremium;
+    }
+
+
+    /**
+     * Sets the actualPremium value for this MainEhm.
+     * 
+     * @param actualPremium
+     */
+    public void setActualPremium(java.lang.String actualPremium) {
+        this.actualPremium = actualPremium;
+    }
+
+
+    /**
+     * Gets the arbitBoardName value for this MainEhm.
+     * 
+     * @return arbitBoardName
+     */
+    public java.lang.String getArbitBoardName() {
+        return arbitBoardName;
+    }
+
+
+    /**
+     * Sets the arbitBoardName value for this MainEhm.
+     * 
+     * @param arbitBoardName
+     */
+    public void setArbitBoardName(java.lang.String arbitBoardName) {
+        this.arbitBoardName = arbitBoardName;
+    }
+
+
+    /**
+     * Gets the argueSolution value for this MainEhm.
+     * 
+     * @return argueSolution
+     */
+    public java.lang.String getArgueSolution() {
+        return argueSolution;
+    }
+
+
+    /**
+     * Sets the argueSolution value for this MainEhm.
+     * 
+     * @param argueSolution
+     */
+    public void setArgueSolution(java.lang.String argueSolution) {
+        this.argueSolution = argueSolution;
+    }
+
+
+    /**
+     * Gets the city value for this MainEhm.
+     * 
+     * @return city
+     */
+    public java.lang.String getCity() {
+        return city;
+    }
+
+
+    /**
+     * Sets the city value for this MainEhm.
+     * 
+     * @param city
+     */
+    public void setCity(java.lang.String city) {
+        this.city = city;
+    }
+
+
+    /**
+     * Gets the companyNumber value for this MainEhm.
+     * 
+     * @return companyNumber
+     */
+    public java.lang.String getCompanyNumber() {
+        return companyNumber;
+    }
+
+
+    /**
+     * Sets the companyNumber value for this MainEhm.
+     * 
+     * @param companyNumber
+     */
+    public void setCompanyNumber(java.lang.String companyNumber) {
+        this.companyNumber = companyNumber;
+    }
+
+
+    /**
+     * Gets the county value for this MainEhm.
+     * 
+     * @return county
+     */
+    public java.lang.String getCounty() {
+        return county;
+    }
+
+
+    /**
+     * Sets the county value for this MainEhm.
+     * 
+     * @param county
+     */
+    public void setCounty(java.lang.String county) {
+        this.county = county;
+    }
+
+
+    /**
+     * Gets the disCount value for this MainEhm.
+     * 
+     * @return disCount
+     */
+    public java.lang.String getDisCount() {
+        return disCount;
+    }
+
+
+    /**
+     * Sets the disCount value for this MainEhm.
+     * 
+     * @param disCount
+     */
+    public void setDisCount(java.lang.String disCount) {
+        this.disCount = disCount;
+    }
+
+
+    /**
+     * Gets the endDate value for this MainEhm.
+     * 
+     * @return endDate
+     */
+    public java.lang.String getEndDate() {
+        return endDate;
+    }
+
+
+    /**
+     * Sets the endDate value for this MainEhm.
+     * 
+     * @param endDate
+     */
+    public void setEndDate(java.lang.String endDate) {
+        this.endDate = endDate;
+    }
+
+
+    /**
+     * Gets the endorseNoDate value for this MainEhm.
+     * 
+     * @return endorseNoDate
+     */
+    public java.lang.String getEndorseNoDate() {
+        return endorseNoDate;
+    }
+
+
+    /**
+     * Sets the endorseNoDate value for this MainEhm.
+     * 
+     * @param endorseNoDate
+     */
+    public void setEndorseNoDate(java.lang.String endorseNoDate) {
+        this.endorseNoDate = endorseNoDate;
+    }
+
+
+    /**
+     * Gets the insuredNumber value for this MainEhm.
+     * 
+     * @return insuredNumber
+     */
+    public java.lang.String getInsuredNumber() {
+        return insuredNumber;
+    }
+
+
+    /**
+     * Sets the insuredNumber value for this MainEhm.
+     * 
+     * @param insuredNumber
+     */
+    public void setInsuredNumber(java.lang.String insuredNumber) {
+        this.insuredNumber = insuredNumber;
+    }
+
+
+    /**
+     * Gets the insurerCode value for this MainEhm.
+     * 
+     * @return insurerCode
+     */
+    public java.lang.String getInsurerCode() {
+        return insurerCode;
+    }
+
+
+    /**
+     * Sets the insurerCode value for this MainEhm.
+     * 
+     * @param insurerCode
+     */
+    public void setInsurerCode(java.lang.String insurerCode) {
+        this.insurerCode = insurerCode;
+    }
+
+
+    /**
+     * Gets the operateDate value for this MainEhm.
+     * 
+     * @return operateDate
+     */
+    public java.lang.String getOperateDate() {
+        return operateDate;
+    }
+
+
+    /**
+     * Sets the operateDate value for this MainEhm.
+     * 
+     * @param operateDate
+     */
+    public void setOperateDate(java.lang.String operateDate) {
+        this.operateDate = operateDate;
+    }
+
+
+    /**
+     * Gets the operatorCode value for this MainEhm.
+     * 
+     * @return operatorCode
+     */
+    public java.lang.String getOperatorCode() {
+        return operatorCode;
+    }
+
+
+    /**
+     * Sets the operatorCode value for this MainEhm.
+     * 
+     * @param operatorCode
+     */
+    public void setOperatorCode(java.lang.String operatorCode) {
+        this.operatorCode = operatorCode;
+    }
+
+
+    /**
+     * Gets the operatorCompany value for this MainEhm.
+     * 
+     * @return operatorCompany
+     */
+    public java.lang.String getOperatorCompany() {
+        return operatorCompany;
+    }
+
+
+    /**
+     * Sets the operatorCompany value for this MainEhm.
+     * 
+     * @param operatorCompany
+     */
+    public void setOperatorCompany(java.lang.String operatorCompany) {
+        this.operatorCompany = operatorCompany;
+    }
+
+
+    /**
+     * Gets the policyNo value for this MainEhm.
+     * 
+     * @return policyNo
+     */
+    public java.lang.String getPolicyNo() {
+        return policyNo;
+    }
+
+
+    /**
+     * Sets the policyNo value for this MainEhm.
+     * 
+     * @param policyNo
+     */
+    public void setPolicyNo(java.lang.String policyNo) {
+        this.policyNo = policyNo;
+    }
+
+
+    /**
+     * Gets the previousPolicyNo value for this MainEhm.
+     * 
+     * @return previousPolicyNo
+     */
+    public java.lang.String getPreviousPolicyNo() {
+        return previousPolicyNo;
+    }
+
+
+    /**
+     * Sets the previousPolicyNo value for this MainEhm.
+     * 
+     * @param previousPolicyNo
+     */
+    public void setPreviousPolicyNo(java.lang.String previousPolicyNo) {
+        this.previousPolicyNo = previousPolicyNo;
+    }
+
+
+    /**
+     * Gets the primaryKey value for this MainEhm.
+     * 
+     * @return primaryKey
+     */
+    public java.lang.String getPrimaryKey() {
+        return primaryKey;
+    }
+
+
+    /**
+     * Sets the primaryKey value for this MainEhm.
+     * 
+     * @param primaryKey
+     */
+    public void setPrimaryKey(java.lang.String primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+
+    /**
+     * Gets the province value for this MainEhm.
+     * 
+     * @return province
+     */
+    public java.lang.String getProvince() {
+        return province;
+    }
+
+
+    /**
+     * Sets the province value for this MainEhm.
+     * 
+     * @param province
+     */
+    public void setProvince(java.lang.String province) {
+        this.province = province;
+    }
+
+
+    /**
+     * Gets the renewalFlag value for this MainEhm.
+     * 
+     * @return renewalFlag
+     */
+    public java.lang.String getRenewalFlag() {
+        return renewalFlag;
+    }
+
+
+    /**
+     * Sets the renewalFlag value for this MainEhm.
+     * 
+     * @param renewalFlag
+     */
+    public void setRenewalFlag(java.lang.String renewalFlag) {
+        this.renewalFlag = renewalFlag;
+    }
+
+
+    /**
+     * Gets the salemanCode value for this MainEhm.
+     * 
+     * @return salemanCode
+     */
+    public java.lang.String getSalemanCode() {
+        return salemanCode;
+    }
+
+
+    /**
+     * Sets the salemanCode value for this MainEhm.
+     * 
+     * @param salemanCode
+     */
+    public void setSalemanCode(java.lang.String salemanCode) {
+        this.salemanCode = salemanCode;
+    }
+
+
+    /**
+     * Gets the salemanIdCard value for this MainEhm.
+     * 
+     * @return salemanIdCard
+     */
+    public java.lang.String getSalemanIdCard() {
+        return salemanIdCard;
+    }
+
+
+    /**
+     * Sets the salemanIdCard value for this MainEhm.
+     * 
+     * @param salemanIdCard
+     */
+    public void setSalemanIdCard(java.lang.String salemanIdCard) {
+        this.salemanIdCard = salemanIdCard;
+    }
+
+
+    /**
+     * Gets the salemanName value for this MainEhm.
+     * 
+     * @return salemanName
+     */
+    public java.lang.String getSalemanName() {
+        return salemanName;
+    }
+
+
+    /**
+     * Sets the salemanName value for this MainEhm.
+     * 
+     * @param salemanName
+     */
+    public void setSalemanName(java.lang.String salemanName) {
+        this.salemanName = salemanName;
+    }
+
+
+    /**
+     * Gets the salemanPhone value for this MainEhm.
+     * 
+     * @return salemanPhone
+     */
+    public java.lang.String getSalemanPhone() {
+        return salemanPhone;
+    }
+
+
+    /**
+     * Sets the salemanPhone value for this MainEhm.
+     * 
+     * @param salemanPhone
+     */
+    public void setSalemanPhone(java.lang.String salemanPhone) {
+        this.salemanPhone = salemanPhone;
+    }
+
+
+    /**
+     * Gets the signDate value for this MainEhm.
+     * 
+     * @return signDate
+     */
+    public java.lang.String getSignDate() {
+        return signDate;
+    }
+
+
+    /**
+     * Sets the signDate value for this MainEhm.
+     * 
+     * @param signDate
+     */
+    public void setSignDate(java.lang.String signDate) {
+        this.signDate = signDate;
+    }
+
+
+    /**
+     * Gets the specialProvisions value for this MainEhm.
+     * 
+     * @return specialProvisions
+     */
+    public java.lang.String getSpecialProvisions() {
+        return specialProvisions;
+    }
+
+
+    /**
+     * Sets the specialProvisions value for this MainEhm.
+     * 
+     * @param specialProvisions
+     */
+    public void setSpecialProvisions(java.lang.String specialProvisions) {
+        this.specialProvisions = specialProvisions;
+    }
+
+
+    /**
+     * Gets the spreadsheetPremium value for this MainEhm.
+     * 
+     * @return spreadsheetPremium
+     */
+    public java.lang.String getSpreadsheetPremium() {
+        return spreadsheetPremium;
+    }
+
+
+    /**
+     * Sets the spreadsheetPremium value for this MainEhm.
+     * 
+     * @param spreadsheetPremium
+     */
+    public void setSpreadsheetPremium(java.lang.String spreadsheetPremium) {
+        this.spreadsheetPremium = spreadsheetPremium;
+    }
+
+
+    /**
+     * Gets the startDate value for this MainEhm.
+     * 
+     * @return startDate
+     */
+    public java.lang.String getStartDate() {
+        return startDate;
+    }
+
+
+    /**
+     * Sets the startDate value for this MainEhm.
+     * 
+     * @param startDate
+     */
+    public void setStartDate(java.lang.String startDate) {
+        this.startDate = startDate;
+    }
+
+
+    /**
+     * Gets the sumAmount value for this MainEhm.
+     * 
+     * @return sumAmount
+     */
+    public java.lang.String getSumAmount() {
+        return sumAmount;
+    }
+
+
+    /**
+     * Sets the sumAmount value for this MainEhm.
+     * 
+     * @param sumAmount
+     */
+    public void setSumAmount(java.lang.String sumAmount) {
+        this.sumAmount = sumAmount;
+    }
+
+
+    /**
+     * Gets the systemCode value for this MainEhm.
+     * 
+     * @return systemCode
+     */
+    public java.lang.String getSystemCode() {
+        return systemCode;
+    }
+
+
+    /**
+     * Sets the systemCode value for this MainEhm.
+     * 
+     * @param systemCode
+     */
+    public void setSystemCode(java.lang.String systemCode) {
+        this.systemCode = systemCode;
+    }
+
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
+        if (!(obj instanceof MainEhm)) return false;
+        MainEhm other = (MainEhm) obj;
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (__equalsCalc != null) {
+            return (__equalsCalc == obj);
+        }
+        __equalsCalc = obj;
+        boolean _equals;
+        _equals = true && 
+            ((this.actualPremium==null && other.getActualPremium()==null) || 
+             (this.actualPremium!=null &&
+              this.actualPremium.equals(other.getActualPremium()))) &&
+            ((this.arbitBoardName==null && other.getArbitBoardName()==null) || 
+             (this.arbitBoardName!=null &&
+              this.arbitBoardName.equals(other.getArbitBoardName()))) &&
+            ((this.argueSolution==null && other.getArgueSolution()==null) || 
+             (this.argueSolution!=null &&
+              this.argueSolution.equals(other.getArgueSolution()))) &&
+            ((this.city==null && other.getCity()==null) || 
+             (this.city!=null &&
+              this.city.equals(other.getCity()))) &&
+            ((this.companyNumber==null && other.getCompanyNumber()==null) || 
+             (this.companyNumber!=null &&
+              this.companyNumber.equals(other.getCompanyNumber()))) &&
+            ((this.county==null && other.getCounty()==null) || 
+             (this.county!=null &&
+              this.county.equals(other.getCounty()))) &&
+            ((this.disCount==null && other.getDisCount()==null) || 
+             (this.disCount!=null &&
+              this.disCount.equals(other.getDisCount()))) &&
+            ((this.endDate==null && other.getEndDate()==null) || 
+             (this.endDate!=null &&
+              this.endDate.equals(other.getEndDate()))) &&
+            ((this.endorseNoDate==null && other.getEndorseNoDate()==null) || 
+             (this.endorseNoDate!=null &&
+              this.endorseNoDate.equals(other.getEndorseNoDate()))) &&
+            ((this.insuredNumber==null && other.getInsuredNumber()==null) || 
+             (this.insuredNumber!=null &&
+              this.insuredNumber.equals(other.getInsuredNumber()))) &&
+            ((this.insurerCode==null && other.getInsurerCode()==null) || 
+             (this.insurerCode!=null &&
+              this.insurerCode.equals(other.getInsurerCode()))) &&
+            ((this.operateDate==null && other.getOperateDate()==null) || 
+             (this.operateDate!=null &&
+              this.operateDate.equals(other.getOperateDate()))) &&
+            ((this.operatorCode==null && other.getOperatorCode()==null) || 
+             (this.operatorCode!=null &&
+              this.operatorCode.equals(other.getOperatorCode()))) &&
+            ((this.operatorCompany==null && other.getOperatorCompany()==null) || 
+             (this.operatorCompany!=null &&
+              this.operatorCompany.equals(other.getOperatorCompany()))) &&
+            ((this.policyNo==null && other.getPolicyNo()==null) || 
+             (this.policyNo!=null &&
+              this.policyNo.equals(other.getPolicyNo()))) &&
+            ((this.previousPolicyNo==null && other.getPreviousPolicyNo()==null) || 
+             (this.previousPolicyNo!=null &&
+              this.previousPolicyNo.equals(other.getPreviousPolicyNo()))) &&
+            ((this.primaryKey==null && other.getPrimaryKey()==null) || 
+             (this.primaryKey!=null &&
+              this.primaryKey.equals(other.getPrimaryKey()))) &&
+            ((this.province==null && other.getProvince()==null) || 
+             (this.province!=null &&
+              this.province.equals(other.getProvince()))) &&
+            ((this.renewalFlag==null && other.getRenewalFlag()==null) || 
+             (this.renewalFlag!=null &&
+              this.renewalFlag.equals(other.getRenewalFlag()))) &&
+            ((this.salemanCode==null && other.getSalemanCode()==null) || 
+             (this.salemanCode!=null &&
+              this.salemanCode.equals(other.getSalemanCode()))) &&
+            ((this.salemanIdCard==null && other.getSalemanIdCard()==null) || 
+             (this.salemanIdCard!=null &&
+              this.salemanIdCard.equals(other.getSalemanIdCard()))) &&
+            ((this.salemanName==null && other.getSalemanName()==null) || 
+             (this.salemanName!=null &&
+              this.salemanName.equals(other.getSalemanName()))) &&
+            ((this.salemanPhone==null && other.getSalemanPhone()==null) || 
+             (this.salemanPhone!=null &&
+              this.salemanPhone.equals(other.getSalemanPhone()))) &&
+            ((this.signDate==null && other.getSignDate()==null) || 
+             (this.signDate!=null &&
+              this.signDate.equals(other.getSignDate()))) &&
+            ((this.specialProvisions==null && other.getSpecialProvisions()==null) || 
+             (this.specialProvisions!=null &&
+              this.specialProvisions.equals(other.getSpecialProvisions()))) &&
+            ((this.spreadsheetPremium==null && other.getSpreadsheetPremium()==null) || 
+             (this.spreadsheetPremium!=null &&
+              this.spreadsheetPremium.equals(other.getSpreadsheetPremium()))) &&
+            ((this.startDate==null && other.getStartDate()==null) || 
+             (this.startDate!=null &&
+              this.startDate.equals(other.getStartDate()))) &&
+            ((this.sumAmount==null && other.getSumAmount()==null) || 
+             (this.sumAmount!=null &&
+              this.sumAmount.equals(other.getSumAmount()))) &&
+            ((this.systemCode==null && other.getSystemCode()==null) || 
+             (this.systemCode!=null &&
+              this.systemCode.equals(other.getSystemCode())));
+        __equalsCalc = null;
+        return _equals;
+    }
+
+    private boolean __hashCodeCalc = false;
+    public synchronized int hashCode() {
+        if (__hashCodeCalc) {
+            return 0;
+        }
+        __hashCodeCalc = true;
+        int _hashCode = 1;
+        if (getActualPremium() != null) {
+            _hashCode += getActualPremium().hashCode();
+        }
+        if (getArbitBoardName() != null) {
+            _hashCode += getArbitBoardName().hashCode();
+        }
+        if (getArgueSolution() != null) {
+            _hashCode += getArgueSolution().hashCode();
+        }
+        if (getCity() != null) {
+            _hashCode += getCity().hashCode();
+        }
+        if (getCompanyNumber() != null) {
+            _hashCode += getCompanyNumber().hashCode();
+        }
+        if (getCounty() != null) {
+            _hashCode += getCounty().hashCode();
+        }
+        if (getDisCount() != null) {
+            _hashCode += getDisCount().hashCode();
+        }
+        if (getEndDate() != null) {
+            _hashCode += getEndDate().hashCode();
+        }
+        if (getEndorseNoDate() != null) {
+            _hashCode += getEndorseNoDate().hashCode();
+        }
+        if (getInsuredNumber() != null) {
+            _hashCode += getInsuredNumber().hashCode();
+        }
+        if (getInsurerCode() != null) {
+            _hashCode += getInsurerCode().hashCode();
+        }
+        if (getOperateDate() != null) {
+            _hashCode += getOperateDate().hashCode();
+        }
+        if (getOperatorCode() != null) {
+            _hashCode += getOperatorCode().hashCode();
+        }
+        if (getOperatorCompany() != null) {
+            _hashCode += getOperatorCompany().hashCode();
+        }
+        if (getPolicyNo() != null) {
+            _hashCode += getPolicyNo().hashCode();
+        }
+        if (getPreviousPolicyNo() != null) {
+            _hashCode += getPreviousPolicyNo().hashCode();
+        }
+        if (getPrimaryKey() != null) {
+            _hashCode += getPrimaryKey().hashCode();
+        }
+        if (getProvince() != null) {
+            _hashCode += getProvince().hashCode();
+        }
+        if (getRenewalFlag() != null) {
+            _hashCode += getRenewalFlag().hashCode();
+        }
+        if (getSalemanCode() != null) {
+            _hashCode += getSalemanCode().hashCode();
+        }
+        if (getSalemanIdCard() != null) {
+            _hashCode += getSalemanIdCard().hashCode();
+        }
+        if (getSalemanName() != null) {
+            _hashCode += getSalemanName().hashCode();
+        }
+        if (getSalemanPhone() != null) {
+            _hashCode += getSalemanPhone().hashCode();
+        }
+        if (getSignDate() != null) {
+            _hashCode += getSignDate().hashCode();
+        }
+        if (getSpecialProvisions() != null) {
+            _hashCode += getSpecialProvisions().hashCode();
+        }
+        if (getSpreadsheetPremium() != null) {
+            _hashCode += getSpreadsheetPremium().hashCode();
+        }
+        if (getStartDate() != null) {
+            _hashCode += getStartDate().hashCode();
+        }
+        if (getSumAmount() != null) {
+            _hashCode += getSumAmount().hashCode();
+        }
+        if (getSystemCode() != null) {
+            _hashCode += getSystemCode().hashCode();
+        }
+        __hashCodeCalc = false;
+        return _hashCode;
+    }
+
+    // Type metadata
+    private static org.apache.axis.description.TypeDesc typeDesc =
+        new org.apache.axis.description.TypeDesc(MainEhm.class, true);
+
+    static {
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "MainEhm"));
+        org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("actualPremium");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "actualPremium"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("arbitBoardName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "arbitBoardName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("argueSolution");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "argueSolution"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("city");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "city"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("companyNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "companyNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("county");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "county"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("disCount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "disCount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("endDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "endDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("endorseNoDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "endorseNoDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("insuredNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "insuredNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("insurerCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "insurerCode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("operateDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "operateDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("operatorCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "operatorCode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("operatorCompany");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "operatorCompany"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("policyNo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "policyNo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("previousPolicyNo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "previousPolicyNo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("primaryKey");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "primaryKey"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("province");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "province"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("renewalFlag");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "renewalFlag"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("salemanCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "salemanCode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("salemanIdCard");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "salemanIdCard"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("salemanName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "salemanName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("salemanPhone");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "salemanPhone"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("signDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "signDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("specialProvisions");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "specialProvisions"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("spreadsheetPremium");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "spreadsheetPremium"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("startDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "startDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("sumAmount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "sumAmount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("systemCode");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://common.AZXDto.dto.insuranceSingle.AZX.webService.dsib.com/xsd", "systemCode"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+    }
+
+    /**
+     * Return type metadata object
+     */
+    public static org.apache.axis.description.TypeDesc getTypeDesc() {
+        return typeDesc;
+    }
+
+    /**
+     * Get Custom Serializer
+     */
+    public static org.apache.axis.encoding.Serializer getSerializer(
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
+           javax.xml.namespace.QName _xmlType) {
+        return 
+          new  org.apache.axis.encoding.ser.BeanSerializer(
+            _javaType, _xmlType, typeDesc);
+    }
+
+    /**
+     * Get Custom Deserializer
+     */
+    public static org.apache.axis.encoding.Deserializer getDeserializer(
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
+           javax.xml.namespace.QName _xmlType) {
+        return 
+          new  org.apache.axis.encoding.ser.BeanDeserializer(
+            _javaType, _xmlType, typeDesc);
+    }
+
+}

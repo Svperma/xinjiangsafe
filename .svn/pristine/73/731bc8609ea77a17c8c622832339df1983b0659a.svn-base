@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyLimitMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyLimit">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<id column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<id column="LIMITNO" property="limitno" jdbcType="DECIMAL" />
+		<result column="POLICYNO" property="policyno" jdbcType="VARCHAR" />
+		<result column="LIMITCODE" property="limitcode" jdbcType="VARCHAR" />
+		<result column="LIMITFEE" property="limitfee" jdbcType="DECIMAL" />
+		<result column="LIMITDESCRIPTION" property="limitdescription"
+			jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, RISKCODE, LIMITNO, POLICYNO, LIMITCODE, LIMITFEE, LIMITDESCRIPTION,
+		FLAG,
+		REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyLimitKey">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYLIMIT
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and LIMITNO = #{limitno,jdbcType=DECIMAL}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyLimitKey">
+		delete from GUPOLICYLIMIT
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and LIMITNO = #{limitno,jdbcType=DECIMAL}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyLimit">
+		insert into GUPOLICYLIMIT (BUSINESSNO, RISKCODE, LIMITNO,
+		POLICYNO, LIMITCODE, LIMITFEE,
+		LIMITDESCRIPTION, FLAG, REMARK
+		)
+		values (#{businessno,jdbcType=VARCHAR}, #{riskcode,jdbcType=VARCHAR},
+		#{limitno,jdbcType=DECIMAL},
+		#{policyno,jdbcType=VARCHAR}, #{limitcode,jdbcType=VARCHAR}, #{limitfee,jdbcType=DECIMAL},
+		#{limitdescription,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyLimit">
+		insert into GUPOLICYLIMIT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="limitno != null">
+				LIMITNO,
+			</if>
+			<if test="policyno != null">
+				POLICYNO,
+			</if>
+			<if test="limitcode != null">
+				LIMITCODE,
+			</if>
+			<if test="limitfee != null">
+				LIMITFEE,
+			</if>
+			<if test="limitdescription != null">
+				LIMITDESCRIPTION,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="limitno != null">
+				#{limitno,jdbcType=DECIMAL},
+			</if>
+			<if test="policyno != null">
+				#{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="limitcode != null">
+				#{limitcode,jdbcType=VARCHAR},
+			</if>
+			<if test="limitfee != null">
+				#{limitfee,jdbcType=DECIMAL},
+			</if>
+			<if test="limitdescription != null">
+				#{limitdescription,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyLimit">
+		update GUPOLICYLIMIT
+		<set>
+			<if test="policyno != null">
+				POLICYNO = #{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="limitcode != null">
+				LIMITCODE = #{limitcode,jdbcType=VARCHAR},
+			</if>
+			<if test="limitfee != null">
+				LIMITFEE = #{limitfee,jdbcType=DECIMAL},
+			</if>
+			<if test="limitdescription != null">
+				LIMITDESCRIPTION = #{limitdescription,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and LIMITNO = #{limitno,jdbcType=DECIMAL}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyLimit">
+		update GUPOLICYLIMIT
+		set POLICYNO = #{policyno,jdbcType=VARCHAR},
+		LIMITCODE = #{limitcode,jdbcType=VARCHAR},
+		LIMITFEE = #{limitfee,jdbcType=DECIMAL},
+		LIMITDESCRIPTION = #{limitdescription,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+		and LIMITNO = #{limitno,jdbcType=DECIMAL}
+	</update>
+</mapper>

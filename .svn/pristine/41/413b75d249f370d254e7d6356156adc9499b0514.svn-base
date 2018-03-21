@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+<title>退款明细查询</title>
+
+</head>
+
+
+
+
+
+<body>
+
+<form form1 method="post" action="refundQuery.jsp">
+	
+	<tr width="95%">
+
+		<td width="20%">商户编号：</td>
+
+		<td><input name="merchant_no" maxlength="15"  value="301310015209504"/>&nbsp;<font color="red"
+
+			size="4">*</font></td>
+
+	</tr>
+<br />
+
+<br />
+起始日期：&nbsp;&nbsp;<input name="start_date" /> 格式yyyyMMdd <font color = "red" size= "4"> *</font>
+
+<br />
+
+<br />
+
+结束日期：&nbsp;&nbsp;<input name="end_date"   /> 格式yyyyMMdd <font color = "red" size= "4"> *</font>
+
+<br />
+
+<br />
+
+交易状态：&nbsp;&nbsp;<input name="tran_state" /> 
+
+<br />
+
+<br />
+
+卖方退款账号：&nbsp;&nbsp;<input name="pay_acc_no"	/>
+
+<br />
+
+<br />
+
+买方收退款账号：&nbsp;&nbsp;<input name="rec_acc_no"  />
+
+<br />
+
+<br />
+币种：&nbsp;&nbsp;<input name="tran_currency"  /> 人民币:CNY 港币:HKD 
+
+<br />
+
+<br />
+
+订单号：<input name="order_no" /> 
+
+<br />
+
+<br />
+
+最小金额：&nbsp;&nbsp;<input name= "min_amount" />
+
+<br />
+
+<br />
+
+最大金额：&nbsp;&nbsp;<input name="max_amount"	/>
+
+<br />
+
+<br />
+
+
+
+
+
+<input type="submit" value="提交" />
+
+</form>
+
+</body>
+
+</html>
+

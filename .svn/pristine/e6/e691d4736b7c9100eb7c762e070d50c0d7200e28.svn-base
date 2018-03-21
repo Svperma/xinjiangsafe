@@ -1,0 +1,35 @@
+package com.dsib.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dsib.dao.GcClaimMapper;
+import com.dsib.entity.GcClaim;
+import com.dsib.service.GcClaimService;
+
+@Service("gcClaimService")
+public class GcClaimServiceImpl implements GcClaimService {
+
+	@Autowired
+	private GcClaimMapper claimMapper;
+
+	public Map<String, Object> getLossSum(Map<String, Object> map) {
+		Map<String, Object> resMap = null;
+		try {
+			resMap = claimMapper.getLossSum(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resMap == null ? new HashMap<String, Object>() : resMap;
+	}
+
+	@Override
+	public Integer insertGcClaimSelective(GcClaim claim) {
+		return claimMapper.insertGcClaimSelective(claim);
+	}
+
+}

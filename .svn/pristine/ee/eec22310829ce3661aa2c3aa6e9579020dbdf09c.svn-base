@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.dsib.entity.GgUserCorp" alias="GgUserCorp"></typeAlias>
+		<typeAlias type="com.dsib.entity.GuPolicyMain" alias="GuPolicyMain"></typeAlias>
+		<typeAlias type="com.dsib.entity.GovOrgan" alias="GovOrgan"></typeAlias>
+		<typeAlias type="com.dsib.common.Pagination" alias="Pagination"></typeAlias>
+		<typeAlias type="com.dsib.entity.GcClaim" alias="GcClaim"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgInsureConfig" alias="GgInsureConfig"/>
+		<typeAlias type="com.dsib.entity.GuPolicyItemKind" alias="GuPolicyItemKind"/>
+		<typeAlias type="com.dsib.entity.GgNotice" alias="GgNotice"></typeAlias>
+    	<typeAlias type="com.dsib.entity.GgCode" alias="GgCode"></typeAlias>
+		<typeAlias type="com.dsib.entity.GGovexpert" alias="GGovexpert"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgUser" alias="GgUser"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgEmergencyManager" alias="GgEmergencyManager"></typeAlias>	
+		<typeAlias type="com.dsib.entity.GgEvaluate" alias="GgEvaluate"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgEvaluateDangers" alias="GgEvaluateDangers"></typeAlias>
+		<typeAlias type="com.dsib.entity.Gupreventfeedetail" alias="Guprevent"></typeAlias>
+		<typeAlias type="com.dsib.common.ConditionAdapter" alias="ConditionAdapter"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgEmployee" alias="GGEMPLOYEE"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgNews" alias="GgNews"></typeAlias>
+		<typeAlias type="com.dsib.entity.GcClaimProve" alias="GcClaimProve"></typeAlias>
+		<typeAlias type="com.dsib.entity.GgPaymentConfig" alias="GgPaymentConfig"></typeAlias>
+		<typeAlias type="com.dsib.entity.GpMainOrder" alias="GpMainOrder"></typeAlias>
+		<typeAlias type="com.dsib.entity.GpOrderDetail" alias="GpOrderDetail"></typeAlias>
+		<typeAlias type="com.dsib.entity.GuPolicyAdjustRate" alias="GuPolicyAdjustRate"></typeAlias>
+		<typeAlias type="com.dsib.entity.GuPolicyInsured" alias="GuPolicyInsured"></typeAlias>
+		<typeAlias type="com.dsib.entity.GuPolicyLimit" alias="GuPolicyLimit"></typeAlias>
+		<typeAlias type="com.dsib.entity.GcClaim" alias="GcClaim"></typeAlias>
+		<typeAlias type="com.dsib.entity.GuPolicyEndorse" alias="GuPolicyEndorse"></typeAlias>
+	</typeAliases>	
+</configuration>
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GuWebClientMapper">
+	<select id="quotePolicyMain"  resultType="map">
+		SELECT GM.BUSINESSNO , GM.PROPOSALNO , GM.OPERATEDATE , GM.APPLINAME , GM.SPREADSHEETPREMIUM, GC.BUSINESSLICENSENO
+		FROM GUPOLICYMAIN GM LEFT JOIN GGUSERCORP GC ON GM.APPLICODE = GC.USERCODE
+		WHERE GM.UNDERWRITEFLAG = '1'
+	</select>
+
+
+	<update id="updaterbPolicy" parameterType="map">
+		UPDATE GUPOLICYMAIN SET POLICYNO=#{PolicyNo} , UPDATEDATE=#{SendDateTime} , 
+				PAYBILLNO=#{EleDownloadArr} 
+		WHERE   BUSINESSNO=#{PrimaryKey}
+	</update>
+	<!-- 添加理赔信息 -->
+	<insert id="insertClaim" parameterType="GcClaim">
+		INSERT INTO GCCLAIM(BAOANNO,PEIANNO,POLICYNO,LOSSAMOUNT,LOSSCAUSE,LOSSDATE,RISKCODE,
+							BUSINESSNO,LOSSLOCAITON,CREATERCODE,CREATEDATE,UPDATORCODE,UPDATEDATE,
+							STATUS,REMARK,FLAG,PROVINCE,CITY,COUNTY,PAYAMOUNT,INSURERCODE,CLOSEDATE,
+							USERCODE,BAOANDATE,LOSSDETAIL,LINKNAME,LINKPHONE)
+		VALUES(#{baoAnNo,jdbcType=VARCHAR},#{peiAnNo,jdbcType=VARCHAR},#{policyNo,jdbcType=VARCHAR},
+			   #{lossAmount,jdbcType=NUMERIC},#{lossCause,jdbcType=VARCHAR},#{lossDate,jdbcType=TIMESTAMP},
+			   #{businessNo,jdbcType=VARCHAR},#{lossLocaiton,jdbcType=VARCHAR},#{createrCode,jdbcType=VARCHAR},
+			   #{createDate,jdbcType=TIMESTAMP},#{upDatorCode,jdbcType=VARCHAR},#{upDateDate,jdbcType=TIMESTAMP},
+			   #{status,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},#{flag,jdbcType=VARCHAR},#{province,jdbcType=VARCHAR},
+			   #{city,jdbcType=VARCHAR},#{county,jdbcType=VARCHAR},#{payMount,jdbcType=NUMERIC},#{insurerCode,jdbcType=VARCHAR},
+			   #{closeDate,jdbcType=TIMESTAMP},#{userCode,jdbcType=VARCHAR},#{bananDate,jdbcType=TIMESTAMP},
+			   #{lossDetail,jdbcType=VARCHAR},#{linkName,jdbcType=VARCHAR},#{linkPhone,jdbcType=VARCHAR})  
+	</insert>
+	<!-- 查看折扣费率 -->
+	<select id="adjustrate" resultType="GuPolicyAdjustRate" parameterType="string"> 
+		SELECT * FROM GUPOLICYADJUSTRATE WHERE BUSINESSNO = #{business }
+	</select>
+	<update id="updatePremium" parameterType="map">
+		UPDATE GUPOLICYINSUREPREMIUM SET SUM_PREMIUM = #{ActualPremium,jdbcType=DOUBLE } 
+		<if test=" itemKind_one != '' and itemKind_one != null ">
+			, ITEMKIND_ONE = #{itemKind_one,jdbcType=DOUBLE}
+		</if>
+		<if test=" ittmKind_two !='' and ittmKind_two != null ">
+			, ITEMKIND_TWO = #{ittmKind_two,jdbcType=DOUBLE }
+		</if>
+		<if test=" ittmKind_three != '' and ittmKind_three != null ">
+			, ITEMKIND_THREE = #{ittmKind_three,jdbcType=DOUBLE }		
+		</if>
+		<if test="ittmKind_four !='' and ittmKind_four != null ">
+			, ITEMKIND_FOUR = #{ittmKind_four,jdbcType=DOUBLE }
+		</if>
+		WHERE BUSINESS_NO = #{business }
+		
+	</update>
+	<update id="updatePolicyKind" parameterType="map">
+		UPDATE GUPOLICYITEMKIND SET SPREADSHEETPREMIUM = #{Premium,jdbcType=DOUBLE} , ACTUALPREMIUM = #{Premium,jdbcType=DOUBLE} 
+		WHERE BUSINESSNO=#{business}
+	</update>
+	<update id="updatePolicyMain" parameterType="map">
+		UPDATE GUPOLICYMAIN SET PROPOSALNO=#{ProposalNo,jdbcType=VARCHAR} , UNDERWRITEFLAG=#{ProposalState,jdbcType=VARCHAR} , 
+								UNDERDIRECTIONS=#{CensorContent,jdbcType=VARCHAR} , SUMAMOUNT=#{SumAmout,jdbcType=DOUBLE} ,
+								SPREADSHEETPREMIUM = #{ActualPremium,jdbcType=DOUBLE} , ACTUALPREMIUM = #{ActualPremium,jdbcType=DOUBLE}
+		WHERE BUSINESSNO=#{business}
+	</update>
+	<update id="CensorContent" parameterType="map" >
+		UPDATE GUPOLICYINSUREPREMIUM SET REMARK = #{remark,jdbcType=VARCHAR } WHERE BUSINESS_NO = #{business }
+	</update>
+	<update id="updateCensor" parameterType="map">
+		UPDATE GUPOLICYMAIN SET UNDERDIRECTIONS=#{underdirections,jdbcType=VARCHAR} , UNDERWRITEFLAG = #{underwriteflag,jdbcType=VARCHAR }
+		WHERE BUSINESSNO = #{business }
+	</update>
+</mapper>

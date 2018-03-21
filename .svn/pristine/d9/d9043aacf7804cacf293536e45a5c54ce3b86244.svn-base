@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgEmployeeMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgEmployee">
+	    <result column="EMID" jdbcType="VARCHAR" property="emId" />
+	    <result column="EMNAME" jdbcType="VARCHAR" property="emName" />
+	    <result column="IDENTITYNO" jdbcType="VARCHAR" property="identityNo" />
+	    <result column="SEX" jdbcType="VARCHAR" property="sex" />
+	    <result column="AGE" jdbcType="DECIMAL" property="age" />
+	    <result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+	    <result column="USERCODE" jdbcType="VARCHAR" property="userCode" />
+	    <result column="DEPARTMENTCODE" jdbcType="VARCHAR" property="departmentCode" />
+	    <result column="VALIDSTATUS" jdbcType="CHAR" property="validStatus" />
+	    <result column="TELEPHONE" jdbcType="VARCHAR" property="telePhone" />
+	  </resultMap>
+	 
+	 <sql id="Base_Column_List">
+	 EMID, EMNAME, IDENTITYNO, SEX, AGE, ADDRESS, USERCODE, DEPARTMENTCODE, VALIDSTATUS, TELEPHONE
+	 </sql>
+	 <select id="getGgEmployeeList"  resultMap="BaseResultMap" parameterType="com.dsib.entity.GgEmployee">
+		 select 
+	    	<include refid="Base_Column_List" />
+	    from GGEMPLOYEE
+		    <where>
+		    	 and VALIDSTATUS='1'
+		    	<if test="userCode!=null &amp;&amp; userCode!=''"> 
+	 	    	 and USERCODE=#{userCode} 
+	 	    	</if> 
+		    </where>
+	 </select>
+	<!-- 初始化 -->
+	<select id="getEmployeeDetail" parameterType="String"
+		resultType="GGEMPLOYEE">
+		SELECT * FROM GGEMPLOYEE GE
+		<where>
+			1=1
+			AND GE.VALIDSTATUS='1' AND GE.USERCODE=#{userCode}
+		</where>
+	</select>
+	
+	<select id="selectByIdentityNo" parameterType="String" resultType="GGEMPLOYEE">
+		SELECT * FROM GGEMPLOYEE GE
+		<where>
+			1=1
+			AND GE.IDENTITYNO=#{identityNo}
+		</where>
+	</select>
+
+	<select id="getEmployeeDetails" parameterType="Pagination"
+		resultType="map">
+		SELECT EMNAME,IDENTITYNO,SEX,AGE,ADDRESS,VALIDSTATUS,TELEPHONE,
+		DEPARTMENTCODE FROM GGEMPLOYEE
+		<where>
+			1=1
+			<if test="queryCondition != null">
+				<if
+					test="queryCondition.userCode != null and queryCondition.userCode != ''"> AND USERCODE = #{queryCondition.userCode}</if>
+			</if>
+			AND VALIDSTATUS='1'
+		</where>
+	</select>
+	<select id="getGgCodeByObj" parameterType="map" resultType="GgCode">
+		SELECT * FROM GGCODE
+		<where>
+			1=1
+			<if test="codeType != null and codeType != ''">
+				AND CODETYPE=#{codeType}
+			</if>
+			<if test="codeCode != null and codeCode != ''">
+				AND CODECODE = #{codeCode}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+		</where>
+	</select>
+	<!-- “查询” -->
+	<select id="getSubmit" parameterType="Pagination" resultType="map">
+		SELECT
+		EMNAME,IDENTITYNO,SEX,AGE,ADDRESS,VALIDSTATUS,TELEPHONE,EMID,DEPARTMENTCODE
+		FROM GGEMPLOYEE
+		<where>
+			1=1
+			<if test="queryCondition.emName != null and queryCondition.emName != ''">
+				AND EMNAME LIKE '%${queryCondition.emName }%'
+			</if>
+			<if
+				test="queryCondition.identityNo != null and queryCondition.identityNo != ''">
+				AND IDENTITYNO LIKE '%${queryCondition.identityNo }%'
+			</if>
+			<if test="queryCondition.idNo != null and queryCondition.idNo != ''">
+				AND IDENTITYNO = #{queryCondition.idNo }
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND USERCODE = #{queryCondition.userCode}
+			</if>
+			AND VALIDSTATUS='1'
+		</where>
+	</select>
+	<!-- 逻辑删除员工（有效状态置为0） -->
+	<update id="deletePersons" parameterType="GGEMPLOYEE">
+		UPDATE GGEMPLOYEE SET
+		VALIDSTATUS='0'
+		WHERE
+		1=1
+		AND IDENTITYNO=#{identityNo }
+		AND
+		VALIDSTATUS='1'
+	</update>
+	<!-- 添加新员工 -->
+	<insert id="insertPersons" parameterType="GGEMPLOYEE">
+		INSERT INTO GGEMPLOYEE
+		(EMID,EMNAME,IDENTITYNO,USERCODE,VALIDSTATUS)
+		<!-- ,SEX,AGE,ADDRESS,DEPARTMENTCODE,TELEPHONE -->
+		VALUES
+		(#{emId},#{emName},#{identityNo},#{userCode},#{validStatus})
+		<!-- ,#{sex},#{age},#{address},#{departmentCode},#{telePhone} -->
+	</insert>
+
+	<select id="insertToExcelPersons" parameterType="String"
+		resultType="String">
+		SELECT GC.CODECODE FROM GGCODE GC
+		<where>
+			1=1
+			AND GC.CODETYPE = 'EnterpriseSector'
+			AND
+			CODECNAME=#{departmentCode}
+		</where>
+	</select>
+	<update id="updatePersons" parameterType="GGEMPLOYEE">
+		UPDATE GGEMPLOYEE SET
+		EMNAME=#{emName},IDENTITYNO=#{identityNo},VALIDSTATUS=#{validStatus}
+		<!-- SEX=#{sex},AGE=#{age},ADDRESS=#{address},TELEPHONE=#{telePhone},DEPARTMENTCODE=#{departmentCode} -->
+		WHERE EMID=#{emId}
+	</update>
+	<!-- 查询员工人数 -->
+	<select id="getNum" parameterType="String" resultType="int">
+		select count(EM.EMID) from GGEMPLOYEE EM
+		<where>
+			EM.VALIDSTATUS='1' AND EM.USERCODE =#{userCode}
+		</where>
+	</select>
+	<!-- 报表下载hslt -->
+	<select id="getEmployeeToExc" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT EMNAME,IDENTITYNO,
+		CASE SEX WHEN '1' THEN '男' ELSE '女'
+		END
+		SEX,AGE,TELEPHONE,
+		(SELECT CODECNAME FROM GGCODE WHERE
+		CODETYPE='EnterpriseSector' AND
+		CODECODE=DEPARTMENTCODE)
+		AS
+		DEPARTMENTCODE,ADDRESS FROM GGEMPLOYEE
+		<where>
+			1=1
+			<if test="queryCondition.emName != null and queryCondition.emName != ''">
+				AND EMNAME LIKE '%${queryCondition.emName }%'
+			</if>
+			<if
+				test="queryCondition.identityNo != null and queryCondition.identityNo != ''">
+				AND IDENTITYNO LIKE '%${queryCondition.identityNo }%'
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''"> AND USERCODE = #{queryCondition.userCode}</if>
+			AND VALIDSTATUS='1'
+		</where>
+	</select>
+
+
+</mapper>

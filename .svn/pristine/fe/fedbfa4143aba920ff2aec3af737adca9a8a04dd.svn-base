@@ -1,0 +1,154 @@
+package com.dsib.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.dsib.common.ConditionAdapter;
+import com.dsib.common.Pagination;
+import com.dsib.entity.GgCode;
+import com.dsib.entity.GgEvaluateDangers;
+import com.dsib.entity.GgUserCorp;
+import com.dsib.entity.GuPolicyItemKind;
+import com.dsib.service.base.BaseService;
+
+public interface GgUserCorpService extends BaseService {
+	
+
+	public Map getUserCorpCount(Map map);
+
+	/**
+	 * jjx企业总数
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	public List<Map<String, Object>> getCorpBy_userCodeCount(Pagination pagination);
+
+	/**
+	 * 查询评估内容
+	 * 
+	 * @param map
+	 * @return
+	 */
+
+	public List<Map<String, Object>> getContent(String EvaluateDangers);
+
+	/**
+	 * 查询危险源
+	 * 
+	 */
+	public List<Map<String, Object>> get_Source(String userCode);
+
+	/**
+	 * jjx多表查询(企业状况)
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	public List<Map<String, Object>> getCorpBy_userCode1(Pagination pagination);
+
+	/**
+	 * jjx企业状况详细信息
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	public List<Map<String, Object>> get_Main_itemBy_userCode(
+			Pagination pagination);
+
+	/**
+	 * 请输入要查询的企业名
+	 * 
+	 * @param UserCorp
+	 * @return
+	 */
+	public List<GgUserCorp> getCompanyName(String UserCorp);
+
+	/**
+	 * 根据businessNo查询主险和附加险
+	 * 
+	 * @param list
+	 * @return
+	 */
+	public List<GuPolicyItemKind> getBusinessNo(String businessNo);
+
+	/**
+	 * qiye企业信息
+	 * 
+	 * @param userCode
+	 * @return
+	 */
+	public GgUserCorp getData(String userCode);
+
+	/**
+	 * qiye获取行业大类
+	 * 
+	 * @param userCode
+	 * @return
+	 */
+	public String getclassCode(String userCode);
+
+	/**
+	 * qiye更新企业信息
+	 * 
+	 * @param ggusercorp
+	 */
+	public void updateUserCorp(GgUserCorp ggusercorp);
+	
+	/**
+	 * 根据社会统一信用代码 qiye更新企业信息
+	 * 
+	 * @param ggusercorp
+	 * @throws Exception
+	 */
+	public void updateUserCorpByBusinessLicenseNo(GgUserCorp ggusercorp);
+
+	/**
+	 * 分页
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	public Pagination getUsercorpContinue(Pagination pagination);
+
+	/**
+	 * 报表下载
+	 * 
+	 * @param adapter
+	 * @return
+	 */
+	public java.util.List<Map<String, Object>> getUserCorpToExc(
+			ConditionAdapter adapter);
+
+	/**
+	 * 根据主键查询企业详细信息
+	 * 
+	 * @param userCode
+	 * @return
+	 */
+	public GgUserCorp selectByPrimaryKey(String userCode);
+
+	/**
+	 * 用户注册时usercorp表插入数据
+	 * 
+	 * @param ggUserCorp
+	 */
+	public void insertUserCorp(GgUserCorp ggUserCorp);
+	/**
+	 * 模糊查询企业
+	 * @param remark
+	 * @return
+	 */
+	public List<GgUserCorp> getUserLikeName(String remark);
+	
+	public GgUserCorp checkTelePhone(String telePhone);
+	
+	GgUserCorp selectByBusinessLicenseNo(String businessLicenseNo);
+	GgUserCorp selectByCompanyName(String companyName);
+	
+	List<GgUserCorp> selectiveGgUserCorp(GgUserCorp userCorp);
+	
+	public void updateUserCode_userCorpAndEvaluateDangers(String userCode,GgUserCorp userCorp,
+			List<GgEvaluateDangers> evaluateDangers);
+
+}

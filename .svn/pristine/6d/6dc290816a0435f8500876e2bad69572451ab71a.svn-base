@@ -1,0 +1,389 @@
+package com.dsib.entity;
+
+import java.util.Date;
+
+/**
+ * 投保信息封装类（传输用无数据库对应表）
+ * 
+ * @author Administrator
+ * 
+ */
+public class PolicyManager {
+	private Date startDate;
+	private Date endDate;
+	private String riskCode;//险种代码
+	private String areaCode;
+	private String insureCode;//保险公司代码
+	private String pepSum;//员工数
+	private String pepSums;//员工信息
+	private String amount;//每人赔偿限额
+	private String sumAmount;//每次事故赔偿限额
+	private String sanamount;//三者限额
+	
+	private String itemOne;
+	private String itemTwo;
+	private String itemThree;
+	private String itemFour;
+	
+	private String toTalk;//争议方式
+	private String toTalkName;
+	private String sumPr;//总保费(有时候存大写总保费用)
+	private String pr;//主险保费
+	
+	private String inName;//投保人名称
+	private String inLinkName;
+	private String inAddress;
+	private String inEmail;
+	private String inTelePhone;
+	private String inBusinessLicenseNo;
+	private String inSafetyLicenseNo;
+	
+	private String alName;//被保人名称
+	private String alLinkName;
+	private String alAddress;
+	private String alEmail;
+	private String alTelePhone;
+	private String alBusinessLicenseNo;//社会统一信用代码
+	private String alSafetyLicenseNo;//安全标准化等级证号
+	
+	private String province;//被保人归属省
+	private String city;
+	private String county;
+	private String classCode;//行业大类
+	private String businessClass;//被保人经营范围
+	private String standardLevel;//被保人安全标准等级
+
+	public String getInName() {
+		return inName;
+	}
+
+	public void setInName(String inName) {
+		this.inName = inName;
+	}
+
+	public String getInLinkName() {
+		return inLinkName;
+	}
+
+	public void setInLinkName(String inLinkName) {
+		this.inLinkName = inLinkName;
+	}
+
+	public String getInAddress() {
+		return inAddress;
+	}
+
+	public void setInAddress(String inAddress) {
+		this.inAddress = inAddress;
+	}
+
+	public String getInEmail() {
+		return inEmail;
+	}
+
+	public void setInEmail(String inEmail) {
+		this.inEmail = inEmail;
+	}
+
+	public String getInTelePhone() {
+		return inTelePhone;
+	}
+
+	public void setInTelePhone(String inTelePhone) {
+		this.inTelePhone = inTelePhone;
+	}
+
+	public String getInBusinessLicenseNo() {
+		return inBusinessLicenseNo;
+	}
+
+	public void setInBusinessLicenseNo(String inBusinessLicenseNo) {
+		this.inBusinessLicenseNo = inBusinessLicenseNo;
+	}
+
+	public String getInSafetyLicenseNo() {
+		return inSafetyLicenseNo;
+	}
+
+	public void setInSafetyLicenseNo(String inSafetyLicenseNo) {
+		this.inSafetyLicenseNo = inSafetyLicenseNo;
+	}
+
+	public String getAlName() {
+		return alName;
+	}
+
+	public void setAlName(String alName) {
+		this.alName = alName;
+	}
+
+	public String getAlLinkName() {
+		return alLinkName;
+	}
+
+	public void setAlLinkName(String alLinkName) {
+		this.alLinkName = alLinkName;
+	}
+
+	public String getAlAddress() {
+		return alAddress;
+	}
+
+	public void setAlAddress(String alAddress) {
+		this.alAddress = alAddress;
+	}
+
+	public String getAlEmail() {
+		return alEmail;
+	}
+
+	public void setAlEmail(String alEmail) {
+		this.alEmail = alEmail;
+	}
+
+	public String getAlTelePhone() {
+		return alTelePhone;
+	}
+
+	public void setAlTelePhone(String alTelePhone) {
+		this.alTelePhone = alTelePhone;
+	}
+
+	public String getAlBusinessLicenseNo() {
+		return alBusinessLicenseNo;
+	}
+
+	public void setAlBusinessLicenseNo(String alBusinessLicenseNo) {
+		this.alBusinessLicenseNo = alBusinessLicenseNo;
+	}
+
+	public String getAlSafetyLicenseNo() {
+		return alSafetyLicenseNo;
+	}
+
+	public void setAlSafetyLicenseNo(String alSafetyLicenseNo) {
+		this.alSafetyLicenseNo = alSafetyLicenseNo;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	/**
+	 * 险种代码
+	 * @return
+	 */
+	public String getRiskCode() {
+		return riskCode;
+	}
+
+	/**
+	 * 险种代码
+	 * @param riskCode
+	 */
+	public void setRiskCode(String riskCode) {
+		this.riskCode = riskCode;
+	}
+
+	public String getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(String areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	public String getInsureCode() {
+		return insureCode;
+	}
+
+	public void setInsureCode(String insureCode) {
+		this.insureCode = insureCode;
+	}
+
+	public String getPepSum() {
+		return pepSum;
+	}
+
+	public void setPepSum(String pepSum) {
+		this.pepSum = pepSum;
+	}
+
+	/**
+	 * 每人赔偿限额
+	 * @return
+	 */
+	public String getAmount() {
+		return amount;
+	}
+
+	/**
+	 * 每人赔偿限额
+	 * @param amount
+	 */
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	/**
+	 * 每次事故赔偿限额(主险总限额)
+	 * @return
+	 */
+	public String getSumAmount() {
+		return sumAmount;
+	}
+	/**
+	 * 每次事故赔偿限额(主险总限额)
+	 * @return
+	 */
+	public void setSumAmount(String sumAmount) {
+		this.sumAmount = sumAmount;
+	}
+
+	public String getItemOne() {
+		return itemOne;
+	}
+
+	public void setItemOne(String itemOne) {
+		this.itemOne = itemOne;
+	}
+
+	public String getItemTwo() {
+		return itemTwo;
+	}
+
+	public void setItemTwo(String itemTwo) {
+		this.itemTwo = itemTwo;
+	}
+
+	public String getItemThree() {
+		return itemThree;
+	}
+
+	public void setItemThree(String itemThree) {
+		this.itemThree = itemThree;
+	}
+	
+	public String getItemFour() {
+		return itemFour;
+	}
+	public void setItemFour(String itemFour) {
+		this.itemFour = itemFour;
+	}
+	public String getToTalk() {
+		return toTalk;
+	}
+
+	public void setToTalk(String toTalk) {
+		this.toTalk = toTalk;
+	}
+
+	public String getToTalkName() {
+		return toTalkName;
+	}
+
+	public void setToTalkName(String toTalkName) {
+		this.toTalkName = toTalkName;
+	}
+
+	public String getSumPr() {
+		return sumPr;
+	}
+
+	public void setSumPr(String sumPr) {
+		this.sumPr = sumPr;
+	}
+
+	public String getPr() {
+		return pr;
+	}
+
+	public void setPr(String pr) {
+		this.pr = pr;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public void setCounty(String county) {
+		this.county = county;
+	}
+
+	public String getClassCode() {
+		return classCode;
+	}
+
+	public void setClassCode(String classCode) {
+		this.classCode = classCode;
+	}
+
+	/**
+	 * 被保人经营范围
+	 * @return
+	 */
+	public String getBusinessClass() {
+		return businessClass;
+	}
+
+	/**
+	 * 被保人经营范围
+	 * @param businessClass
+	 */
+	public void setBusinessClass(String businessClass) {
+		this.businessClass = businessClass;
+	}
+
+	public String getStandardLevel() {
+		return standardLevel;
+	}
+
+	public void setStandardLevel(String standardLevel) {
+		this.standardLevel = standardLevel;
+	}
+
+	public String getSanamount() {
+		return sanamount;
+	}
+
+	public void setSanamount(String sanamount) {
+		this.sanamount = sanamount;
+	}
+
+	public String getPepSums() {
+		return pepSums;
+	}
+
+	public void setPepSums(String pepSums) {
+		this.pepSums = pepSums;
+	}
+
+}

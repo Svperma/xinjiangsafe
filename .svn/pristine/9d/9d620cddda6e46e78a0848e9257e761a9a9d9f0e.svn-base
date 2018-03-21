@@ -1,0 +1,337 @@
+package com.dsib.controller;
+
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.dsib.common.Pagination;
+import com.dsib.dao.GgUserMapper;
+import com.dsib.entity.GgCode;
+import com.dsib.entity.GgUser;
+import com.dsib.entity.GgUserCorp;
+import com.dsib.service.GcClaimService;
+import com.dsib.service.GgAdministrationService;
+import com.dsib.service.GgCodeService;
+import com.dsib.service.GgUserCorpService;
+import com.dsib.service.GuPolicyMainService;
+import com.dsib.util.Md5Util;
+
+@Controller
+@SessionAttributes({ "pagination", "power", "perResult", "gguser", "opption" })
+@RequestMapping("/admin")
+public class GgAdministrationController extends BaseController {
+
+	@Resource(name = "ggCodeService")
+	private GgCodeService ggCodeService;
+	@Resource(name = "GuPolicyMainService")
+	private GuPolicyMainService guPolicyMainService;
+	@Resource(name = "ggUserCorpService")
+	private GgUserCorpService corpService;
+	@Resource(name = "gcClaimService")
+	private GcClaimService claimService;
+	@Resource(name = "ggAdministration")
+	private GgAdministrationService administr;
+	@Autowired
+	GgUserMapper userMapper;
+
+	@RequestMapping("/admininit")
+	public ModelAndView administration() {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = new Pagination();
+		// 获取登录对象
+		GgUser ggUser = (GgUser) session.getAttribute("ggUser");
+		// 获取用户权限等级
+		String comLevel = ggUser.getComLevel();
+		String power = ggUser.getFlag();
+		// 统计条件
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("province", null);
+		map.put("city", null);
+		map.put("county", null);
+		map.put("bussiness", null);
+		map.put("beginDate", null);
+		map.put("endDate", null);
+		if ("1".equals(comLevel)) {
+			// 省级用户
+			map.put("province", ggUser.getProvince());
+		} else if ("2".equals(comLevel)) {
+			// 市
+			map.put("province", ggUser.getProvince());
+			map.put("city", ggUser.getCity());
+			map.put("remark", ggUser.getUserCode());
+		} else if ("3".equals(comLevel)) {
+			map.put("province", ggUser.getProvince());
+			map.put("city", ggUser.getCity());
+			map.put("county", ggUser.getCounty());
+		}
+		int com = Integer.parseInt(comLevel);
+		String newComLevel = String.valueOf(com+1);
+		map.put("newComLevel", newComLevel);
+		map.put("comLevel", comLevel);
+		map.put("userInd", ggUser.getUserInd());
+		map.put("userCode", ggUser.getUserCode());
+		
+		pagination.setQueryCondition(map);
+		List<Map<String, Object>> resultList = administr.getAdminQuery(pagination);
+		List<Map<String, Object>> result = administr.Criteria();
+		List<GgCode> comLevelList = administr.selectByComLevel(newComLevel);
+		GgCode code = new GgCode();
+		code.setCodeType("BusinessClass");
+		List<GgCode> list = ggCodeService.getGgCodeByObj(code);
+		Map totalMap = corpService.getUserCorpCount(map);
+		Map<String, Object> lossMap = claimService.getLossSum(map);
+		Map resMap = guPolicyMainService.getChartCount(map);
+		resMap.put("TOTALCOUNT", totalMap.get("TOTALCOUNT"));
+		resMap.put("LOSSAMOUNT", lossMap.get("LOSSAMOUNT"));
+		mad.addObject("bcList", list == null ? new ArrayList<GgCode>() : list);
+		mad.addObject("chartMap", resMap);
+		pagination.setResultList(resultList);
+		mad.addObject("perResult", result); // 获取用户类型
+		mad.addObject("power", power); // 操作员与管理员
+		mad.addObject("comLevelList", comLevelList); 
+		mad.addObject(pagination);
+		mad.setViewName("/jianguan/administration/administrationCondition");
+		return mad;
+	}
+
+	@RequestMapping(value = "/admininsert", consumes = "application/json", method = RequestMethod.POST)
+	public void admininsert(@RequestBody GgUser ggUser, PrintWriter writer) throws ParseException {
+		String userCode = ggUser.getUserCode();
+		String passWord = Md5Util.md5(ggUser.getPassword());
+		String userName = ggUser.getUserName();
+		String division = ggUser.getDivision();
+		String flag = ggUser.getFlag();
+		String province = ggUser.getProvince();
+		String city = ggUser.getCity();
+		String county = ggUser.getCounty();
+		String comLevel = ggUser.getComLevel();
+		String query = userCode;
+		String result = "";
+		GgUser user = userMapper.getUser(query);
+		GgUser gguser = (GgUser) session.getAttribute("ggUser");
+		int a = Integer.parseInt(comLevel);
+		int i = a-1;
+		String newComlevel = String.valueOf(i);
+		GgUser admin = new GgUser();
+		long l = System.currentTimeMillis();
+		Date time = new Date(l);
+		admin.setUserCode(userCode);
+		admin.setPassword(passWord);
+		admin.setUserName(userName);
+		admin.setDivision(division);
+		admin.setFlag(flag);
+		admin.setProvince(province);
+		admin.setCity(city);
+		admin.setCounty(county);
+		admin.setUpdateDate(time);
+		admin.setComLevel(newComlevel);
+		admin.setUserInd("1");
+		admin.setRemark(gguser.getUserCode());
+		if (user == null) {
+			administr.getAdminsert(admin);
+			result = "success";
+		} else {
+			result = "falsess";
+		}
+		writer.write(JSON.toJSONString(result));
+	}
+
+	@RequestMapping("/adminquery")
+	public ModelAndView adminquery(HttpServletRequest request) {
+		ModelAndView mad = new ModelAndView();
+		String province = request.getParameter("hidden_province1");
+		String city = request.getParameter("hidden_city1");
+		String county = request.getParameter("hidden_county1");
+		String UserName = request.getParameter("UserName");
+		Pagination pagination = new Pagination();
+		Map<String, Object> conditionMap = new HashMap<String, Object>();
+		GgUser gguser = (GgUser) session.getAttribute("ggUser");
+		String comLevel = gguser.getComLevel();
+		int com = Integer.parseInt(comLevel);
+		String newComLevel = String.valueOf(com+1);
+		conditionMap.put("newComLevel", newComLevel);
+		conditionMap.put("comLevel", comLevel);
+		conditionMap.put("userInd", gguser.getUserInd());
+		conditionMap.put("userCode", gguser.getUserCode());
+		conditionMap.put("remark", gguser.getUserCode());
+		
+		conditionMap.put("province", province);
+		conditionMap.put("city", city);
+		conditionMap.put("county", county);
+		conditionMap.put("UserName", UserName.equals("请输入需要查询的用户名") ? "" : UserName);
+		pagination.setQueryCondition(conditionMap);
+		List<Map<String, Object>> resultList = administr.getAdminQuery(pagination);
+		pagination.setResultList(resultList);
+		mad.addObject(pagination);
+		mad.setViewName("/jianguan/administration/administrationResult");
+		return mad;
+
+	}
+
+	@RequestMapping("/admindel")
+	public void admindel(@RequestParam String userCode, PrintWriter writer) {
+//		ModelAndView mad = new ModelAndView();
+		GgUser gguser = (GgUser)session.getAttribute("ggUser");
+//		String UserCode = request.getParameter("UserCode");
+		String checkStatus = "";
+		if (gguser.getUserCode().equals(userCode)) {
+			checkStatus = "bunengshanchuziji";
+		}else {
+			administr.setAdminStatus(userCode);
+			checkStatus = "success";
+		}
+//		Pagination pagination = (Pagination) session.getAttribute("pagination");
+//		List<Map<String, Object>> resultList = administr.getAdminQuery(pagination);
+//		pagination.setResultList(resultList);
+//		mad.addObject("pagination", pagination);
+//		mad.setViewName("/jianguan/administration/administrationResult");
+//		return mad;
+		writer.write(JSON.toJSONString(checkStatus));
+		writer.flush();
+		writer.close();
+	}
+	/**
+	 * 只用于删除用户后的返回页面
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/admindelfan")
+	public ModelAndView admindelfan(HttpServletRequest request) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		List<Map<String, Object>> resultList = administr.getAdminQuery(pagination);
+		pagination.setResultList(resultList);
+		mad.addObject("pagination", pagination);
+		mad.setViewName("/jianguan/administration/administrationResult");
+		return mad;
+	}
+		@RequestMapping("/adminedit")
+		public ModelAndView adminedit(HttpServletRequest request) {
+		ModelAndView mad = new ModelAndView();
+		GgUser ggUser = (GgUser) session.getAttribute("ggUser");
+		// 获取用户权限等级
+		String comLevel = ggUser.getComLevel();
+		//获取当前登录用户小一级以后的等级
+		int a = Integer.parseInt(comLevel);
+		int i = a+1;
+		String newComlevel = String.valueOf(i);
+		String UserCode = request.getParameter("UserCode");
+		GgUser gguser = administr.getAdminEdit(UserCode);
+		List<Map<String, Object>> opption = administr.Criteria();
+		List<GgCode> comLevellist = null;
+		if (UserCode.equals(ggUser.getUserCode())) {
+			comLevellist = administr.selectByComLevel(ggUser.getComLevel());//查询当前登录用户下级权限
+		}else {
+			comLevellist = administr.selectByComLevel(newComlevel);//查询当前登录用户下级权限
+		}
+		Map<String, Object> level = new HashMap<String, Object>();
+		level.put("level", comLevel);
+		mad.addObject("levele", level);
+		mad.addObject("opption", opption);
+		mad.addObject("gguser", gguser);
+		mad.addObject("comLevellist", comLevellist);
+		mad.setViewName("/jianguan/administration/adminsitrationShow");
+		return mad;
+	}
+
+	@RequestMapping("/adminupdate")
+	public ModelAndView admintupdate(HttpServletRequest request) {
+		ModelAndView mad = new ModelAndView();
+		String USERCODE = request.getParameter("USERCODE");
+		String USERNAME = request.getParameter("USERNAME");
+		String PROVINCE = request.getParameter("province1");
+		String CITY = request.getParameter("city1");
+		String COUNTY = request.getParameter("county1");
+		String TELEPHONE = request.getParameter("TELEPHONE");
+		String LINKNAME = request.getParameter("LINKNAME");
+		String MOBILE = request.getParameter("MOBILE");
+//		String UPDATOR = request.getParameter("UPDATOR");
+		String FLAG = request.getParameter("FLAG");
+		String division = request.getParameter("division");
+		String comLevel = request.getParameter("discopy");
+		String address = request.getParameter("ADDRESS");
+		
+		GgUser gguser = (GgUser)session.getAttribute("ggUser");
+//		int a = Integer.parseInt(comLevel);
+//		int i = a-1;
+//		String newComlevel = String.valueOf(i);
+		GgUser user = new GgUser();
+		user.setUserCode(USERCODE);
+		user.setUserName(USERNAME);
+		user.setProvince(PROVINCE);
+		user.setCity(CITY);
+		user.setCounty(COUNTY);
+		user.setTelePhone(TELEPHONE);
+		user.setLinkName(LINKNAME);
+		user.setMobile(MOBILE);
+		user.setAddress(address);
+		user.setUpdator(gguser.getUserCode());
+		user.setUpdateDate(new Date());
+		user.setFlag(FLAG);
+		user.setComLevel(comLevel);
+		user.setDivision(division);
+		/*if (!USERCODE.equals(gguser.getUserCode())) {
+			user.setRemark(gguser.getUserCode());
+		}*/
+		user.setUserInd("1");
+		administr.getAdminUpdate(user);
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		List<Map<String, Object>> resultList = administr.getAdminQuery(pagination);
+		pagination.setResultList(resultList);
+		mad.addObject("pagination", pagination);
+		mad.setViewName("/jianguan/administration/administrationResult");
+//		return this.administration();
+		return mad;
+	}
+
+	@RequestMapping("/adminpage")
+	public ModelAndView adminpage(@RequestParam("pageNo") String pageNo, HttpSession session) {
+		ModelAndView mad = new ModelAndView();
+		Pagination pagination = (Pagination) session.getAttribute("pagination");
+		pagination.setPageNo(Integer.parseInt(pageNo));
+		pagination = administr.getAdminpage(pagination);
+		mad.addObject(pagination);
+		mad.setViewName("/jianguan/administration/administrationResult");
+		return mad;
+	}
+	@RequestMapping(value = "/checkUserCode")
+	public void checkUserCode(@RequestParam String userCode, PrintWriter writer) {
+		GgUser gguser = userMapper.getUser(userCode);
+		String checkStatus = "yes";
+		if (gguser == null) {
+			checkStatus = "no";
+		}
+		writer.write(JSON.toJSONString(checkStatus));
+		writer.flush();
+		writer.close();
+	}
+	@RequestMapping(value = "/checkUserName")
+	public void checkUserName(@RequestParam String userName, PrintWriter writer) {
+		GgUser gguser = userMapper.getUserName(userName);
+		String checkStatus = "yes";
+		if (gguser == null) {
+			checkStatus = "no";
+		}
+		writer.write(JSON.toJSONString(checkStatus));
+		writer.flush();
+		writer.close();
+	}
+}

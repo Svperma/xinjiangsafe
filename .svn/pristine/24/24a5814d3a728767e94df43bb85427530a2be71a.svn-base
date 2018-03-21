@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgRiskMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgRisk">
+		<id column="AREACODE" property="areacode" jdbcType="VARCHAR" />
+		<id column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="RISKNAME" property="riskname" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		AREACODE, RISKCODE, FLAG, REMARK, RISKNAME
+	</sql>
+	<select id="findKind4Aera" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgUser">
+		select
+		<include refid="Base_Column_List" />
+		from GGRISK
+		<where>
+			<if test="province!=null &amp;&amp; province!=''">
+				or AREACODE=#{province}
+			</if>
+			<if test="city!=null &amp;&amp; city!=''">
+				or AREACODE=#{city}
+			</if>
+			<if test="county!=null &amp;&amp; county!=''">
+				or AREACODE=#{county}
+			</if>
+			order by AREACODE desc
+		</where>
+	</select>
+	<!-- 查询评价 -->
+	<select id="getPingJia"  parameterType="Pagination" resultType="map">
+			SELECT (SELECT substr(COMPANYNAME, 0, 3) FROM GGUSERCORP WHERE USERCODE = GE.EVALUATOR) PINGJIAREN,GE.CONTENT,GE.SCORE,
+			(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE = GE.EVALUATOR) PINGJIARENZ,GE.SERIESNO,GE.EVALUATETIME,
+			(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GE.BEEVALUATOR) INSURENAME,GE.EVALUATOR
+		FROM GGEVALUATE GE
+		<where>
+			GE.ITEM = '1'
+			<if test="queryCondition.insurancecode != '' and queryCondition.insurancecode != null ">
+				AND GE.BEEVALUATOR = #{queryCondition.insurancecode }
+			</if>
+			<if test="queryCondition.languagec == 1">
+				AND (GE.SCORE = '4' OR GE.SCORE = '5')
+			</if>
+			<if test="queryCondition.languagec == 2">
+				AND GE.SCORE = '3'
+			</if>
+			<if test="queryCondition.languagec == 3">
+				AND (GE.SCORE = '1' OR GE.SCORE = '2')
+			</if>
+		</where>
+	</select>
+	<delete id="delPingjia" parameterType="string">
+		delete from GGEVALUATE
+		where SERIESNO = #{businessno,jdbcType=VARCHAR}
+	</delete>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgRiskKey">
+		select
+		<include refid="Base_Column_List" />
+		from GGRISK
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgRiskKey">
+		delete from GGRISK
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgRisk">
+		insert into GGRISK (AREACODE, RISKCODE, FLAG,
+		REMARK, RISKNAME)
+		values (#{areacode,jdbcType=VARCHAR}, #{riskcode,jdbcType=VARCHAR},
+		#{flag,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}, #{riskname,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgRisk">
+		insert into GGRISK
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="areacode != null">
+				AREACODE,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+			<if test="riskname != null">
+				RISKNAME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="areacode != null">
+				#{areacode,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="riskname != null">
+				#{riskname,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgRisk">
+		update GGRISK
+		<set>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="riskname != null">
+				RISKNAME = #{riskname,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgRisk">
+		update GGRISK
+		set FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR},
+		RISKNAME = #{riskname,jdbcType=VARCHAR}
+		where AREACODE = #{areacode,jdbcType=VARCHAR}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</update>
+</mapper>

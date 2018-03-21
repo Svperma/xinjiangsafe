@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyItemKindMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyItemKind">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<id column="KINDCODE" property="kindcode" jdbcType="VARCHAR" />
+		<result column="POLICYNO" property="policyno" jdbcType="VARCHAR" />
+		<result column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<result column="STARTDATE" property="startdate" jdbcType="DATE" />
+		<result column="ENDDATE" property="enddate" jdbcType="DATE" />
+		<result column="KINDNAME" property="kindname" jdbcType="VARCHAR" />
+		<result column="SPREADSHEETPREMIUM" property="spreadsheetpremium"
+			jdbcType="DECIMAL" />
+		<result column="ACTUALPREMIUM" property="actualpremium"
+			jdbcType="DECIMAL" />
+		<result column="AMOUNT" property="amount" jdbcType="DECIMAL" />
+		<result column="RATE" property="rate" jdbcType="DECIMAL" />
+		<result column="DISCOUNT" property="discount" jdbcType="DECIMAL" />
+		<result column="UNITAMOUNT" property="unitamount" jdbcType="DECIMAL" />
+		<result column="UNITPREMIUM" property="unitpremium" jdbcType="DECIMAL" />
+		<result column="QUANTITY" property="quantity" jdbcType="DECIMAL" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, KINDCODE, POLICYNO, RISKCODE, STARTDATE, ENDDATE, KINDNAME,
+		SPREADSHEETPREMIUM,
+		ACTUALPREMIUM, AMOUNT, RATE, DISCOUNT, UNITAMOUNT, UNITPREMIUM, QUANTITY, FLAG,
+		REMARK
+	</sql>
+	<select id="selectListByBusinessNo" resultMap="BaseResultMap" parameterType="com.dsib.entity.GuPolicyItemKind">
+	select 
+	<include refid="Base_Column_List" />
+	from GUPOLICYITEMKIND 
+	where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyItemKindKey">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYITEMKIND
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyItemKindKey">
+			delete from GUPOLICYITEMKIND
+			where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		<if test="kindcode != null">
+			and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+		</if>
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyItemKind">
+		insert into GUPOLICYITEMKIND (BUSINESSNO, KINDCODE, POLICYNO,
+		RISKCODE, STARTDATE, ENDDATE,
+		KINDNAME, SPREADSHEETPREMIUM, ACTUALPREMIUM,
+		AMOUNT, RATE, DISCOUNT,
+		UNITAMOUNT, UNITPREMIUM, QUANTITY,
+		FLAG, REMARK)
+		values (#{businessno,jdbcType=VARCHAR}, #{kindcode,jdbcType=VARCHAR},
+		#{policyno,jdbcType=VARCHAR},
+		#{riskcode,jdbcType=VARCHAR}, #{startdate,jdbcType=DATE}, #{enddate,jdbcType=DATE},
+		#{kindname,jdbcType=VARCHAR}, #{spreadsheetpremium,jdbcType=DECIMAL},
+		#{actualpremium,jdbcType=DECIMAL},
+		#{amount,jdbcType=DECIMAL}, #{rate,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL},
+		#{unitamount,jdbcType=DECIMAL}, #{unitpremium,jdbcType=DECIMAL},
+		#{quantity,jdbcType=DECIMAL},
+		#{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyItemKind">
+		insert into GUPOLICYITEMKIND
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="kindcode != null">
+				KINDCODE,
+			</if>
+			<if test="policyno != null">
+				POLICYNO,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="startdate != null">
+				STARTDATE,
+			</if>
+			<if test="enddate != null">
+				ENDDATE,
+			</if>
+			<if test="kindname != null">
+				KINDNAME,
+			</if>
+			<if test="spreadsheetpremium != null">
+				SPREADSHEETPREMIUM,
+			</if>
+			<if test="actualpremium != null">
+				ACTUALPREMIUM,
+			</if>
+			<if test="amount != null">
+				AMOUNT,
+			</if>
+			<if test="rate != null">
+				RATE,
+			</if>
+			<if test="discount != null">
+				DISCOUNT,
+			</if>
+			<if test="unitamount != null">
+				UNITAMOUNT,
+			</if>
+			<if test="unitpremium != null">
+				UNITPREMIUM,
+			</if>
+			<if test="quantity != null">
+				QUANTITY,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="kindcode != null">
+				#{kindcode,jdbcType=VARCHAR},
+			</if>
+			<if test="policyno != null">
+				#{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="startdate != null">
+				#{startdate,jdbcType=DATE},
+			</if>
+			<if test="enddate != null">
+				#{enddate,jdbcType=DATE},
+			</if>
+			<if test="kindname != null">
+				#{kindname,jdbcType=VARCHAR},
+			</if>
+			<if test="spreadsheetpremium != null">
+				#{spreadsheetpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualpremium != null">
+				#{actualpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="amount != null">
+				#{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="rate != null">
+				#{rate,jdbcType=DECIMAL},
+			</if>
+			<if test="discount != null">
+				#{discount,jdbcType=DECIMAL},
+			</if>
+			<if test="unitamount != null">
+				#{unitamount,jdbcType=DECIMAL},
+			</if>
+			<if test="unitpremium != null">
+				#{unitpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="quantity != null">
+				#{quantity,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyItemKind">
+		update GUPOLICYITEMKIND
+		<set>
+			<if test="policyno != null">
+				POLICYNO = #{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				RISKCODE = #{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="startdate != null">
+				STARTDATE = #{startdate,jdbcType=DATE},
+			</if>
+			<if test="enddate != null">
+				ENDDATE = #{enddate,jdbcType=DATE},
+			</if>
+			<if test="kindname != null">
+				KINDNAME = #{kindname,jdbcType=VARCHAR},
+			</if>
+			<if test="spreadsheetpremium != null">
+				SPREADSHEETPREMIUM = #{spreadsheetpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="actualpremium != null">
+				ACTUALPREMIUM = #{actualpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="amount != null">
+				AMOUNT = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="rate != null">
+				RATE = #{rate,jdbcType=DECIMAL},
+			</if>
+			<if test="discount != null">
+				DISCOUNT = #{discount,jdbcType=DECIMAL},
+			</if>
+			<if test="unitamount != null">
+				UNITAMOUNT = #{unitamount,jdbcType=DECIMAL},
+			</if>
+			<if test="unitpremium != null">
+				UNITPREMIUM = #{unitpremium,jdbcType=DECIMAL},
+			</if>
+			<if test="quantity != null">
+				QUANTITY = #{quantity,jdbcType=DECIMAL},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyItemKind">
+		update GUPOLICYITEMKIND
+		set POLICYNO = #{policyno,jdbcType=VARCHAR},
+		RISKCODE = #{riskcode,jdbcType=VARCHAR},
+		STARTDATE = #{startdate,jdbcType=DATE},
+		ENDDATE = #{enddate,jdbcType=DATE},
+		KINDNAME = #{kindname,jdbcType=VARCHAR},
+		SPREADSHEETPREMIUM = #{spreadsheetpremium,jdbcType=DECIMAL},
+		ACTUALPREMIUM = #{actualpremium,jdbcType=DECIMAL},
+		AMOUNT = #{amount,jdbcType=DECIMAL},
+		RATE = #{rate,jdbcType=DECIMAL},
+		DISCOUNT = #{discount,jdbcType=DECIMAL},
+		UNITAMOUNT = #{unitamount,jdbcType=DECIMAL},
+		UNITPREMIUM = #{unitpremium,jdbcType=DECIMAL},
+		QUANTITY = #{quantity,jdbcType=DECIMAL},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and KINDCODE = #{kindcode,jdbcType=VARCHAR}
+	</update>
+</mapper>

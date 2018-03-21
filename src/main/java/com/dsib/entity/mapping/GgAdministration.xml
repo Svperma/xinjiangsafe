@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgAdministrMapper">
+	<select id="getAdminQuery" parameterType="Pagination"
+		resultType="map">
+		SELECT 
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = G.PROVINCE AND CODETYPE = 'Province') PROVINCE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = G.COUNTY AND CODETYPE = 'County' ) COUNTY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = G.CITY AND CODETYPE = 'City') CITY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = G.DIVISION AND CODETYPE = 'Department')DIVISION,
+			G.USERCODE,G.USERNAME, G.FLAG,
+			(SELECT USERNAME FROM GGUSER WHERE USERCODE = G.REMARK) REMARK
+		FROM
+		(
+		SELECT * FROM GGUSER
+		<where>
+			1=1 
+			AND VALIDSTATUS = '1'
+			AND USERIND = #{queryCondition.userInd}
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.comLevel != null and queryCondition.comLevel != ''">
+				AND COMLEVEL > #{queryCondition.comLevel }
+			</if>
+			<if test="queryCondition.remark != null and queryCondition.remark != ''">
+				AND REMARK = #{queryCondition.remark }
+			</if>
+			<if test="queryCondition.SelectLv != null and queryCondition.SelectLv != ''">
+				AND ADDRESS = #{queryCondition.SelectLv }
+			</if>
+			<if
+				test="queryCondition.UserName != null and queryCondition.UserName != ''">
+				AND USERNAME like '%'||#{queryCondition.UserName }||'%'
+			</if>
+		</where>
+		UNION
+		SELECT * FROM GGUSER
+		<where>
+			1=1
+			AND VALIDSTATUS = '1'
+			AND USERIND = #{queryCondition.userInd}
+			<if test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND USERCODE = #{queryCondition.userCode}
+			</if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.SelectLv != null and queryCondition.SelectLv != ''">
+				AND ADDRESS = #{queryCondition.SelectLv }
+			</if>
+			<if
+				test="queryCondition.UserName != null and queryCondition.UserName != ''">
+				AND USERNAME like '%'||#{queryCondition.UserName }||'%'
+			</if>
+		</where>
+		) G
+	</select>
+	<select id="selectByComLevel" parameterType="string"
+		resultType="com.dsib.entity.GgCode">
+			SELECT * FROM GGCODE
+			WHERE
+			1=1
+			AND CODETYPE = 'honorClassCode'
+			AND CODECODE > #{newComLevel}
+		</select>
+	<!-- 保险公司用户查询用户 -->
+	<select id="getAdminQueryPolicy" parameterType="Pagination"
+		resultType="map">
+		SELECT (SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE =
+		GUSE.COUNTY AND GU.CODETYPE = 'County' )COUNTY,
+		(SELECT GU.CODECNAME
+		FROM GGCODE GU WHERE GU.CODECODE = GUSE.PROVINCE AND
+		GU.CODETYPE =
+		'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GUSE.CITY AND
+		GU.CODETYPE = 'City')CITY,
+		GUSE.USERCODE,GUSE.USERNAME,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GUSE.DIVISION AND
+		GU.CODETYPE = 'Department')DIVISION,
+		GUSE.FLAG
+		FROM GGUSER GUSE
+		<where>
+			GUSE.VALIDSTATUS = 1 AND GUSE.USERIND = 4 AND GUSE.USERCODE != #{queryCondition.SelectCode }
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GUSE.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GUSE.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GUSE.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.userType != null and queryCondition.userType != ''">
+				AND GUSE.FLAG = #{queryCondition.userType }
+			</if>
+			<if test="queryCondition.SelectLv != null and queryCondition.SelectLv != ''">
+				AND GUSE.ADDRESS = #{queryCondition.SelectLv }
+			</if>
+			<if test="queryCondition.SelectLvL != null and queryCondition.SelectLvL != ''">
+				AND GUSE.UPDATOR = #{queryCondition.SelectCode }
+			</if>
+			<if
+				test="queryCondition.UserName != null and queryCondition.UserName != ''">
+				AND GUSE.USERNAME like '%'||#{queryCondition.UserName }||'%'
+			</if>
+		</where>
+	</select>
+	<!-- 经济公司用户查询用户 -->
+	<select id="getAdminQueryJj" parameterType="Pagination"
+		resultType="map">
+		SELECT (SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE =
+		GUSE.COUNTY AND GU.CODETYPE = 'County' )COUNTY,
+		(SELECT GU.CODECNAME
+		FROM GGCODE GU WHERE GU.CODECODE = GUSE.PROVINCE AND
+		GU.CODETYPE =
+		'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GUSE.CITY AND
+		GU.CODETYPE = 'City')CITY,
+		GUSE.USERCODE,GUSE.USERNAME,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GUSE.DIVISION AND
+		GU.CODETYPE = 'Department')DIVISION,
+		GUSE.FLAG
+		FROM GGUSER GUSE
+		<where>
+			GUSE.VALIDSTATUS = 1 AND GUSE.USERIND = 3 AND GUSE.USERCODE != #{queryCondition.SelectCode }
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GUSE.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GUSE.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GUSE.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.userType != null and queryCondition.userType != ''">
+				AND GUSE.FLAG = #{queryCondition.userType }
+			</if>
+			<if test="queryCondition.SelectLv != null and queryCondition.SelectLv != ''">
+				AND GUSE.ADDRESS = #{queryCondition.SelectLv }
+			</if>
+			<if test="queryCondition.SelectLvL != null and queryCondition.SelectLvL != ''">
+				AND GUSE.UPDATOR = #{queryCondition.SelectCode }
+			</if>
+			<if
+				test="queryCondition.UserName != null and queryCondition.UserName != ''">
+				AND GUSE.USERNAME like '%'||#{queryCondition.UserName }||'%'
+			</if>
+		</where>
+	</select>
+	<!-- 字段4要进行等级判断 字段5=1 监管用户 字段13=1 该用户有效 字段"flag"是判断用户类别 字段"division"是判断所属部门 -->
+	<insert id="getAdminsert" parameterType="GgUser">
+		INSERT INTO
+		GGUSER(USERCODE,USERNAME,PASSWORD,COMLEVEL,USERIND,ADDRESS,PROVINCE,CITY,COUNTY,TELEPHONE,
+		LINKNAME,MOBILE,VALIDSTATUS,UPDATOR,UPDATEDATE,REMARK,FLAG,DIVISION)
+		VALUES(#{userCode },#{userName },#{password
+		},#{comLevel,jdbcType=VARCHAR},#{userInd,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{province
+		},#{city },#{county },#{telePhone,jdbcType=VARCHAR
+		},#{linkName,jdbcType=VARCHAR },#{mobile,jdbcType=VARCHAR
+		},'1',#{updator,jdbcType=VARCHAR },
+		#{updateDate,jdbcType=TIMESTAMP
+		},#{remark,jdbcType=VARCHAR },#{flag,jdbcType=VARCHAR
+		},#{division,jdbcType=VARCHAR })
+
+	</insert>
+
+	<sql id="whereAddress">
+		<if test="province != null and province != ''">
+			<if test="city != null and city != '' ">
+				<if test="county != null and  county != '' ">
+					'3'
+				</if>
+			</if>
+		</if>
+		<if test="province != null and province != ''">
+			<if test="city != null and city != '' ">
+				<if test="county == null or  county == '' ">
+					'2'
+				</if>
+			</if>
+		</if>
+		<if test="province != null and province != ''">
+			<if test="city == null or city == '' ">
+				'1'
+			</if>
+		</if>
+		<if test="province == null or province == ''">
+			'0'
+		</if>
+	</sql>
+	<select id="Criteria" resultType="map">
+		SELECT CODETYPE , CODECODE ,
+		CODECNAME FROM GGCODE WHERE CODETYPE IN
+		('Department','Perssion')
+	</select>
+
+	<update id="setAdminStatus" parameterType="String">
+		UPDATE GGUSER ADMINN
+		SET ADMINN.VALIDSTATUS='0' WHERE ADMINN.USERCODE =
+		#{USERCODE }
+	</update>
+	<!-- 保险公司经济公司用户查询用户 -->
+	<select id="getAdminEditNew" parameterType="String" resultType="GgUser">
+		SELECT GU.USERCODE , GU.PASSWORD ,GU.USERNAME , GU.COMLEVEL
+		,GU.PROVINCE , GU.CITY , GU.COUNTY , GU.TELEPHONE , GU.LINKNAME ,
+		GU.MOBILE , GU.FLAG , GU.ADDRESS ADDRESS,
+		(SELECT GE.CODECNAME FROM GGCODE GE WHERE GE.CODECODE =
+		GU.DIVISION AND
+		GE.CODETYPE = 'Department') DIVISION,
+		GU.DIVISION DL,
+		(SELECT USERNAME FROM GGUSER where USERCODE=GU.UPDATOR ) UPDATOR
+		FROM GGUSER GU
+		WHERE GU.USERCODE = #{USERCODE }
+	</select>
+	
+	<select id="getAdminEdit" parameterType="String" resultType="GgUser">
+		SELECT GU.USERCODE , GU.PASSWORD ,GU.USERNAME , GU.COMLEVEL
+		,GU.PROVINCE , GU.CITY , GU.COUNTY , GU.TELEPHONE , GU.LINKNAME ,
+		GU.MOBILE , GU.UPDATOR , (SELECT GE.CODECNAME FROM GGCODE GE WHERE
+		GE.CODECODE = GU.FLAG AND GE.CODETYPE = 'Perssion') FLAG ,
+		GU.FLAG FL,
+		GU.ADDRESS ADDRESS,
+		(SELECT GE.CODECNAME FROM GGCODE GE WHERE GE.CODECODE =
+		GU.DIVISION AND
+		GE.CODETYPE = 'Department') DIVISION,
+		GU.DIVISION DL
+		FROM GGUSER GU
+		WHERE GU.USERCODE = #{USERCODE }
+	</select>
+
+	<update id="getAdminUpdate" parameterType="GgUser">
+		UPDATE GGUSER
+		SET
+		<if test="userName != null and userName != ''">USERNAME=#{userName,jdbcType=VARCHAR } ,</if>
+		<if test="comLevel != null and comLevel != ''">COMLEVEL=#{comLevel,jdbcType=VARCHAR} ,</if>
+		<if test="userInd != null and userInd != ''">USERIND = #{userInd},</if>
+		<if test="address != null and address != ''">ADDRESS=#{address,jdbcType=VARCHAR } ,</if>
+		<if test="province != null and province != ''">PROVINCE = #{province,jdbcType=VARCHAR },</if>
+		<if test="city != null and city != ''">CITY = #{city,jdbcType=VARCHAR },</if>
+		<if test="county != null and county != ''">COUNTY =#{county,jdbcType=VARCHAR } ,</if>
+		<if test="telePhone != null and telePhone != ''">TELEPHONE=#{telePhone,jdbcType=VARCHAR } ,</if>
+		<if test="linkName != null or linkName != ''">LINKNAME=#{linkName,jdbcType=VARCHAR } ,</if>
+		<if test="mobile != null and mobile != ''">MOBILE=#{mobile,jdbcType=VARCHAR } , </if>
+		<if test="updator != null and updator != ''">UPDATOR = #{updator,jdbcType=VARCHAR } ,</if>
+		UPDATEDATE = #{updateDate,jdbcType=TIMESTAMP } ,
+		<!-- <if test="remark != null and remark != ''">REMARK = #{remark,jdbcType=VARCHAR } ,</if> -->
+		<if test="flag != null and flag != ''">FLAG = #{flag,jdbcType=VARCHAR }, </if>
+		<if test="division != null and division != ''">DIVISION=#{division,jdbcType=VARCHAR }</if>
+		WHERE USERCODE = #{userCode }
+	</update>
+</mapper>

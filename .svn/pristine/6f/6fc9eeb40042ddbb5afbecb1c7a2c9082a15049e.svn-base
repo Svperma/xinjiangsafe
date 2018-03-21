@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgTroubleMapper">
+
+	<select id="getGgTrouble" parameterType="Pagination" resultType="map">
+		SELECT GA.ID ,
+		(SELECT GG.COMPANYNAME FROM GGUSERCORP GG WHERE GG.USERCODE = GA.USERCODE)
+		USERCODE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GA.COUNTY AND
+		GU.CODETYPE = 'County' )COUNTY,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GA.PROVINCE AND
+		GU.CODETYPE = 'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GA.CITY AND
+		GU.CODETYPE = 'City')CITY,
+		GA.DEALER,GA.HAPPENDATE,GA.CAUSE,GA.LOSS,GA.ASSISTANCE,GA.STATUS
+		from GGACCIDENT GA
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GA.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GA.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GA.COUNTY = #{queryCondition.county }
+			</if>
+			<if
+				test="queryCondition.business != null and queryCondition.business != ''">
+				AND USERCODE IN (SELECT USERCODE FROM GGUSERCORP WHERE
+				COMPANYNAME LIKE '%'||#{queryCondition.business }||'%')
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND to_char(HAPPENDATE,'yyyy-mm-dd') &gt;=
+				#{queryCondition.beginDate }
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate !=''">
+				AND to_char(HAPPENDATE-1,'yyyy-mm-dd') &lt;
+				#{queryCondition.enddate }
+			</if>
+			ORDER BY GA.STATUS ASC , GA.HAPPENDATE DESC
+		</where>
+	</select>
+	<select id="getShow" parameterType="String" resultType="map">
+		SELECT
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE = GA.USERCODE)
+		USERCODE, GA.CITY,
+		GA.DEALER,GA.HAPPENDATE,GA.CAUSE,GA.LOSS,GA.ASSISTANCE,GA.ADVICE
+		from GGACCIDENT GA where ID = #{id }
+	</select>
+</mapper>	

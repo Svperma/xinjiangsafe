@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgInsureConfigMapper">
+	<select id="getInsurance" resultType="GgInsureConfig"
+		parameterType="GgInsureConfig">
+		SELECT * FROM GGINSURECONFIG
+		<where>
+			1=1
+			<if test="areaCode != null and areaCode != ''">
+				AND AREACODE = #{areaCode}
+			</if>
+			<if test="riskCode != null and riskCode != ''">
+				AND RISKCODE = #{riskCode}
+			</if>
+			<if test="insuranceName != null and insuranceName != ''">
+				AND INSURANCENAME LIKE '%'||#{insuranceName}||'%'
+			</if>
+			<if test="insuranceCode != null and insuranceCode != ''">
+				AND INSURANCECODE = #{insuranceCode}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,107 @@
+package com.dsib.entity;
+
+import java.util.Date;
+
+public class GgAssess {
+
+	private Integer id;
+	private String userCode;
+	private String content;
+	private String evaluator;
+	private Date date;
+	private Date completeDate;
+	private String userInd;
+	private String status;
+	private String remark;
+	private String flag;
+	private String docAddress;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getEvaluator() {
+		return evaluator;
+	}
+
+	public void setEvaluator(String evaluator) {
+		this.evaluator = evaluator;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public Date getCompleteDate() {
+		return completeDate;
+	}
+
+	public void setCompleteDate(Date completeDate) {
+		this.completeDate = completeDate;
+	}
+
+	public String getUserInd() {
+		return userInd;
+	}
+
+	public void setUserInd(String userInd) {
+		this.userInd = userInd;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+
+	public String getDocAddress() {
+		return docAddress;
+	}
+
+	public void setDocAddress(String docAddress) {
+		this.docAddress = docAddress;
+	}
+
+}

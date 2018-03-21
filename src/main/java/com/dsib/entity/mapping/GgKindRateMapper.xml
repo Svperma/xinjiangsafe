@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GgKindRateMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgKindRate">
+		<id column="ID" property="id" jdbcType="DECIMAL" />
+		<id column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<result column="KINDCODE" property="kindcode" jdbcType="VARCHAR" />
+		<result column="AREACODE" property="areacode" jdbcType="VARCHAR" />
+		<result column="RATE" property="rate" jdbcType="DECIMAL" />
+		<result column="VALIDSTATUS" property="validstatus" jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, RISKCODE, KINDCODE, AREACODE, RATE, VALIDSTATUS, FLAG, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GgKindRateKey">
+		select
+		<include refid="Base_Column_List" />
+		from GGKINDRATE
+		where ID = #{id,jdbcType=DECIMAL}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GgKindRateKey">
+		delete from GGKINDRATE
+		where ID = #{id,jdbcType=DECIMAL}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GgKindRate">
+		insert into GGKINDRATE (ID, RISKCODE, KINDCODE,
+		AREACODE, RATE, VALIDSTATUS,
+		FLAG, REMARK)
+		values (#{id,jdbcType=DECIMAL}, #{riskcode,jdbcType=VARCHAR},
+		#{kindcode,jdbcType=VARCHAR},
+		#{areacode,jdbcType=VARCHAR}, #{rate,jdbcType=DECIMAL}, #{validstatus,jdbcType=VARCHAR},
+		#{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GgKindRate">
+		insert into GGKINDRATE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="kindcode != null">
+				KINDCODE,
+			</if>
+			<if test="areacode != null">
+				AREACODE,
+			</if>
+			<if test="rate != null">
+				RATE,
+			</if>
+			<if test="validstatus != null">
+				VALIDSTATUS,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=DECIMAL},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="kindcode != null">
+				#{kindcode,jdbcType=VARCHAR},
+			</if>
+			<if test="areacode != null">
+				#{areacode,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				#{rate,jdbcType=DECIMAL},
+			</if>
+			<if test="validstatus != null">
+				#{validstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgKindRate">
+		update GGKINDRATE
+		<set>
+			<if test="kindcode != null">
+				KINDCODE = #{kindcode,jdbcType=VARCHAR},
+			</if>
+			<if test="areacode != null">
+				AREACODE = #{areacode,jdbcType=VARCHAR},
+			</if>
+			<if test="rate != null">
+				RATE = #{rate,jdbcType=DECIMAL},
+			</if>
+			<if test="validstatus != null">
+				VALIDSTATUS = #{validstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=DECIMAL}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgKindRate">
+		update GGKINDRATE
+		set KINDCODE = #{kindcode,jdbcType=VARCHAR},
+		AREACODE = #{areacode,jdbcType=VARCHAR},
+		RATE = #{rate,jdbcType=DECIMAL},
+		VALIDSTATUS = #{validstatus,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=DECIMAL}
+		and RISKCODE = #{riskcode,jdbcType=VARCHAR}
+	</update>
+</mapper>

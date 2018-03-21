@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>直接商户-授权支付</title>
+<script language="javascript">
+function createOrderInfo(){
+	var tmpDate = new Date();
+	var day = tmpDate.getDate();
+	var month= tmpDate.getMonth() + 1 ;
+	var year= tmpDate.getYear();
+   	var hours = tmpDate.getHours()
+   	var minutes = tmpDate.getMinutes()
+   	var seconds = tmpDate.getSeconds()
+    	
+   	month = ((month < 10) ? "0" : "") + month;
+   	day = ((day < 10) ? "0" : "") + day;
+   	hours = ((hours < 10) ? "0" : "") + hours;
+   	minutes = ((minutes < 10) ? "0" : "") + minutes;
+   	seconds = ((seconds < 10) ? "0" : "") + seconds;
+   	
+   	document.all.merchantOrderNo.value = year + month + day + hours + minutes + seconds;
+		
+}
+</script>
+</head>
+<body>
+<form name="form1" method="post" action="B2BDireMerOrder.jsp">
+<table border="0">
+	<tr>
+		<td width="20%">商户编号:</td>
+		<td><input name="merchantNo" maxlength="15" value="301310054119506"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>商户检索号:</td>
+		<td><input name="merchantOrderNo" maxlength="30" />&nbsp;<font
+			color="red" size="4">*</font>
+			<input type = "button" name = "createOrderId" value = "随机生成商户检索号" onClick = "javascript:createOrderInfo();" ></td>
+	</tr>
+	
+	<tr>
+		<td>订单模式:</td>
+		<td><input name="orderMode" maxlength="2" value="10"/>&nbsp;<font color="red"
+			size="4">*</font></td>
+	</tr>
+	<tr>
+
+		<td align="right">注：</td>
+
+		<td align="left">10(直接商户-一次性支付)/11(直接商户-交互支付)</td>
+
+	</tr>
+	<tr>
+		<td>买方网银客户号：</td>
+		<td><input name="purchaserBankNo" maxlength="10" value="9000001549"/>&nbsp;<font
+			color="red" size=4>*</font></td>
+	</tr>
+	<tr>
+		<td>付款账号：</td>
+		<td><input name="payAccNo" maxlength="21" value="310066661010121012968"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>收款账号：</td>
+		<td><input name="recAccNo" maxlength="21" value="310066593018004457705"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>收款帐户类型：</td>
+		<td><input name="recAccType" maxlength="2" value="01"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>订单有效天数：</td>
+		<td><input name="validatePeriod" maxlength="3" value="11"/></td>
+	</tr>
+	<tr>
+		<td>订单名称：</td>
+		<td><input name="orderName" maxlength="60" value="B2B Test Order"/></td>
+	</tr>
+	<tr>
+		<td>订单金额：</td>
+		<td><input name="orderAmount" maxlength="15" value="0.1"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>订单币种：</td>
+		<td><input name="orderCurrency" maxlength="10" value="CNY"/>&nbsp;<font
+			color="red" size="4">*</font></td>
+	</tr>
+	<tr>
+		<td>订单备注：</td>
+		<td><input name="orderComment"/></td>
+	</tr>
+	<tr>
+		<td>买方备注：</td>
+		<td><input name="purchaserComment" maxlength="100" /></td>
+	</tr>
+	<tr>
+		<td>卖方备注：</td>
+		<td><input name="bargainorComment" maxlength="100" /></td>
+	</tr>
+	<tr>
+		<td>ERP编号：</td>
+		<td><input name="erpSerialNo" maxlength="30" /></td>
+	<tr>
+</table>
+<input type="submit" value="提交" /></form>
+</body>
+</html>

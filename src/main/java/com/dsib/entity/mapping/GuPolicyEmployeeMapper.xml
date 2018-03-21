@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyEmployeeMapper" >
+  <resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyEmployee" >
+    <id column="BUSINESS_NO" property="businessNo" jdbcType="VARCHAR" />
+    <id column="PEP_NO" property="pepNo" jdbcType="VARCHAR" />
+    <result column="PEP_NAME" property="pepName" jdbcType="VARCHAR" />
+    <result column="PEP_IDENTITY_NO" property="pepIdentityNo" jdbcType="VARCHAR" />
+    <result column="AGE" property="age" jdbcType="VARCHAR" />
+    <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    <result column="MOBLE" property="moble" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BUSINESS_NO, PEP_NO, PEP_NAME, PEP_IDENTITY_NO, AGE, ADDRESS, MOBLE
+  </sql>
+  <select id="findEmployeeList" resultMap="BaseResultMap" parameterType="com.dsib.entity.GuPolicyEmployeeKey">
+  	select 
+    <include refid="Base_Column_List" />
+    from GUPOLICYEMPLOYEE
+    <where>
+	    	<if test="businessNo!=null &amp;&amp; businessNo!=''"> 
+ 	    	 and BUSINESS_NO=#{businessNo} 
+ 	    	</if> 
+	    	<if test="pepNo!=null &amp;&amp; pepNo!=''"> 
+ 	    	 and PEP_NO=#{pepNo} 
+ 	    	</if> 
+	    </where>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.dsib.entity.GuPolicyEmployeeKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from GUPOLICYEMPLOYEE
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and PEP_NO = #{pepNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyEmployeeKey" >
+    delete from GUPOLICYEMPLOYEE
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and PEP_NO = #{pepNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dsib.entity.GuPolicyEmployee" >
+    insert into GUPOLICYEMPLOYEE (BUSINESS_NO, PEP_NO, PEP_NAME, 
+      PEP_IDENTITY_NO, AGE, ADDRESS, 
+      MOBLE)
+    values (#{businessNo,jdbcType=VARCHAR}, #{pepNo,jdbcType=VARCHAR}, #{pepName,jdbcType=VARCHAR}, 
+      #{pepIdentityNo,jdbcType=VARCHAR}, #{age,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{moble,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyEmployee" >
+    insert into GUPOLICYEMPLOYEE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="businessNo != null" >
+        BUSINESS_NO,
+      </if>
+      <if test="pepNo != null" >
+        PEP_NO,
+      </if>
+      <if test="pepName != null" >
+        PEP_NAME,
+      </if>
+      <if test="pepIdentityNo != null" >
+        PEP_IDENTITY_NO,
+      </if>
+      <if test="age != null" >
+        AGE,
+      </if>
+      <if test="address != null" >
+        ADDRESS,
+      </if>
+      <if test="moble != null" >
+        MOBLE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="businessNo != null" >
+        #{businessNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pepNo != null" >
+        #{pepNo,jdbcType=VARCHAR},
+      </if>
+      <if test="pepName != null" >
+        #{pepName,jdbcType=VARCHAR},
+      </if>
+      <if test="pepIdentityNo != null" >
+        #{pepIdentityNo,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="moble != null" >
+        #{moble,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyEmployee" >
+    update GUPOLICYEMPLOYEE
+    <set >
+      <if test="pepName != null" >
+        PEP_NAME = #{pepName,jdbcType=VARCHAR},
+      </if>
+      <if test="pepIdentityNo != null" >
+        PEP_IDENTITY_NO = #{pepIdentityNo,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        AGE = #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        ADDRESS = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="moble != null" >
+        MOBLE = #{moble,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and PEP_NO = #{pepNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyEmployee" >
+    update GUPOLICYEMPLOYEE
+    set PEP_NAME = #{pepName,jdbcType=VARCHAR},
+      PEP_IDENTITY_NO = #{pepIdentityNo,jdbcType=VARCHAR},
+      AGE = #{age,jdbcType=VARCHAR},
+      ADDRESS = #{address,jdbcType=VARCHAR},
+      MOBLE = #{moble,jdbcType=VARCHAR}
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and PEP_NO = #{pepNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

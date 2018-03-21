@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GpMainOrderMapper">
+	<insert id="insertMainOrder" parameterType="GpMainOrder">
+		INSERT INTO
+		GPMAINORDER (BUSINESSNO,MERCHANTNO,MERCHANTORDERNO,UPDATETIME) VALUES
+		(#{businessNo,jdbcType=VARCHAR},#{merchantNo,jdbcType=VARCHAR},#{merchantOrderNo,jdbcType=VARCHAR},#{updateTime})
+	</insert>
+
+	<update id="updateByMerchantOrderNo" parameterType="GpMainOrder">
+		UPDATE GPMAINORDER
+		SET
+		UPDATETIME=#{updateTime}
+		<where>
+			MERCHANTORDERNO=#{merchantOrderNo}
+		</where>
+	</update>
+
+	<select id="selectByBusinessNo" parameterType="String"
+		resultType="GpMainOrder">
+		SELECT * FROM GPMAINORDER
+		<where>
+			1=1
+			AND BUSINESSNO=#{businessNo,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<delete id="deleteByBusinessNo" parameterType="String">
+		DELETE GPMAINORDER
+		<where>
+			1=1
+			AND BUSINESSNO=#{businessNo,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="selectByEndorsement" parameterType="String" resultType="GuPolicyEndorse">
+		SELECT *  FROM GUPOLICYENDORSE WHERE ENDORSEMENT = #{endorsement }
+	</select>
+	
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgUserMapper">
+	<select id="getUser" parameterType="string" resultType="com.dsib.entity.GgUser">
+		select *
+		from GGUSER WHERE USERCODE =#{userCode} AND VALIDSTATUS = '1'
+	</select>
+	<select id="getUserName" parameterType="string" resultType="com.dsib.entity.GgUser">
+		select *
+		from GGUSER WHERE USERNAME =#{userName} AND VALIDSTATUS = '1'
+	</select>
+	<select id="queryPersonsAll" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GU.USERCODE,GU.USERNAME,GU.COMLEVEL,GU.USERIND,GU.ADDRESS,
+		GU.PROVINCE,GU.CITY,GU.COUNTY,GU.TELEPHONE,GU.LINKNAME,GU.MOBILE,
+		GU.VALIDSTATUS,GU.DIVISION,GU.FLAG
+		FROM GGUSER GU
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.userName != null and queryCondition.userName != ''">AND GU.USERNAME=#{queryCondition.userName} </if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+			<if
+				test="queryCondition.comLevel != null and queryCondition.comLevel != ''">AND GU.COMLEVEL=#{queryCondition.comLevel} </if>
+		</where>
+	</select>
+	<select id="queryPersonsAllEnterprise" parameterType="Pagination"
+		resultType="map">
+		SELECT * FROM GGUSERCORP GU
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<!-- <if test="queryCondition.userName != null and queryCondition.userName 
+				!= ''">AND GU.USERNAME=#{queryCondition.userName} </if> -->
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+		</where>
+	</select>
+
+	<update id="updateUser" parameterType="GgUser">
+		UPDATE GGUSER SET
+		PROVINCE=#{province},CITY=#{city},COUNTY=#{county},USERNAME=#{userName},
+		LINKNAME=#{linkName},ADDRESS=#{address},MOBILE=#{mobile},TELEPHONE=#{telePhone}
+		WHERE USERCODE=#{userCode}
+	</update>
+	<!-- 新闻管理用户修改密码 HSLT-->
+	<update id="updateNewUser" parameterType="GgUser">
+		UPDATE GGUSER SET
+		PASSWORD = #{password}
+		WHERE USERCODE=#{userCode}
+	</update>
+
+	<!-- hslt -->
+	<!-- 获取所有可以发送消息的用户类型 -->
+	<select id="getNoticeUser" parameterType="Pagination"
+		resultType="map">
+		SELECT * FROM GGUSER
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND USERCODE != #{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.comLevel != null and queryCondition.comLevel != ''">AND COMLEVEL >= #{queryCondition.comLevel} </if>
+		</where>
+	</select>
+	<select id="selectNotice4User" parameterType="GgUser"
+		resultType="map">
+		SELECT * FROM GGUSER
+		<where>
+			1=1
+			<if test="userInd != null and userInd != ''">
+				AND USERIND = #{userInd}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				AND USERCODE != #{userCode}
+			</if>
+			<if test="comLevel != null and comLevel != ''">
+				AND COMLEVEL >= #{comLevel}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = (SELECT COUNTY FROM GGUSER WHERE USERCODE=#{userCode})
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = (SELECT CITY FROM GGUSER WHERE USERCODE=#{userCode})
+			</if>
+			<if test="province != null and province != ''">
+				AND PROVINCE = (SELECT PROVINCE FROM GGUSER WHERE USERCODE=#{userCode})
+			</if>
+			
+		</where>
+	</select>
+	<select id="selectRecipientDesc" parameterType="String"
+		resultType="GgNotice">
+		SELECT USERNAME FROM GGUSER GU WHERE USERCODE=#{str}
+	</select>
+	<select id="selectUserName" parameterType="GgUser" resultType="GgUser">
+		SELECT USERCODE,USERNAME FROM GGUSER
+		<where>
+			1=1
+		</where>
+	</select>
+	<insert id="insertGgUser" parameterType="GgUser">
+		INSERT INTO GGUSER
+		(USERCODE,USERNAME,PASSWORD,COMLEVEL,USERIND,ADDRESS,PROVINCE,CITY,COUNTY,TELEPHONE,
+		LINKNAME,MOBILE,VALIDSTATUS,UPDATOR,UPDATEDATE,REMARK,FLAG)
+		VALUES(#{userCode},#{userName},#{password},#{comLevel,jdbcType=VARCHAR},#{userInd},#{address,jdbcType=VARCHAR},
+		#{province,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},#{county,jdbcType=VARCHAR},#{telePhone,jdbcType=VARCHAR},#{linkName,jdbcType=VARCHAR},#{mobile,jdbcType=VARCHAR},#{validStatus,jdbcType=VARCHAR},#{updator,jdbcType=VARCHAR},
+		#{updateDate,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},#{flag,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertGgUserByRegister" parameterType="GgUser">
+		INSERT INTO GGUSER
+		(USERCODE,PASSWORD,USERIND,VALIDSTATUS)
+		VALUES
+		(#{userCode},#{password},#{userInd},#{validStatus})
+	</insert>
+
+	<select id="getObject" parameterType="String" resultType="GgUser">
+		SELECT * FROM GGUSER GU
+		<where>
+			1=1 AND GU.USERCODE=#{userCode}
+		</where>
+	</select>
+</mapper>

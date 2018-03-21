@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GovOrganMapper">
+	<select id="getGovOrgan" parameterType="Pagination" resultType="GovOrgan">
+		SELECT * FROM GOVORGAN WHERE 1=1
+	</select>
+	<!-- 评估时插入机构表信息 -->
+	<insert id="insertGov" parameterType="GovOrgan">
+		INSERT INTO GOVORGAN
+		(ORGCODE,ORGNAME,ORGOWNER,
+		VALIDSTATUS
+		,REGISTRATION,GRADE)
+		VALUES
+		(#{orgCode},#{orgName},#{orgOwner},
+		#{validStatus}
+		,#{registrAtion},#{grade})
+	</insert>
+
+	<select id="selectGovorgan4Code" parameterType="com.dsib.entity.GovOrgan"
+		resultType="map">
+		select * from GOVORGAN
+		<where>
+			1=1
+			<if test="businessType!=null and businessType!=''">
+				and BUSINESSTYPE=#{businessType}
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+				and ORGCODE=#{orgCode}
+			</if>
+			<if test="grade != null and grade != ''">
+				and GRADE=#{grade}
+			</if>
+		</where>
+	</select>
+	<select id="selectGovorganByCode" parameterType="com.dsib.entity.GovOrgan"
+		resultType="com.dsib.entity.GovOrgan">
+		SELECT * FROM GOVORGAN GO
+		<where>
+			1=1
+			AND GO.LANGUAGE=(
+			SELECT GC.CLASSCODE FROM GGUSERCORP GC WHERE
+			GC.USERCODE=(
+			SELECT GU.USERCODE FROM GGUSER GU WHERE
+			GU.USERCODE=#{businessType}
+			)
+			)
+			<if test="orgCode!=null and orgCode!=''">
+				and ORGCODE=#{orgCode}
+			</if>
+			ORDER BY GO.LANGUAGE,GO.BUSINESSTYPE
+		</where>
+	</select>
+	<select id="addInveStigateByOrgan" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		DISTINCT(G.ORGCODE) ORGCODE,
+		G.ORGNAME,G.ORGOWNER,G.PHONE,G.VALIDSTATUS,
+		G.PROVINCE,G.CITY,G.COUNTY,G.REGISTRATION,G.GRADE,
+		G.ADDRESS,G.BUSINESSTYPE,G.PHOTO,G.LANGUAGE,GS.ORGCODE SUBORGCODE
+		FROM
+		(SELECT * FROM GOVORGAN GO
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GO.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GO.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GO.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.orgName != null and queryCondition.orgName != ''">
+				AND GO.ORGNAME LIKE '%${queryCondition.orgName }%'
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode !=''">
+				AND GO.LANGUAGE = (
+				SELECT GC.CLASSCODE FROM GGUSERCORP GC WHERE
+				GC.USERCODE=(
+				SELECT GU.USERCODE FROM GGUSER GU WHERE
+				GU.USERCODE=#{queryCondition.userCode}
+				)
+				)
+			</if>
+			AND VALIDSTATUS='1'
+		</where>
+		) G LEFT JOIN GGSUBSCRIBE GS ON G.ORGCODE = GS.ORGCODE
+		ORDER BY
+		GS.ORGCODE,G.LANGUAGE,G.BUSINESSTYPE
+	</select>
+</mapper>

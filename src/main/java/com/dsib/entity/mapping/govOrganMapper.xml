@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GovOrganMapper">
+	<select id="getGovOrgan" parameterType="Pagination" resultType="GovOrgan">
+		SELECT * FROM GOVORGAN WHERE 1=1
+	</select>
+	<!-- 评估时插入机构表信息 -->
+	<insert id="insertGov" parameterType="GovOrgan">
+		INSERT INTO GOVORGAN
+		(ORGCODE,ORGNAME,ORGOWNER,
+		VALIDSTATUS
+		,REGISTRATION,GRADE)
+		VALUES
+		(#{orgCode},#{orgName},#{orgOwner},
+		#{validStatus}
+		,#{registrAtion},#{grade})
+	</insert>
+
+	<select id="selectGovorgan4Code" parameterType="com.dsib.entity.GovOrgan"
+		resultType="map">
+		select * from GOVORGAN
+		<!-- <where>
+			1=1
+			<if test="businessType!=null and businessType!=''">
+				and BUSINESSTYPE=#{businessType}
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+				and ORGCODE=#{orgCode}
+			</if>
+			<if test="grade != null and grade != ''">
+				and GRADE=#{grade}
+			</if>
+		</where> -->
+		<where>
+			1 = 1
+			<if test="orgCode != null and orgCode != ''">
+				AND ORGCODE = #{orgCode}
+			</if>
+			<if test="orgName != null and orgName != ''">
+				AND ORGNAME = #{orgName}
+			</if>
+			<if test="orgOwner != null and orgOwner != ''">
+				AND ORGOWNER = #{orgOwner}
+			</if>
+			<if test="phone != null and phone != ''">
+				AND PHONE = #{phone}
+			</if>
+			<if test="validStatus != null and validStatus != ''">
+				AND VALIDSTATUS = #{validStatus}
+			</if>
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="flag != null and flag != ''">
+				AND FLAG = #{flag}
+			</if>
+			<if test="registrAtion != null and registrAtion != ''">
+				AND REGISTRATION = #{registrAtion}
+			</if>
+			<if test="grade != null and grade != ''">
+				AND GRADE = #{grade}
+			</if>
+			<if test="address != null and address != ''">
+				AND ADDRESS = #{address}
+			</if>
+			<if test="businessType != null and businessType != ''">
+				AND BUSINESSTYPE = #{businessType}
+			</if>
+			<if test="photo != null and photo != ''">
+				AND PHOTO = #{photo}
+			</if>
+			<if test="langUage != null and langUage != ''">
+				AND LANGUAGE = #{langUage}
+			</if>
+		</where>
+		
+	</select>
+	<select id="selectGovorganByCode" parameterType="com.dsib.entity.GovOrgan"
+		resultType="com.dsib.entity.GovOrgan">
+		SELECT * FROM GOVORGAN GO
+		<where>
+			1=1
+			AND GO.LANGUAGE=(
+			SELECT GC.CLASSCODE FROM GGUSERCORP GC WHERE
+			GC.USERCODE=(
+			SELECT GU.USERCODE FROM GGUSER GU WHERE
+			GU.USERCODE=#{businessType}
+			)
+			)
+			<if test="orgCode!=null and orgCode!=''">
+				and ORGCODE=#{orgCode}
+			</if>
+			ORDER BY GO.LANGUAGE,GO.BUSINESSTYPE
+		</where>
+	</select>
+	<select id="selectiveGovOrgan" parameterType="com.dsib.entity.GovOrgan"
+		resultType="com.dsib.entity.GovOrgan">
+		
+		SELECT * FROM GOVORGAN 
+		<where>
+			1 = 1
+			<if test="orgCode != null and orgCode != ''">
+				AND ORGCODE = #{orgCode}
+			</if>
+			<if test="orgName != null and orgName != ''">
+				AND ORGNAME = #{orgName}
+			</if>
+			<if test="orgOwner != null and orgOwner != ''">
+				AND ORGOWNER = #{orgOwner}
+			</if>
+			<if test="phone != null and phone != ''">
+				AND PHONE = #{phone}
+			</if>
+			<if test="validStatus != null and validStatus != ''">
+				AND VALIDSTATUS = #{validStatus}
+			</if>
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="flag != null and flag != ''">
+				AND FLAG = #{flag}
+			</if>
+			<if test="registrAtion != null and registrAtion != ''">
+				AND REGISTRATION = #{registrAtion}
+			</if>
+			<if test="grade != null and grade != ''">
+				AND GRADE = #{grade}
+			</if>
+			<if test="address != null and address != ''">
+				AND ADDRESS = #{address}
+			</if>
+			<if test="businessType != null and businessType != ''">
+				AND BUSINESSTYPE = #{businessType}
+			</if>
+			<if test="photo != null and photo != ''">
+				AND PHOTO = #{photo}
+			</if>
+			<if test="langUage != null and langUage != ''">
+				AND LANGUAGE = #{langUage}
+			</if>
+		</where>
+	
+	</select>
+	<select id="addInveStigateByOrgan" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		DISTINCT(G.ORGCODE) ORGCODE,
+		G.ORGNAME,G.ORGOWNER,G.PHONE,G.VALIDSTATUS,
+		G.PROVINCE,G.CITY,G.COUNTY,G.REGISTRATION,G.GRADE,
+		G.ADDRESS,G.BUSINESSTYPE,G.PHOTO,G.LANGUAGE,GS.ORGCODE SUBORGCODE
+		FROM
+		(SELECT * FROM GOVORGAN GO
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GO.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GO.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GO.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.orgName != null and queryCondition.orgName != ''">
+				AND GO.ORGNAME LIKE '%${queryCondition.orgName }%'
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode !=''">
+				AND GO.LANGUAGE = (
+				SELECT GC.CLASSCODE FROM GGUSERCORP GC WHERE
+				GC.USERCODE=(
+				SELECT GU.USERCODE FROM GGUSER GU WHERE
+				GU.USERCODE=#{queryCondition.userCode}
+				)
+				)
+			</if>
+			AND VALIDSTATUS='1'
+		</where>
+		) G LEFT JOIN GGSUBSCRIBE GS ON G.ORGCODE = GS.ORGCODE
+		ORDER BY
+		GS.ORGCODE,G.LANGUAGE,G.BUSINESSTYPE
+	</select>
+	
+	<update id="updateGovOrganSelective"  parameterType="GovOrgan">
+		UPDATE GOVORGAN
+		<set>
+			<if test="orgCode != null and orgCode != ''">
+				ORGCODE = #{orgCode},
+			</if>
+			<if test="orgName != null and orgName != ''">
+				ORGNAME = #{orgName},
+			</if>
+			<if test="orgOwner != null and orgOwner != ''">
+				ORGOWNER = #{orgOwner},
+			</if>
+			<if test="phone != null and phone != ''">
+				PHONE = #{phone},
+			</if>
+			<if test="validStatus != null and validStatus != ''">
+				VALIDSTATUS = #{validStatus},
+			</if>
+			<if test="province != null and province != ''">
+				PROVINCE = #{province},
+			</if>
+			<if test="city != null and city != ''">
+				CITY = #{city},
+			</if>
+			<if test="county != null and county != ''">
+				COUNTY = #{county},
+			</if>
+			<if test="remark != null and remark != ''">
+				REMARK = #{remark},
+			</if>
+			<if test="flag != null and flag != ''">
+				FLAG = #{flag},
+			</if>
+			<if test="registrAtion != null and registrAtion != ''">
+				REGISTRATION = #{registrAtion},
+			</if>
+			<if test="grade != null and grade != ''">
+				GRADE = #{grade},
+			</if>
+			<if test="address != null and address != ''">
+				ADDRESS = #{address},
+			</if>
+			<if test="businessType != null and businessType != ''">
+				BUSINESSTYPE = #{businessType},
+			</if>
+			<if test="photo != null and photo != ''">
+				PHOTO = #{photo},
+			</if>
+			<if test="langUage != null and langUage != ''">
+				LANGUAGE = #{langUage},
+			</if>
+		</set>
+		<where>
+			ORGCODE = #{orgCode}
+		</where>
+
+	</update>
+	
+	<insert id="insertGovOrganSelective" parameterType="GovOrgan">
+	INSERT INTO GOVORGAN
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="orgCode != null">
+			ORGCODE,
+		</if>
+		<if test="orgName != null">
+			ORGNAME,
+		</if>
+		<if test="orgOwner != null">
+			ORGOWNER,
+		</if>
+		<if test="phone != null">
+			PHONE,
+		</if>
+		<if test="validStatus != null">
+			VALIDSTATUS,
+		</if>
+		<if test="province != null">
+			PROVINCE,
+		</if>
+		<if test="city != null">
+			CITY,
+		</if>
+		<if test="county != null">
+			COUNTY,
+		</if>
+		<if test="remark != null">
+			REMARK,
+		</if>
+		<if test="flag != null">
+			FLAG,
+		</if>
+		<if test="registrAtion != null">
+			REGISTRATION,
+		</if>
+		<if test="grade != null">
+			GRADE,
+		</if>
+		<if test="address != null">
+			ADDRESS,
+		</if>
+		<if test="businessType != null">
+			BUSINESSTYPE,
+		</if>
+		<if test="photo != null">
+			PHOTO,
+		</if>
+		<if test="langUage != null">
+			LANGUAGE,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="orgCode != null">
+			#{orgCode},
+		</if>
+		<if test="orgName != null">
+			#{orgName},
+		</if>
+		<if test="orgOwner != null">
+			#{orgOwner},
+		</if>
+		<if test="phone != null">
+			#{phone},
+		</if>
+		<if test="validStatus != null">
+			#{validStatus},
+		</if>
+		<if test="province != null">
+			#{province},
+		</if>
+		<if test="city != null">
+			#{city},
+		</if>
+		<if test="county != null">
+			#{county},
+		</if>
+		<if test="remark != null">
+			#{remark},
+		</if>
+		<if test="flag != null">
+			#{flag},
+		</if>
+		<if test="registrAtion != null">
+			#{registrAtion},
+		</if>
+		<if test="grade != null">
+			#{grade},
+		</if>
+		<if test="address != null">
+			#{address},
+		</if>
+		<if test="businessType != null">
+			#{businessType},
+		</if>
+		<if test="photo != null">
+			#{photo},
+		</if>
+		<if test="langUage != null">
+			#{langUage},
+		</if>
+	</trim>
+</insert>
+	
+</mapper>

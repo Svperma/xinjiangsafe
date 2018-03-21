@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GuInterfaceMapper">
+	<select id="getUserCorp" parameterType="String" resultType="GgUserCorp">
+		SELECT USERCODE , COMPANYNAME , LINKNAME , COMPANYNAME , CLASSCODE ,
+		BUSINESSCLASS ,EMCOUNT , MOBILE,
+		EMAIL , FAX , POST , BUSINESSLICENSENO , SAFETYLICENSENO , COMPANYADDRESS ,
+		CLASSSIZE , TELEPHONE,
+		STANDARDLEVEL ,PROVINCE ,CITY , COUNTY ,VALIDSTATUS , BUSINESSLICENSEIMAGE ,
+		SAFETYLICENSEIMAGE,
+		STANDARDLEVELIMAGE
+		FROM GGUSERCORP
+		WHERE USERCODE = #{USERCODE }
+	</select>
+
+	<update id="upDataUserCorp" parameterType="GgUserCorp">
+		UPDATE GGUSERCORP SET COMPANYADDRESS=#{companyAddress,jdbcType=VARCHAR} ,
+		BUSINESSCLASS=#{businessClass,jdbcType=VARCHAR } ,
+		BUSINESSLICENSEIMAGE=#{businessLicenseImage,jdbcType=VARCHAR },
+		BUSINESSLICENSENO=#{businessLicenseNo,jdbcType=VARCHAR } ,
+		CITY=#{city,jdbcType=VARCHAR } ,
+		CLASSCODE=#{classCode,jdbcType=VARCHAR } ,
+		COUNTY=#{county,jdbcType=VARCHAR } ,
+		EMCOUNT =#{emCount,jdbcType=VARCHAR } , EMAIL=#{email,jdbcType=VARCHAR } ,
+		FAX=#{fax,jdbcType=VARCHAR } , FLAG=#{flag,jdbcType=VARCHAR } ,
+		LINKNAME=#{linkName,jdbcType=VARCHAR } ,
+		MOBILE=#{mobile,jdbcType=VARCHAR },
+		POST=#{post,jdbcType=VARCHAR } , PROVINCE=#{province,jdbcType=VARCHAR } ,
+		REMARK=#{remark,jdbcType=VARCHAR } ,
+		STANDARDLEVEL=#{standardLevel,jdbcType=VARCHAR } ,
+		SAFETYLICENSEIMAGE=#{safetyLicenseImage,jdbcType=VARCHAR } ,
+		SAFETYLICENSENO=#{safetyLicenseNo,jdbcType=VARCHAR } ,
+		STANDARDLEVELIMAGE = #{standardLevelImage,jdbcType=VARCHAR } ,
+		CLASSSIZE = #{classSize,jdbcType=VARCHAR } , COMPANYNAME =
+		#{companyName,jdbcType=VARCHAR } ,
+		VALIDSTATUS =#{validStatus,jdbcType=VARCHAR }
+		WHERE USERCODE=#{userCode}
+	</update>
+
+	<select id="showadjustRate" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,AMOUNTADJUST,LOSSRATE,RENEWALRATE,FLAG,SHORTRATE,STANDARDLEVELRATE,SUMAMOUNTADJUST
+		FROM GUPOLICYADJUSTRATE
+		WHERE BUSINESSNO = #{BUSINESSNO}
+	</select>
+	<insert id="insertadjustRate" parameterType="GuPolicyAdjustRate">
+		INSERT INTO
+		GUPOLICYADJUSTRATE(BUSINESSNO,AMOUNTADJUST,LOSSRATE,RENEWALRATE,FLAG,SHORTRATE,STANDARDLEVELRATE,SUMAMOUNTADJUST)
+		VALUES(#{businessno,jdbcType=VARCHAR},#{amountadjust,jdbcType=VARCHAR},#{lossrate,jdbcType=VARCHAR},#{renewalrate,jdbcType=VARCHAR},#{flag,jdbcType=VARCHAR},
+		#{shortrate,jdbcType=VARCHAR},#{standardlevelrate,jdbcType=VARCHAR},#{sumamountadjust,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateadjustRate" parameterType="GuPolicyAdjustRate">
+		UPDATE GUPOLICYADJUSTRATE SET AMOUNTADJUST=#{amountadjust,jdbcType=VARCHAR},
+		LOSSRATE=#{lossrate,jdbcType=VARCHAR},RENEWALRATE=#{renewalrate,jdbcType=VARCHAR},FLAG=#{flag,jdbcType=VARCHAR},
+		SHORTRATE=#{shortrate,jdbcType=VARCHAR},STANDARDLEVELRATE=#{standardlevelrate,jdbcType=VARCHAR},SUMAMOUNTADJUST=#{sumamountadjust,jdbcType=VARCHAR}
+		WHERE BUSINESSNO=#{businessno}
+	</update>
+	<!-- 时间是否与Main保持一致 -->
+	<select id="showitemKind" parameterType="Map" resultType="Map">
+		SELECT
+		BUSINESSNO,POLICYNO,RISKCODE,STARTDATE,ENDDATE,KINDCODE,KINDNAME,SPREADSHEETPREMIUM,ACTUALPREMIUM,AMOUNT,
+		UNITAMOUNT
+		FROM GUPOLICYITEMKIND
+		WHERE BUSINESSNO=#{BUSINESSNO} AND KINDCODE =#{kindCode }
+	</select>
+	<insert id="insertitemkind" parameterType="GuPolicyItemKind">
+		INSERT INTO
+		GUPOLICYITEMKIND(BUSINESSNO,POLICYNO,RISKCODE,STARTDATE,ENDDATE,KINDCODE,KINDNAME,SPREADSHEETPREMIUM,ACTUALPREMIUM,AMOUNT,UNITAMOUNT)
+		VALUES(#{businessno,jdbcType=VARCHAR},#{policyno,jdbcType=VARCHAR},#{riskcode,jdbcType=VARCHAR},#{startdate,jdbcType=DATE},#{enddate,jdbcType=DATE},
+		#{kindcode,jdbcType=VARCHAR},#{kindname,jdbcType=VARCHAR},#{spreadsheetpremium,jdbcType=VARCHAR},
+		#{actualpremium,jdbcType=VARCHAR},#{amount,jdbcType=VARCHAR},#{unitamount,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateitemkind" parameterType="GuPolicyItemKind">
+		UPDATE GUPOLICYITEMKIND SET BUSINESSNO=#{businessno,jdbcType=VARCHAR},
+		POLICYNO=#{policyno,jdbcType=VARCHAR},RISKCODE=#{riskcode,jdbcType=VARCHAR},STARTDATE=#{startdate,jdbcType=DATE},
+		ENDDATE=#{enddate,jdbcType=DATE},KINDCODE=#{kindcode,jdbcType=VARCHAR},KINDNAME=#{kindname,jdbcType=VARCHAR},SPREADSHEETPREMIUM=#{spreadsheetpremium,jdbcType=VARCHAR},
+		ACTUALPREMIUM=#{actualpremium,jdbcType=VARCHAR},AMOUNT=#{amount,jdbcType=VARCHAR},UNITAMOUNT=#{unitamount,jdbcType=VARCHAR}
+		WHERE BUSINESSNO=#{businessno} AND KINDCODE =#{kindcode}
+	</update>
+
+	<select id="showpolicyMain" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,APPLIADDRESS,APPLICODE,APPLINAME,ARGUESOLUTION,ARBITBOARDNAME,ACCIDENTPREVENTFEE,ACTUALPREMIUM,
+		CITY,CLASSCODE,COUNTY,DISCOUNT,INSUREDADDRESS,INSUREDCODE,INSUREDNAME,INSURERCODE,OPERATORCODE,
+		PAYBILLNO,PAYFLAG,PLANCODE,POLICYNO,PREVIOUSPOLICYNO,PROPOSALNO,PROVINCE,SPREADSHEETPREMIUM,SUMAMOUNT,
+		OPERATEDATE,STARTDATE,ENDDATE
+		FROM GUPOLICYMAIN
+		WHERE BUSINESSNO=#{businessNo}
+	</select>
+	<insert id="insertpolicyMain" parameterType="GuPolicyMain">
+		INSERT INTO
+		GUPOLICYMAIN(BUSINESSNO,APPLIADDRESS,APPLICODE,APPLINAME,ARGUESOLUTION,ARBITBOARDNAME,ACCIDENTPREVENTFEE,ACTUALPREMIUM,
+		CITY,CLASSCODE,COUNTY,DISCOUNT,INSUREDADDRESS,INSUREDCODE,INSUREDNAME,INSURERCODE,OPERATORCODE,
+		PAYBILLNO,PAYFLAG,PLANCODE,POLICYNO,PREVIOUSPOLICYNO,PROPOSALNO,PROVINCE,SPREADSHEETPREMIUM,SUMAMOUNT,
+		OPERATEDATE,STARTDATE,ENDDATE,RENEWALFLAG)
+		VALUES(#{businessNo,jdbcType=VARCHAR},#{appliAddress,jdbcType=VARCHAR},#{appliCode,jdbcType=VARCHAR},#{appliName,jdbcType=VARCHAR},
+		#{argueSolution,jdbcType=VARCHAR},#{arbitBoardName,jdbcType=VARCHAR},#{accidentPreventFee,jdbcType=DOUBLE},#{actualPremium,jdbcType=DOUBLE},
+		#{city,jdbcType=VARCHAR},#{classCode,jdbcType=VARCHAR},#{county,jdbcType=VARCHAR},#{disCount,jdbcType=DOUBLE},#{insuredAddress,jdbcType=VARCHAR},
+		#{insuredCode,jdbcType=VARCHAR},#{insuredName,jdbcType=VARCHAR},#{insurerCode,jdbcType=VARCHAR},#{operatorCode,jdbcType=VARCHAR},#{payBillNo,jdbcType=VARCHAR},
+		#{payFlag,jdbcType=VARCHAR},#{planCode,jdbcType=VARCHAR},#{policyNo,jdbcType=VARCHAR},#{previousPolicyNo,jdbcType=VARCHAR},
+		#{proposalNo,jdbcType=VARCHAR},#{province,jdbcType=VARCHAR},#{spreadsheetPremium,jdbcType=DOUBLE},#{sumAmount,jdbcType=DOUBLE},
+		#{operateDate,jdbcType=DATE},#{startDate,jdbcType=DATE},#{endDate,jdbcType=DATE},#{renewalFlag,jdbcType=VARCHAR})
+	</insert>
+	<update id="updatepolicyMain" parameterType="GuPolicyMain">
+		UPDATE GUPOLICYMAIN SET
+		APPLIADDRESS=#{appliAddress,jdbcType=VARCHAR},APPLICODE=#{appliCode,jdbcType=VARCHAR},APPLINAME=#{appliName,jdbcType=VARCHAR},
+		ARGUESOLUTION=#{argueSolution,jdbcType=VARCHAR},ARBITBOARDNAME=#{arbitBoardName,jdbcType=VARCHAR},ACCIDENTPREVENTFEE=#{accidentPreventFee,jdbcType=DOUBLE},ACTUALPREMIUM=#{actualPremium,jdbcType=DOUBLE},
+		CITY=#{city,jdbcType=VARCHAR},CLASSCODE=#{classCode,jdbcType=VARCHAR},COUNTY=#{county,jdbcType=VARCHAR},DISCOUNT=#{disCount,jdbcType=DOUBLE},
+		INSUREDADDRESS=#{insuredAddress,jdbcType=VARCHAR},INSUREDCODE=#{insuredCode,jdbcType=VARCHAR},OPERATORCODE=#{operatorCode,jdbcType=VARCHAR},
+		PAYBILLNO=#{payBillNo,jdbcType=VARCHAR},PAYFLAG=#{payFlag,jdbcType=VARCHAR},PLANCODE=#{planCode,jdbcType=VARCHAR},POLICYNO=#{policyNo,jdbcType=VARCHAR},
+		PREVIOUSPOLICYNO=#{previousPolicyNo,jdbcType=VARCHAR},PROPOSALNO=#{proposalNo,jdbcType=VARCHAR},PROVINCE=#{province,jdbcType=VARCHAR},
+		SPREADSHEETPREMIUM=#{spreadsheetPremium,jdbcType=DOUBLE},SUMAMOUNT=#{sumAmount,jdbcType=DOUBLE},OPERATEDATE=#{operateDate,jdbcType=DATE},STARTDATE=#{startDate,jdbcType=DATE},
+		ENDDATE=#{endDate,jdbcType=DATE},RENEWALFLAG=#{renewalFlag,jdbcType=VARCHAR}
+		WHERE BUSINESSNO=#{businessNo}
+	</update>
+	<select id="showPolicyInsured" parameterType="map" resultType="Map">
+		SELECT BUSINESSNO,IDENTITYTYPE,IDENTITYNUMBER,PHONENUMBER,EMAIL
+		FROM GUPOLICYINSURED
+		WHERE BUSINESSNO=#{businessNo} AND SERIESNO=#{seriesno}
+	</select>
+	<insert id="insertpolicyinsured" parameterType="GuPolicyInsured">
+		INSERT INTO
+		GUPOLICYINSURED(BUSINESSNO,POLICYNO,RISKCODE,INSUREDFLAG,SERIESNO,INSUREDCODE,INSUREDNAME,INSUREDADDRESS,
+		IDENTITYTYPE,IDENTITYNUMBER,PHONENUMBER,EMAIL)
+		VALUES(#{businessno,jdbcType=VARCHAR},#{policyno,jdbcType=VARCHAR},#{riskcode,jdbcType=VARCHAR},#{insuredflag,jdbcType=VARCHAR},
+		#{seriesno,jdbcType=INTEGER},#{insuredcode,jdbcType=VARCHAR},#{insuredname,jdbcType=VARCHAR},#{insuredaddress,jdbcType=VARCHAR},
+		#{identitytype,jdbcType=VARCHAR},#{identitynumber,jdbcType=VARCHAR},#{phonenumber,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR})
+	</insert>
+	<update id="updatepolicyinsured" parameterType="GuPolicyInsured">
+		UPDATE GUPOLICYINSURED SET
+		IDENTITYTYPE=#{identitytype,jdbcType=VARCHAR},IDENTITYNUMBER=#{identitynumber,jdbcType=VARCHAR},PHONENUMBER=#{phonenumber,jdbcType=VARCHAR},
+		EMAIL=#{email,jdbcType=VARCHAR}
+		WHERE BUSINESSNO=#{businessno} AND SERIESNO=#{seriesno}
+	</update>
+	<select id="showpolicyLimit" parameterType="Map" resultType="GuPolicyLimit">
+		SELECT BUSINESSNO,POLICYNO,LIMITNO,LIMITCODE,LIMITFEE,LIMITDESCRIPTION
+		FROM GUPOLICYLIMIT
+		WHERE BUSINESSNO=#{businessno} AND RISKCODE = #{riskcode} AND
+		LIMITNO=#{limitNo}
+	</select>
+	<insert id="insertpolicyLimit" parameterType="GuPolicyLimit">
+		INSERT INTO GUPOLICYLIMIT
+		(BUSINESSNO,POLICYNO,RISKCODE,LIMITNO,LIMITCODE,LIMITFEE,LIMITDESCRIPTION)
+		VALUES(#{businessno,jdbcType=VARCHAR},#{policyno,jdbcType=VARCHAR},#{riskcode,jdbcType=VARCHAR},
+		#{limitno,jdbcType=INTEGER},#{limitcode,jdbcType=VARCHAR},#{limitfee,jdbcType=DOUBLE},
+		#{limitdescription,jdbcType=VARCHAR})
+	</insert>
+	<update id="updatepolicyLimit" parameterType="GuPolicyLimit">
+		UPDATE GUPOLICYLIMIT SET
+		BUSINESSNO=#{businessno,jdbcType=VARCHAR},POLICYNO=#{policyno,jdbcType=VARCHAR},
+		LIMITNO=#{limitno,jdbcType=DOUBLE},RISKCODE=#{riskcode,jdbcType=VARCHAR},LIMITCODE=#{limitcode,jdbcType=VARCHAR},
+		LIMITFEE=#{limitfee,jdbcType=DOUBLE},LIMITDESCRIPTION=#{limitdescription,jdbcType=VARCHAR}
+		WHERE BUSINESSNO=#{businessno} AND RISKCODE = #{riskcode} AND
+		LIMITNO=#{limitno}
+	</update>
+	<!-- 用于支付端的传输 -->
+	<select id="LookadjustRate" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,AMOUNTADJUST,LOSSRATE,RENEWALRATE,FLAG,SHORTRATE,STANDARDLEVELRATE,SUMAMOUNTADJUST
+		FROM GUPOLICYADJUSTRATE
+		WHERE BUSINESSNO = #{BUSINESSNO}
+	</select>
+	<!-- List集合输出 -->
+	<select id="LookitemKind" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,POLICYNO,RISKCODE,STARTDATE,ENDDATE,KINDCODE,KINDNAME,SPREADSHEETPREMIUM,ACTUALPREMIUM,AMOUNT,
+		UNITAMOUNT
+		FROM GUPOLICYITEMKIND
+		WHERE BUSINESSNO=#{businessNo}
+	</select>
+	<select id="Lookpolicyinsured" parameterType="String"
+		resultType="Map">
+		SELECT BUSINESSNO,IDENTITYTYPE,IDENTITYNUMBER,PHONENUMBER,EMAIL,INSUREDFLAG
+		FROM GUPOLICYINSURED
+		WHERE BUSINESSNO=#{businss }
+	</select>
+	<select id="LookpolicyLimit" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,POLICYNO,LIMITNO,LIMITCODE,LIMITFEE,LIMITDESCRIPTION,RISKCODE
+		FROM GUPOLICYLIMIT
+		WHERE BUSINESSNO=#{businessno }
+	</select>
+	<select id="LookpolicyMain" parameterType="String" resultType="Map">
+		SELECT
+		BUSINESSNO,APPLIADDRESS,APPLICODE,APPLINAME,ARGUESOLUTION,ARBITBOARDNAME,ACCIDENTPREVENTFEE,ACTUALPREMIUM,
+		CITY,CLASSCODE,COUNTY,DISCOUNT,INSUREDADDRESS,INSUREDCODE,INSUREDNAME,INSURERCODE,OPERATORCODE,
+		PAYBILLNO,PAYFLAG,PLANCODE,POLICYNO,PREVIOUSPOLICYNO,PROPOSALNO,PROVINCE,SPREADSHEETPREMIUM,SUMAMOUNT,
+		OPERATEDATE,STARTDATE,ENDDATE,RISKCODE,SUMPREMIUM,SUMSUBPREM,SIGNDATE,RENEWALFLAG
+		FROM GUPOLICYMAIN
+		WHERE BUSINESSNO=#{businessNo}
+	</select>
+</mapper>

@@ -1,0 +1,91 @@
+*{
+	margin:0;
+	padding:0;
+	list-style:none;
+	text-decoration:none;
+	font-family:'微软雅黑';
+}
+body{
+	background-color:#ededed;
+}
+.panel{
+	width:80%;
+	padding:20px;
+	background-color:#fff;
+	margin:0 auto;
+	
+}
+.panel-h2{
+	width:60%;
+	height:60px;
+	padding:5px;
+	margin:0 auto;
+	line-height:60px;
+}
+.panel-h2-2{
+	width:30%;
+	margin:0 auto;
+}
+.panel-h3{
+	width:25%;
+	height:40px;
+	padding:5px;
+	margin:0 auto;
+	line-height:40px;
+}
+.para{
+	width:100%;
+	padding:5px 0;
+}
+.para-title{
+	font-size:18px;
+	font-weight:bold;
+	margin:0 20px;
+}
+.text-title{
+	font-size:18px;
+	font-weight:bold;
+}
+.para-title2{
+	font-size:18px;
+	font-weight:bold;
+	margin:10px 0;
+}
+.kong{
+	margin-left:120px;
+}
+.para-text{
+	
+}
+.text-sl{
+	font-size:18px;
+	margin:5px 30px;
+}
+.para-careful{
+	width:50%;
+	margin:0 auto;
+}
+.careful-text{
+	font-size:18px;
+	font-weight:bold;
+	margin:5px 0;
+}
+.para-careful2{
+	width:80%;
+	margin:0 auto;
+}
+.careful-text2{
+	font-size:18px;
+	margin:5px 0;
+}
+.new-text{
+	font-size:18px;
+	margin-left:25px;
+}
+.para-tab{
+	width:100%;
+}
+.para-tab td,.para-tab th{
+	border:1px solid #333;
+}
+/******************************************************   附加险    ************************************************************************/

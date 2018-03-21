@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GuPolicyMainMapper">
+	<select id="getChartCount" parameterType="map" resultType="map">
+		SELECT SUM(GM.SPREADSHEETPREMIUM)/10000 premium,SUM(GM.ACCIDENTPREVENTFEE)/10000
+		preventFee,COUNT(DISTINCT(IDENTITYNUMBER)) appliCount FROM GUPOLICYMAIN GM, GUPOLICYINSURED GE
+		<where>
+			GM.UNDERWRITEFLAG = '3' AND GM.PAYFLAG = '1' AND GM.POLICYNO IS NOT NULL
+			 AND GE.BUSINESSNO = GM.BUSINESSNO AND GE.SERIESNO = '1' 
+			<if test="province != null and province != ''">
+				AND GM.PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND GM.CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND GM.COUNTY = #{county}
+			</if>
+			<if test="classCode != null and classCode != ''">
+				AND GM.CLASSCODE = #{classCode}
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND TO_CHAR (GM.SIGNDATE,'yyyy-MM-DD') &gt;= #{beginDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND TO_CHAR (GM.SIGNDATE,'yyyy-MM-DD') &lt;= #{endDate}
+			</if>
+		</where>
+	</select>
+	<select id="getPreventFee" parameterType="map" resultType="map">
+		SELECT
+			SUM (SPREADSHEETPREMIUM) / 10000 *0.1 preventFee
+		FROM
+			GUPOLICYMAIN
+		<where>
+			POLICYNO IS NOT NULL
+			AND UNDERWRITEFLAG = '3'
+			AND PAYFLAG = '1'
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+			<if test="classCode != null and classCode != ''">
+				AND CLASSCODE = #{classCode}
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND TO_CHAR (SIGNDATE,'yyyy-MM-DD') &gt;= #{beginDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND TO_CHAR (SIGNDATE,'yyyy-MM-DD') &lt;= #{endDate}
+			</if>
+		</where>
+	</select>
+
+	<sql id="whereSqlMain">
+		<where>
+			GU.UNDERWRITEFLAG='3' AND PAYFLAG = '1' AND
+			GU.BUSINESSNO=GI.BUSINESSNO AND GI.KINDCODE = '0901001' AND
+			GU.APPLICODE = GG.USERCODE
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GU.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GU.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GU.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GG.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GG.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GU.INSURERCODE =#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND TO_CHAR(GU.SIGNDATE,'YYYY-MM-DD HH24:MI:SS') &gt;
+				#{queryCondition.beginDate }
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR(GU.SIGNDATE,'YYYY-MM-DD HH24:MI:SS') &lt;=
+				#{queryCondition.endDate}
+			</if>
+		</where>
+	</sql>
+	<sql id="whereSqlClaim">
+		<where>
+			GC.USERCODE=GU.USERCODE AND GC.STATUS='6'
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GC.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GC.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GC.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GU.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GC.INSURERCODE =#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND TO_CHAR(GC.CLOSEDATE,'YYYY-MM-DD HH24:MI:SS')
+				&gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR(GC.CLOSEDATE,'YYYY-MM-DD HH24:MI:SS')
+				&lt;#{queryCondition.endDate}
+			</if>
+		</where>
+	</sql>
+	<sql id="whereSqlAccident">
+		<where>
+			GA.USERCODE=GU.USERCODE
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GA.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GA.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GA.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GU.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GA.INSURERCODE=#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND TO_CHAR(GA.HAPPENDATE,'YYYY-MM-DD HH24:MI:SS')
+				&gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR(GA.HAPPENDATE,'YYYY-MM-DD HH24:MI:SS')
+				&lt;#{queryCondition.endDate}
+			</if>
+		</where>
+	</sql>
+	<sql id="whereSqlEvaluate">
+		<where>
+			(GE.ATTRIBUTEID='3' OR GE.ATTRIBUTEID='4') AND
+			GE.BEEVALUATOR=GC.CODECODE AND GC.CODETYPE='CICompanycode'
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GE.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GE.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GE.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GE.BEEVALUATOR=#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND TO_CHAR(GE.EVALUATETIME,'YYYY-MM-DD HH24:MI:SS')
+				&gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR(GE.EVALUATETIME,'YYYY-MM-DD HH24:MI:SS')
+				&lt;#{queryCondition.endDate}
+			</if>
+		</where>
+	</sql>
+	<!-- 全国 -->
+	<sql id="policyAll">
+		SELECT A.INSURERCODE INSURERCODE,A.INSURER INSURER,A.AREA
+		AREA,SUM(A.ENTERPRISE) ENTERPRISE,SUM(A.PREMIUM)
+		PREMIUM,SUM(A.PREVENTFEE) PREVENTFEE,SUM(A.PAYAMOUNT)
+		PAYAMOUNT,SUM(A.ASSISTANCE) ASSISTANCE,SUM(A.SUGGESTION) SUGGESTION
+		FROM
+		(
+		SELECT GU.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GU.INSURERCODE) INSURER,'全国'
+		AREA,COUNT(DISTINCT(GU.INSUREDCODE))
+		ENTERPRISE,SUM(GU.SPREADSHEETPREMIUM)
+		PREMIUM,SUM(GU.ACCIDENTPREVENTFEE) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GUPOLICYMAIN GU,GUPOLICYITEMKIND
+		GI,GGUSERCORP GG
+		<include refid="whereSqlMain" />
+		GROUP BY GU.INSURERCODE,'全国'
+		UNION
+		SELECT GC.INSURERCODE
+		INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE
+		=GC.INSURERCODE) INSURER,'全国' AREA,SUM(0) ENTERPRISE,SUM(0)
+		PREMIUM,SUM(0) PREVENTFEE,SUM(GC.PAYAMOUNT) PAYAMOUNT,SUM(0)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GCCLAIM GC,GGUSERCORP GU
+		<include refid="whereSqlClaim" />
+		GROUP BY GC.INSURERCODE,'全国'
+		UNION
+		SELECT GA.INSURERCODE
+		INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE
+		=GA.INSURERCODE) INSURER,'全国' AREA,SUM(0) ENTERPRISE,SUM(0)
+		PREMIUM,SUM(0) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(GA.ASSISTANCE)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GGACCIDENT GA ,GGUSERCORP GU
+		<include refid="whereSqlAccident" />
+		GROUP BY GA.INSURERCODE,'全国'
+		UNION
+		SELECT GC.CODECODE
+		INSURERCODE,GC.CODECNAME INSURER,'全国' AREA,SUM(0)
+		ENTERPRISE,SUM(0)
+		PREMIUM,SUM(0) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,COUNT(GE.SERIESNO) SUGGESTION
+		FROM GGEVALUATE GE,GGCODE GC
+		<include refid="whereSqlEvaluate" />
+		GROUP BY GC.CODECNAME,'全国',GC.CODECODE
+		) A GROUP BY
+		A.INSURER,A.AREA,A.INSURERCODE
+	</sql>
+	<!-- 省 -->
+	<sql id="policyProvince">
+		SELECT A.INSURERCODE INSURERCODE,A.INSURER INSURER,A.AREA
+		AREA,SUM(A.ENTERPRISE) ENTERPRISE,SUM(A.PREMIUM)
+		PREMIUM,SUM(A.PREVENTFEE) PREVENTFEE,SUM(A.PAYAMOUNT)
+		PAYAMOUNT,SUM(A.ASSISTANCE) ASSISTANCE,SUM(A.SUGGESTION) SUGGESTION
+		FROM
+		(
+		SELECT GU.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GU.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE=GU.PROVINCE AND
+		CODETYPE='Province') AREA,COUNT(DISTINCT(GU.INSUREDCODE))
+		ENTERPRISE,SUM(GU.SPREADSHEETPREMIUM)
+		PREMIUM,SUM(GU.ACCIDENTPREVENTFEE) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GUPOLICYMAIN GU,GUPOLICYITEMKIND
+		GI,GGUSERCORP GG
+		<include refid="whereSqlMain" />
+		GROUP BY GU.INSURERCODE,GU.PROVINCE,GU.INSURERCODE
+		UNION
+		SELECT
+		GC.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE =GC.INSURERCODE AND CODETYPE='CICompanycode') INSURER,(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE=GC.PROVINCE AND
+		CODETYPE='Province') AREA,SUM(0) ENTERPRISE,SUM(0) PREMIUM,SUM(0)
+		PREVENTFEE,SUM(GC.PAYAMOUNT) PAYAMOUNT,SUM(0) ASSISTANCE,SUM(0)
+		SUGGESTION
+		FROM GCCLAIM GC,GGUSERCORP GU
+		<include refid="whereSqlClaim" />
+		GROUP BY GC.INSURERCODE,GC.PROVINCE,GC.INSURERCODE
+		UNION
+		SELECT
+		GA.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE =GA.INSURERCODE AND CODETYPE='CICompanycode') INSURER,(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE=GA.PROVINCE AND
+		CODETYPE='Province') AREA,SUM(0) ENTERPRISE,SUM(0) PREMIUM,SUM(0)
+		PREVENTFEE,SUM(0) PAYAMOUNT,SUM(GA.ASSISTANCE) ASSISTANCE,SUM(0)
+		SUGGESTION
+		FROM GGACCIDENT GA ,GGUSERCORP GU
+		<include refid="whereSqlAccident" />
+		GROUP BY GA.INSURERCODE,GA.PROVINCE,GA.INSURERCODE
+		UNION
+		SELECT
+		GC.CODECODE INSURERCODE,GC.CODECNAME INSURER,(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GE.PROVINCE) AREA,SUM(0) ENTERPRISE,SUM(0)
+		PREMIUM,SUM(0) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,COUNT(GE.SERIESNO) SUGGESTION
+		FROM GGEVALUATE GE,GGCODE GC
+		<include refid="whereSqlEvaluate" />
+		GROUP BY GC.CODECNAME,GE.PROVINCE,GC.CODECODE
+		) A GROUP BY
+		A.INSURER,A.AREA,A.INSURERCODE
+
+	</sql>
+	<!-- 市 -->
+	<sql id="policyCity">
+		SELECT A.INSURERCODE INSURERCODE,A.INSURER INSURER,A.AREA
+		AREA,SUM(A.ENTERPRISE) ENTERPRISE,SUM(A.PREMIUM)
+		PREMIUM,SUM(A.PREVENTFEE) PREVENTFEE,SUM(A.PAYAMOUNT)
+		PAYAMOUNT,SUM(A.ASSISTANCE) ASSISTANCE,SUM(A.SUGGESTION) SUGGESTION
+		FROM
+		(
+		SELECT GU.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GU.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GU.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GU.CITY AND CODETYPE='City'))
+		AREA,COUNT(DISTINCT(GU.INSUREDCODE))
+		ENTERPRISE,SUM(GU.SPREADSHEETPREMIUM)
+		PREMIUM,SUM(GU.ACCIDENTPREVENTFEE) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GUPOLICYMAIN GU,GUPOLICYITEMKIND
+		GI,GGUSERCORP GG
+		<include refid="whereSqlMain" />
+		GROUP BY GU.INSURERCODE,GU.PROVINCE,GU.CITY,GU.INSURERCODE
+		UNION
+		SELECT
+		GC.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE =GC.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GC.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GC.CITY AND CODETYPE='City')) AREA,SUM(0)
+		ENTERPRISE,SUM(0) PREMIUM,SUM(0) PREVENTFEE,SUM(GC.PAYAMOUNT)
+		PAYAMOUNT,SUM(0) ASSISTANCE,SUM(0) SUGGESTION
+		FROM GCCLAIM
+		GC,GGUSERCORP GU
+		<include refid="whereSqlClaim" />
+		GROUP BY GC.INSURERCODE,GC.PROVINCE,GC.CITY,GC.INSURERCODE
+		UNION
+		SELECT
+		GA.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE =GA.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GA.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GA.CITY AND CODETYPE='City')) AREA,SUM(0)
+		ENTERPRISE,SUM(0) PREMIUM,SUM(0) PREVENTFEE,SUM(0)
+		PAYAMOUNT,SUM(GA.ASSISTANCE) ASSISTANCE,SUM(0) SUGGESTION
+		FROM
+		GGACCIDENT GA ,GGUSERCORP GU
+		<include refid="whereSqlAccident" />
+		GROUP BY GA.INSURERCODE,GA.PROVINCE,GA.CITY,GA.INSURERCODE
+		UNION
+		SELECT
+		GC.CODECODE INSURERCODE,GC.CODECNAME INSURER,CONCAT((SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GE.PROVINCE),(SELECT CODECNAME FROM GGCODE
+		WHERE CODECODE=GE.CITY)) AREA,SUM(0) ENTERPRISE,SUM(0) PREMIUM,SUM(0)
+		PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0) ASSISTANCE,COUNT(GE.SERIESNO)
+		SUGGESTION
+		FROM GGEVALUATE GE,GGCODE GC
+		<include refid="whereSqlEvaluate" />
+		GROUP BY GC.CODECNAME,GE.PROVINCE,GE.CITY,GC.CODECODE
+		) A GROUP BY
+		A.INSURER,A.AREA,A.INSURERCODE
+	</sql>
+	<!-- 区县 -->
+	<sql id="policyCounty">
+		SELECT A.INSURERCODE INSURERCODE,A.INSURER INSURER,A.AREA
+		AREA,SUM(A.ENTERPRISE) ENTERPRISE,SUM(A.PREMIUM)
+		PREMIUM,SUM(A.PREVENTFEE) PREVENTFEE,SUM(A.PAYAMOUNT)
+		PAYAMOUNT,SUM(A.ASSISTANCE) ASSISTANCE,SUM(A.SUGGESTION) SUGGESTION
+		FROM
+		(
+		SELECT GU.INSURERCODE INSURERCODE, (SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GU.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT(CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GU.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GU.CITY AND CODETYPE='City')),(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GU.COUNTY AND CODETYPE='County'))
+		AREA,COUNT(DISTINCT(GU.INSUREDCODE))
+		ENTERPRISE,SUM(GU.SPREADSHEETPREMIUM)
+		PREMIUM,SUM(GU.ACCIDENTPREVENTFEE) PREVENTFEE,SUM(0) PAYAMOUNT,SUM(0)
+		ASSISTANCE,SUM(0) SUGGESTION
+		FROM GUPOLICYMAIN GU,GUPOLICYITEMKIND
+		GI,GGUSERCORP GG
+		<include refid="whereSqlMain" />
+		GROUP BY GU.INSURERCODE,GU.PROVINCE,GU.CITY,GU.COUNTY,GU.INSURERCODE
+		UNION
+		SELECT GC.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GC.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT(CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GC.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GC.CITY AND CODETYPE='City')),(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GC.COUNTY AND CODETYPE='County'))
+		AREA,SUM(0) ENTERPRISE,SUM(0) PREMIUM,0 PREVENTFEE,SUM(GC.PAYAMOUNT)
+		PAYAMOUNT,SUM(0) ASSISTANCE,SUM(0) SUGGESTION
+		FROM GCCLAIM
+		GC,GGUSERCORP GU
+		<include refid="whereSqlClaim" />
+		GROUP BY GC.INSURERCODE,GC.PROVINCE,GC.CITY,GC.COUNTY,GC.INSURERCODE
+		UNION
+		SELECT GA.INSURERCODE INSURERCODE,(SELECT CODECNAME FROM GGCODE
+		WHERE
+		CODECODE =GA.INSURERCODE AND CODETYPE='CICompanycode')
+		INSURER,CONCAT(CONCAT((SELECT CODECNAME FROM GGCODE WHERE
+		CODECODE=GA.PROVINCE AND CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE=GA.CITY AND CODETYPE='City')),(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GA.COUNTY AND CODETYPE='County'))
+		AREA,SUM(0) ENTERPRISE,SUM(0) PREMIUM,SUM(0) PREVENTFEE,SUM(0)
+		PAYAMOUNT,SUM(GA.ASSISTANCE) ASSISTANCE,SUM(0) SUGGESTION
+		FROM
+		GGACCIDENT GA ,GGUSERCORP GU
+		<include refid="whereSqlAccident" />
+		GROUP BY GA.INSURERCODE,GA.PROVINCE,GA.CITY,GA.COUNTY,GA.INSURERCODE
+		UNION
+		SELECT GC.CODECODE INSURERCODE,GC.CODECNAME
+		INSURER,CONCAT(CONCAT((SELECT
+		CODECNAME FROM GGCODE WHERE
+		CODECODE=GE.PROVINCE AND
+		CODETYPE='Province'),(SELECT CODECNAME FROM
+		GGCODE WHERE
+		CODECODE=GE.CITY AND CODETYPE='City')),(SELECT CODECNAME
+		FROM GGCODE
+		WHERE CODECODE=GE.COUNTY AND CODETYPE='County'))
+		AREA,SUM(0)
+		ENTERPRISE,SUM(0) PREMIUM,SUM(0) PREVENTFEE,SUM(0)
+		PAYAMOUNT,SUM(0)
+		ASSISTANCE,COUNT(GE.SERIESNO) SUGGESTION
+		FROM
+		GGEVALUATE GE,GGCODE GC
+		<include refid="whereSqlEvaluate" />
+		GROUP BY GC.CODECNAME,GE.PROVINCE,GE.CITY,GE.COUNTY,GC.CODECODE
+		) A
+		GROUP BY A.INSURER,A.AREA,A.INSURERCODE
+
+	</sql>
+	<select id="getPolicyInfo" parameterType="Pagination"
+		resultType="Map">
+<!-- 		<if test="queryCondition.province == null or queryCondition.province == ''">
+			<include refid="policyAll" />
+		</if>
+		<if	test="queryCondition.province != null and queryCondition.province != '' ">
+			<if test=" (queryCondition.city == null or queryCondition.city == '')">
+				<include refid="policyProvince" />
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				<if test="queryCondition.county == null or queryCondition.county == ''">
+					<include refid="policyCity" />
+				</if>
+				<if test="queryCondition.county != null and queryCondition.county != ''">
+					<include refid="policyCounty" />
+				</if>
+			</if>
+		</if> -->
+
+SELECT
+	GID.INSURANCECODE INSURERCODE,
+	GID.ADDRESS INSURER,
+	TEMP.ENTERPRISE,
+	TEMP.PAYAMOUNT,
+	TEMP.PREMIUM,
+	TEMP.PREVENTFEE
+FROM
+	GGINSURANCEDETAIL GID
+LEFT JOIN (
+	SELECT
+		GM.INSURERCODE,
+		COUNT (GM.INSURERCODE) ENTERPRISE,
+		SUM (GM.SPREADSHEETPREMIUM) PREMIUM,
+		SUM (GM.SPREADSHEETPREMIUM) * 0.1 PREVENTFEE,
+		SUM (GC.PAYAMOUNT) PAYAMOUNT
+	FROM
+		(
+			SELECT
+				*
+			FROM
+				GUPOLICYMAIN
+			WHERE
+				UNDERWRITEFLAG = '3'
+			AND PAYFLAG = '1'
+			AND POLICYNO IS NOT NULL
+		) GM
+	LEFT JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO
+	AND GI.SERIESNO = '2'
+	LEFT JOIN (
+		SELECT
+			POLICYNO,
+			SUM (PAYAMOUNT) PAYAMOUNT
+		FROM
+			GCCLAIM
+		WHERE
+			STATUS = '5'
+		GROUP BY
+			POLICYNO
+	) GC ON GM.POLICYNO = GC.POLICYNO
+		<where>
+				1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GM.CITY = #{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GM.COUNTY = #{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GM.INSURERCODE = #{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND TO_CHAR(GM.STARTDATE, 'YYYY-MM-DD') &gt;= #{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR(GM.ENDDATE, 'YYYY-MM-DD') &lt;= #{queryCondition.endDate}
+			</if>
+		</where>
+		GROUP BY
+		GM.INSURERCODE
+) TEMP ON GID.INSURANCECODE = TEMP.INSURERCODE ORDER BY INSURER
+	</select>
+	<!-- 报表下载sql -->
+	<select id="policyToExcel" parameterType="ConditionAdapter"
+		resultType="map">
+		<if test="queryCondition.province == null or queryCondition.province == ''">
+			<include refid="policyAll" />
+		</if>
+		<if
+			test="queryCondition.province != null and queryCondition.province != '' ">
+			<if test=" (queryCondition.city == null or queryCondition.city == '')">
+				<include refid="policyProvince" />
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				<if test="queryCondition.county == null or queryCondition.county == ''">
+					<include refid="policyCity" />
+				</if>
+				<if test="queryCondition.county != null and queryCondition.county != ''">
+					<include refid="policyCounty" />
+				</if>
+			</if>
+		</if>
+	</select>
+	<!-- 企业明细 -->
+	<select id="getEnterprises" parameterType="Pagination"
+		resultType="map">
+		SELECT <!-- (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE =
+		GU.APPLICODE) -->GU.INSUREDNAME COMNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GU.PROVINCE AND
+		CODETYPE='Province') PROVINCE,
+		(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE = GU.CITY AND CODETYPE='City')
+		CITY,
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE = GU.COUNTY AND
+		CODETYPE='County') COUNTY,
+		(<!-- SELECT CODECNAME FROM GGCODE WHERE CODECODE
+		= GU.INSURERCODE AND
+		CODETYPE='CICompanycode' --> 
+		SELECT
+			ADDRESS
+		FROM
+			GGINSURANCEDETAIL
+		WHERE
+		INSURANCECODE = GU.INSURERCODE
+		AND RISKCODE = '0901') INSURER,
+		CONCAT(CONCAT(TO_CHAR(GU.STARTDATE,
+		'YYYY-MM-DD'),'至'),TO_CHAR(GU.ENDDATE, 'YYYY-MM-DD'))
+		BETWEENDATE,GU.SPREADSHEETPREMIUM PREMIUM,GI.UNITAMOUNT/10000
+		UNITAMOUNT,
+		GU.SUMAMOUNT/10000 AMOUNT
+		FROM GUPOLICYMAIN
+		GU,GUPOLICYITEMKIND GI
+		<where>
+			1=1 AND GU.BUSINESSNO = GI.BUSINESSNO AND GI.KINDCODE='0901001'
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GU.CITY = #{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GU.COUNTY = #{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE = #{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GU.INSURERCODE = #{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GU.SINGDATE &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GU.SINGDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+			AND GU.UNDERWRITEFLAG='3' AND GU.PAYFLAG ='1'
+		</where>
+	</select>
+	<!-- 企业信息明细报表 -->
+	<select id="enterprisesExcel" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE =
+		GU.APPLICODE) COMNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GU.PROVINCE AND
+		CODETYPE='Province') PROVINCE,
+		(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE = GU.CITY AND CODETYPE='City')
+		CITY,
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE = GU.COUNTY AND
+		CODETYPE='County') COUNTY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE
+		= GU.INSURERCODE AND
+		CODETYPE='CICompanycode') INSURER,
+		CONCAT(CONCAT(TO_CHAR(GU.STARTDATE,
+		'YYYY-MM-DD'),'至'),TO_CHAR(GU.ENDDATE, 'YYYY-MM-DD'))
+		BETWEENDATE,GU.SPREADSHEETPREMIUM PREMIUM,GI.UNITAMOUNT/10000
+		UNITAMOUNT,
+		GU.SUMAMOUNT/10000 AMOUNT
+		FROM GUPOLICYMAIN
+		GU,GUPOLICYITEMKIND GI
+		<where>
+			1=1 AND GU.BUSINESSNO = GI.BUSINESSNO AND GI.KINDCODE='0901001'
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GU.CITY = #{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GU.COUNTY = #{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE = #{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GU.INSURERCODE IN
+				<foreach collection="queryCondition.insurance" item="insurer"
+					open="(" separator="," close=")">
+					#{insurer}
+				</foreach>
+			</if>
+
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GU.SINGDATE &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GU.SINGDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+			AND GU.UNDERWRITEFLAG='3' AND GU.PAYFLAG ='1'
+		</where>
+	</select>
+	<!-- 援助金明细 -->
+	<select id="getAssistances" parameterType="Pagination"
+		resultType="Map">
+		SELECT (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE =
+		GA.USERCODE) COMNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GU.PROVINCE AND CODETYPE='Province') PROVINCE,
+		(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE = GU.CITY AND CODETYPE='City') CITY,
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE = GU.COUNTY AND
+		CODETYPE='County') COUNTY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE
+		= GA.INSURERCODE AND CODETYPE='CICompanycode') INSURERCODE,
+		TO_CHAR(GA.HAPPENDATE,'YYYY-MM-DD') HAPPENDATE,
+		GA.ASSISTANCE/10000
+		ASSISTANCE
+		FROM GGACCIDENT GA
+		LEFT JOIN GGUSERCORP GU ON
+		GU.USERCODE=GA.USERCODE
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GU.CITY = #{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GU.COUNTY = #{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GA.INSURERCODE = #{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.BUSINESSCLASS = #{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GA.HAPPENDATE &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GA.HAPPENDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+		</where>
+	</select>
+	<!-- 援助金明细报表 -->
+	<select id="assistancesExcel" parameterType="ConditionAdapter"
+		resultType="Map">
+		SELECT (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE =
+		GA.USERCODE) COMNAME,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GU.PROVINCE AND CODETYPE='Province') PROVINCE,
+		(SELECT CODECNAME FROM
+		GGCODE WHERE CODECODE = GU.CITY AND CODETYPE='City') CITY,
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE = GU.COUNTY AND
+		CODETYPE='County') COUNTY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE
+		= GA.INSURERCODE AND CODETYPE='CICompanycode') INSURERCODE,
+		TO_CHAR(GA.HAPPENDATE,'YYYY-MM-DD') HAPPENDATE,
+		GA.ASSISTANCE/10000
+		ASSISTANCE
+		FROM GGACCIDENT GA
+		LEFT JOIN GGUSERCORP GU ON
+		GU.USERCODE=GA.USERCODE
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GU.CITY = #{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GU.COUNTY = #{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.BUSINESSCLASS = #{queryCondition.classCode}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GA.INSURERCODE IN
+				<foreach collection="queryCondition.insurance" item="insurer"
+					open="(" separator="," close=")">
+					#{insurer}
+				</foreach>
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GA.HAPPENDATE &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GA.HAPPENDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+		</where>
+	</select>
+	<!-- 投诉及反馈 -->
+	<select id="getComplainAndFeedback" parameterType="Pagination"
+		resultMap="feedbackMap">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE
+		WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE
+		<where>
+			(GE.ATTRIBUTEID='3' OR GE.ATTRIBUTEID='4')
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GE.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GE.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GE.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GE.BEEVALUATOR=#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GE.EVALUATETIME &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GE.EVALUATETIME
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD HH:MI:SS')
+			</if>
+			ORDER BY GE.EVALUATETIME DESC
+		</where>
+	</select>
+	<resultMap type="GgEvaluate" id="feedbackMap">
+		<id property="seriesNo" column="SERIESNO" />
+		<result property="beEvaluator" column="BEEVALUATOR" />
+		<result property="item" column="ITEM" />
+		<result property="content" column="CONTENT" />
+		<result property="score" column="SCORE" />
+		<result property="evaluator" column="EVALUATOR" />
+		<result property="evaluateTime" column="EVALUATETIME" />
+		<result property="AttributeId" column="ATTRIBUTEID" />
+		<result property="markId" column="MARKID" />
+		<result property="province" column="PROVINCE" />
+		<result property="city" column="CITY" />
+		<result property="county" column="COUNTY" />
+		<result property="remark" column="REMARK" />
+		<result property="flag" column="FLAG" />
+		<association property="list" column="SERIESNO" select="getFeedback" />
+	</resultMap>
+	<select id="getFeedback" parameterType="string" resultType="GgEvaluate">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE
+		WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE WHERE MARKID = #{ID} AND ATTRIBUTEID='2' ORDER BY
+		EVALUATETIME ASC
+	</select>
+
+
+	<!-- 赔案状况 -->
+	<select id="getClaimMain" parameterType="Pagination" resultType="map">
+		SELECT A.PROVINCE PROVINCE,A.CITY CITY,A.COUNTY COUNTY,A.PAYCOUNT
+		PAYCOUNT,A.PAYAMOUNT PAYAMOUNT,A.UNPAYCOUNT UNPAYCOUNT,A.UNPAYAMOUNT
+		UNPAYAMOUNT,A.ASSISTANCE ASSISTANCE FROM (
+		SELECT GC.PROVINCE
+		PROVINCE,GC.CITY CITY,GC.COUNTY
+		COUNTY,COUNT(GC.BUSINESSNO)
+		PAYCOUNT,SUM(GC.PAYAMOUNT)/10000
+		PAYAMOUNT,
+		SUM(0) UNPAYCOUNT,SUM(0)
+		UNPAYAMOUNT,SUM(GA.ASSISTANCE) ASSISTANCE FROM
+		GCCLAIM GC,GGACCIDENT GA
+		LEFT JOIN GGUSERCORP GU
+		ON GU.USERCODE=GA.USERCODE
+		<if
+			test="queryCondition.classCode != null and queryCondition.classCode != ''">
+			AND GU.BUSINESSCLASS = #{queryCondition.classCode}
+		</if>
+		<where>
+			GC.STATUS='6' AND GC.USERCODE=GA.USERCODE
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GC.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GC.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GC.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GC.INSURERCODE =#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GC.LOSSDATE &gt;=#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GC.LOSSDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+			GROUP BY GC.PROVINCE,GC.CITY,GC.COUNTY
+		</where>
+		UNION
+		SELECT GC.PROVINCE PROVINCE,GC.CITY CITY,GC.COUNTY COUNTY,SUM(0)
+		PAYCOUNT,SUM(0) PAYAMOUNT,
+		COUNT(GC.BUSINESSNO)
+		UNPAYCOUNT,SUM(GC.PAYAMOUNT)/10000 UNPAYAMOUNT,SUM(GA.ASSISTANCE)
+		ASSISTANCE FROM GCCLAIM GC ,GGACCIDENT GA LEFT JOIN GGUSERCORP GU
+		ON
+		GU.USERCODE=GA.USERCODE
+		<if
+			test="queryCondition.classCode != null and queryCondition.classCode != ''">
+			AND GU.BUSINESSCLASS = #{queryCondition.classCode}
+		</if>
+		<where>
+			GC.STATUS != '6' AND GC.USERCODE=GA.USERCODE
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GC.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GC.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GC.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GC.INSURERCODE =#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GC.LOSSDATE &gt;#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GC.LOSSDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+			GROUP BY GC.PROVINCE,GC.CITY,GC.COUNTY
+		</where>
+		) A
+	</select>
+
+	<!-- 赔案明细 -->
+	<select id="claimDetail" parameterType="Pagination" resultType="map">
+		SELECT
+		GU.COMPANYNAME,GC.BAOANDATE,GC.CLOSEDATE,GC.INSURERCODE,GC.LOSSCAUSE,GC.LOSSAMOUNT,GC.PAYAMOUNT,
+		(GC.LOSSAMOUNT-GC.PAYAMOUNT)
+		UNPAY,GA.ASSISTANCE,GC.STATUS,GC.BUSINESSNO FROM GCCLAIM GC
+		,GGACCIDENT GA LEFT JOIN GGUSERCORP GU
+		ON GU.USERCODE=GA.USERCODE
+		<if
+			test="queryCondition.classCode != null and queryCondition.classCode != ''">
+			AND GU.BUSINESSCLASS = #{queryCondition.classCode}
+		</if>
+		<where>
+			GC.USERCODE=GA.USERCODE
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GC.PROVINCE = #{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GC.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GC.COUNTY =#{queryCondition.county}
+			</if>
+			<if
+				test="queryCondition.insurance != null and queryCondition.insurance != ''">
+				AND GC.INSURERCODE =#{queryCondition.insurance}
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != ''">
+				AND GC.LOSSDATE &gt;=#{queryCondition.beginDate}
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND GC.LOSSDATE
+				&lt;TO_CHAR(#{queryCondition.endDate}+1,'YYYY-MM-DD')
+			</if>
+			ORDER BY GC.BAOANNO
+		</where>
+	</select>
+
+	<!-- 赔案查看详情 -->
+	<select id="viewDetail" parameterType="string" resultType="map">
+		SELECT
+		GU.COMPANYNAME,GC.BAOANDATE,GU.LINKNAME,GU.MOBILE,GU.TELEPHONE,GU.COMPANYADDRESS,
+		GC.INSURERCODE,GA.ASSISTANCE,GC.LOSSCAUSE,GC.LOSSDETAIL,GC.LOSSAMOUNT/10000
+		LOSSAMOUNT,GC.PAYAMOUNT/10000 PAYAMOUNT,GC.STATUS
+		FROM GCCLAIM
+		GC,GGACCIDENT GA,GGUSERCORP GU
+		<where>
+			GC.USERCODE=GA.USERCODE AND GA.USERCODE = GU.USERCODE
+			<if test="_parameter != null and _parameter != ''">
+				AND GC.BUSINESSNO=#{businessNo}
+			</if>
+		</where>
+	</select>
+	<!-- 保险截止日期 -->
+	<select id="getDate" parameterType="String" resultType="date">
+		SELECT
+		"MAX"(GM.ENDDATE) ENDDATE FROM GUPOLICYMAIN GM
+		WHERE
+		GM.UNDERWRITEFLAG =
+		'3'
+		AND GM.PAYFLAG = '1'
+		AND ENDDATE &gt; CURRENT_DATE
+		AND GM.APPLICODE =
+		#{userCode}
+		ORDER BY ENDDATE DESC
+	</select>
+</mapper>

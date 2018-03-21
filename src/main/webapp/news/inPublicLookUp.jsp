@@ -1,0 +1,220 @@
+<%@page import="com.sun.xml.internal.rngom.ast.builder.Include"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>安全生产责任保险服务信息平台</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<script type="text/javascript" language="JavaScript"></script>
+<script type="text/javascript" src="${basePath }/js/jquery.min.js"></script>
+<script type="text/javascript" src="${basePath }/js/index.js"></script>
+<link rel="stylesheet" href="${basePath }/css/xm1.css">
+</head>
+
+<body>
+	<header>
+	<div class="img_1">
+		<jsp:include page="/news/biaoti.jsp"/>
+	</div>
+	</header>
+	<nav
+		style="min-height:580px;background-color:white;width:1170px;margin:0 auto;">
+	<div class="nav_1">
+		<div
+			style="font-size:20px; font-weight: 900;margin: 0 auto;text-align: center;">
+			常见问题</div>
+		<HR>
+	</div>
+	<style>
+#ul-1,#li-1 {
+	width: 100%;
+	height: 20px;
+	list-style: disc;
+	padding: 0 10px 0 15px;
+}
+
+#li-1 {
+	padding: 10px 0px;
+}
+
+#li-1 a {
+	display: block;
+	float: left;
+	color: black;
+}
+
+#li-1 a:hover,#li-1:hover {
+	color: #e4393c;
+}
+
+#span-1 {
+	display: block;
+	float: right;
+	margin-right: 20px;
+}
+</style>
+	<div style="text-align: left;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>保单什么时候给我送过来啊？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>过两天就给您送过去了，请耐心等待
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>投保后保单我什么时候才能收到？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>您在成功支付保费后，会由您当地保险公司在1个工作日内出具保单，快递到您所登记的地址，具体到达时间视快递公司的物流速度。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>在你们网上支付安全吗？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>网上支付是通过国内各大银行的支付网关进行操作的，安全性完全有保证。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>通过网上支付以后你们怎么知道是我支付的呢？会不会搞错？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>
+				通过线上支付您首先是在缴费查询中查询到投保单勾选要缴费订单之后再链接到银行支付系统的，系统会自动生成一个唯一的支付订单号，用于识别支付对象，
+				<br>&nbsp;&nbsp;&nbsp;所以是不会弄错的，请您放心。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>如果我通过线下银行转账，你们怎么知道我已经支付了，什么时候可以出单呢？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>
+				如果您通过银行网站或银行柜台转账后，会有财务人员进行核实，确认后出单，出单后当天将您的保单寄出。为了能在第一时间为您出单，建议您转账时在备
+				<br>&nbsp;&nbsp;&nbsp;注栏注明订单号，订单号需要在平台缴费查询中的银行转账界面点击“确认生成订单”生成。当然，您也可以在转账成功后拨打我们客服热线提示一下及时查询。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>如果我用个人帐户缴费，发票能不能写公司名称抬头？如果我用个人帐户缴费，发票能不能写公司名称抬头？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>不管您使用什么方式缴费，发票的抬头都是出单保险公司以及投保企业公司名称。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span> 	出险后报案理赔联系谁？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>出险以后请第一时间拨打保单上的出单公司服务电话或拨打德圣经纪客服专线4000049696进行报案。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span>你们共保体在理赔方面跟原来我们在保险公司直接买有什么优势吗？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>1.事故无责也赔付 2.紧急救援 3.小额快付 4.预付赔款 5.理赔纠纷调解 6.专业的保险经纪服务
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span> 	退费如何操作？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>
+				涉及退保或保费批减的情况，需要退费给企业的，需要像财务提供以下资料，保险公司批单，企业、个人退保情况说明，运管机构证明，原汇款银行信息。
+				<br>&nbsp;&nbsp;&nbsp;涉及客户多支付保费的情况，需要提供，原汇款银行信息，企业、个人退费情况说明。银行信息包括，开户行、帐户名称，账号、联行号。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+								display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter" style="font-size: 16px;">&nbsp;问：</span> 	我已在你们平台上投保，想要追加超赔或其他附加险等，怎么办？
+		</a>
+		</span> 
+		<span> <a 
+			style="text-overflow : ellipsis;white-space:nowrap;
+					display:block;width:100%;float:left;margin-top: 20px;">
+				<span class="letter1" style="font-size: 16px;">&nbsp;答：</span>
+				您可以向我们平台提出批改申请，我们发给保险公司增加批单，并计算增加的保费，将追加保费补缴给平台即可。
+		</a>
+		</span>
+		<hr style="border:1px dotted;">
+	</div>
+
+	</nav>
+	<%-- <form action="/publicLookUpContinue" id="fm" name="fm"
+		method="get">
+		<div style="width: 1170px;margin:0 auto;">
+			<jsp:include page="${basePath }/common/pagination.jsp"></jsp:include>
+			<hr>
+		</div>
+	</form> --%>
+	<jsp:include page="/news/footer.jsp"></jsp:include>
+</body>
+</html>

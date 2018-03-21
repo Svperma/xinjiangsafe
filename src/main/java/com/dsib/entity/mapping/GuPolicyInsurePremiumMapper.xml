@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyInsurePremiumMapper" >
+  <resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyInsurePremium" >
+    <id column="BUSINESS_NO" property="businessNo" jdbcType="VARCHAR" />
+    <id column="VAL_NO" property="valNo" jdbcType="VARCHAR" />
+    <result column="SUM_PREMIUM" property="sumPremium" jdbcType="DECIMAL" />
+    <result column="PREMIUM" property="premium" jdbcType="DECIMAL" />
+    <result column="ITEMKIND_ONE" property="itemkindOne" jdbcType="DECIMAL" />
+    <result column="ITEMKIND_TWO" property="itemkindTwo" jdbcType="DECIMAL" />
+    <result column="ITEMKIND_THREE" property="itemkindThree" jdbcType="DECIMAL" />
+    <result column="ITEMKIND_FOUR" property="itemkindFour" jdbcType="DECIMAL" />
+    <result column="INSURE_CODE" property="insureCode" jdbcType="VARCHAR" />
+    <result column="FLAG" property="flag" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BUSINESS_NO, VAL_NO, SUM_PREMIUM, PREMIUM, ITEMKIND_ONE, ITEMKIND_TWO, ITEMKIND_THREE, 
+    ITEMKIND_FOUR, INSURE_CODE, FLAG, REMARK
+  </sql>
+  <!-- 查询报价列表 -->
+  <select id="findInsurePremiumList" resultMap="BaseResultMap" parameterType="com.dsib.entity.GuPolicyInsurePremiumKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from GUPOLICYINSUREPREMIUM
+    <where>
+    		<if test="businessNo!=null &amp;&amp; businessNo!=''"> 
+ 	    	 and BUSINESS_NO=#{businessNo} 
+ 	    	</if> 
+	    	<if test="valNo!=null &amp;&amp; valNo!=''"> 
+ 	    	 and VAL_NO=#{valNo} 
+ 	    	</if> 
+    </where>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.dsib.entity.GuPolicyInsurePremiumKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from GUPOLICYINSUREPREMIUM
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and VAL_NO = #{valNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyInsurePremiumKey" >
+    delete from GUPOLICYINSUREPREMIUM
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and VAL_NO = #{valNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dsib.entity.GuPolicyInsurePremium" >
+    insert into GUPOLICYINSUREPREMIUM (BUSINESS_NO, VAL_NO, SUM_PREMIUM, 
+      PREMIUM, ITEMKIND_ONE, ITEMKIND_TWO, 
+      ITEMKIND_THREE, ITEMKIND_FOUR, INSURE_CODE, 
+      FLAG, REMARK)
+    values (#{businessNo,jdbcType=VARCHAR}, #{valNo,jdbcType=VARCHAR}, #{sumPremium,jdbcType=DECIMAL}, 
+      #{premium,jdbcType=DECIMAL}, #{itemkindOne,jdbcType=DECIMAL}, #{itemkindTwo,jdbcType=DECIMAL}, 
+      #{itemkindThree,jdbcType=DECIMAL}, #{itemkindFour,jdbcType=DECIMAL}, #{insureCode,jdbcType=VARCHAR}, 
+      #{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyInsurePremium" >
+    insert into GUPOLICYINSUREPREMIUM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="businessNo != null" >
+        BUSINESS_NO,
+      </if>
+      <if test="valNo != null" >
+        VAL_NO,
+      </if>
+      <if test="sumPremium != null" >
+        SUM_PREMIUM,
+      </if>
+      <if test="premium != null" >
+        PREMIUM,
+      </if>
+      <if test="itemkindOne != null" >
+        ITEMKIND_ONE,
+      </if>
+      <if test="itemkindTwo != null" >
+        ITEMKIND_TWO,
+      </if>
+      <if test="itemkindThree != null" >
+        ITEMKIND_THREE,
+      </if>
+      <if test="itemkindFour != null" >
+        ITEMKIND_FOUR,
+      </if>
+      <if test="insureCode != null" >
+        INSURE_CODE,
+      </if>
+      <if test="flag != null" >
+        FLAG,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="businessNo != null" >
+        #{businessNo,jdbcType=VARCHAR},
+      </if>
+      <if test="valNo != null" >
+        #{valNo,jdbcType=VARCHAR},
+      </if>
+      <if test="sumPremium != null" >
+        #{sumPremium,jdbcType=DECIMAL},
+      </if>
+      <if test="premium != null" >
+        #{premium,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindOne != null" >
+        #{itemkindOne,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindTwo != null" >
+        #{itemkindTwo,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindThree != null" >
+        #{itemkindThree,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindFour != null" >
+        #{itemkindFour,jdbcType=DECIMAL},
+      </if>
+      <if test="insureCode != null" >
+        #{insureCode,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyInsurePremium" >
+    update GUPOLICYINSUREPREMIUM
+    <set >
+      <if test="sumPremium != null" >
+        SUM_PREMIUM = #{sumPremium,jdbcType=DECIMAL},
+      </if>
+      <if test="premium != null" >
+        PREMIUM = #{premium,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindOne != null" >
+        ITEMKIND_ONE = #{itemkindOne,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindTwo != null" >
+        ITEMKIND_TWO = #{itemkindTwo,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindThree != null" >
+        ITEMKIND_THREE = #{itemkindThree,jdbcType=DECIMAL},
+      </if>
+      <if test="itemkindFour != null" >
+        ITEMKIND_FOUR = #{itemkindFour,jdbcType=DECIMAL},
+      </if>
+      <if test="insureCode != null" >
+        INSURE_CODE = #{insureCode,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        FLAG = #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and VAL_NO = #{valNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyInsurePremium" >
+    update GUPOLICYINSUREPREMIUM
+    set SUM_PREMIUM = #{sumPremium,jdbcType=DECIMAL},
+      PREMIUM = #{premium,jdbcType=DECIMAL},
+      ITEMKIND_ONE = #{itemkindOne,jdbcType=DECIMAL},
+      ITEMKIND_TWO = #{itemkindTwo,jdbcType=DECIMAL},
+      ITEMKIND_THREE = #{itemkindThree,jdbcType=DECIMAL},
+      ITEMKIND_FOUR = #{itemkindFour,jdbcType=DECIMAL},
+      INSURE_CODE = #{insureCode,jdbcType=VARCHAR},
+      FLAG = #{flag,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where BUSINESS_NO = #{businessNo,jdbcType=VARCHAR}
+      and VAL_NO = #{valNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

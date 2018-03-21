@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GpOrderDetailMapper">
+	<insert id="insertOrderDetail" parameterType="GpOrderDetail">
+		INSERT INTO
+		GPORDERDETAIL
+		(BUSINESSNO,ORDERNO,ORDERSTATUS,DEALDATE,MERCHANTNO,MERCHANTRETRIEVENO,
+		ORDERCURRENCY,ORDERAMOUNT,PAYMENTSERINO,PAYMENTACCOUNTNO,ACCOUNTNO,SETTLECURRENCY,SETTLEAMOUNT,
+		COMMISSION,SETTLEDAMOUNT,PAYMENTSERISTATUS,PAYMENTNAME,ENDDATE) VALUES
+		(#{businessNo},#{orderNo}
+		,#{orderStatus,jdbcType=VARCHAR},#{dealDate},#{merchantNo,jdbcType=VARCHAR},#{merchantRetrieveNo,jdbcType=VARCHAR},#{orderCurrency,jdbcType=VARCHAR},#{orderAmount},
+		#{paymentSeriNo,jdbcType=VARCHAR},#{paymentAccountNo,jdbcType=VARCHAR},#{accountNo,jdbcType=VARCHAR},
+		#{settleCurrency,jdbcType=VARCHAR},#{settleAmount},#{commission},
+		#{settledAmount},#{paymentSeriStatus,jdbcType=VARCHAR},#{paymentName,jdbcType=VARCHAR},#{endDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="updateByBusinessNo" parameterType="GpOrderDetail">
+		UPDATE GPORDERDETAIL
+		SET
+		ORDERSTATUS=#{orderStatus}
+		,MERCHANTNO=#{merchantNo}
+		,SETTLECURRENCY=#{settleCurrency}
+		,SETTLEAMOUNT=#{settleAmount}
+		,ENDDATE=#{endDate,jdbcType=TIMESTAMP}
+		<where>
+			BUSINESSNO=#{businessNo}
+		</where>
+	</update>
+	<update id="updatePolicyMain" parameterType="String">
+		UPDATE GUPOLICYMAIN SET PAYFLAG = '1' WHERE BUSINESSNO = #{businessNo }
+		
+	</update>
+	
+	<select id="selectByMainInMerchantOrderNo" parameterType="String"
+		resultType="GpOrderDetail">
+		SELECT * FROM GPORDERDETAIL
+		<where>
+			1=1
+			AND BUSINESSNO=
+			(SELECT MERCHANTORDERNO FROM GPMAINORDER WHERE BUSINESSNO=
+			(SELECT BUSINESSNO
+			FROM GUPOLICYMAIN WHERE BUSINESSNO=#{businessNo,jdbcType=VARCHAR})
+			)
+		</where>
+	</select>
+
+	<delete id="deleteByBusinessNo" parameterType="String">
+		DELETE GPORDERDETAIL
+		<where>
+			1=1
+			AND BUSINESSNO=
+			( SELECT MERCHANTORDERNO FROM GPMAINORDER WHERE BUSINESSNO=
+			( SELECT
+			BUSINESSNO FROM GUPOLICYMAIN WHERE
+			BUSINESSNO=#{businessNo,jdbcType=VARCHAR} )
+			)
+		</where>
+	</delete>
+	
+	<update id="updatePayFlag" parameterType="String">
+		UPDATE GUPOLICYENDORSE  SET PAYFLAG = '2' WHERE ENDORSEMENT = #{business } 
+	</update>
+	
+	<update id="updateproposal" parameterType="map">
+		UPDATE GUPOLICYMAIN SET PROPOSALNO = #{proposal } , SIGNDATE = #{signTime } WHERE BUSINESSNO = #{buseiness }
+	</update>
+
+</mapper>

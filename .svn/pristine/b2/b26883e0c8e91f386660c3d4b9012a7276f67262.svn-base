@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgUserCorpMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgUserCorp">
+		<id column="USERCODE" property="userCode" jdbcType="VARCHAR" />
+		<result column="BUSINESSLICENSEDATE" property="businessLicenseDate"
+			jdbcType="DATE" />
+		<result column="COMPANYNAME" property="companyName" jdbcType="VARCHAR" />
+		<result column="COMPANYADDRESS" property="companyAddress"
+			jdbcType="VARCHAR" />
+		<result column="SAFETYLICESEDATE" property="safetyLiceseDate"
+			jdbcType="DATE" />
+		<result column="LINKNAME" property="linkName" jdbcType="VARCHAR" />
+		<result column="CLASSCODE" property="classCode" jdbcType="VARCHAR" />
+		<result column="BUSINESSCLASS" property="businessClass"
+			jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="VARCHAR" />
+		<result column="COUNTY" property="county" jdbcType="VARCHAR" />
+		<result column="CORPRATION" property="corpration" jdbcType="VARCHAR" />
+		<result column="EMCOUNT" property="emCount" jdbcType="DECIMAL" />
+		<result column="TELEPHONE" property="telephone" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="FAX" property="fax" jdbcType="VARCHAR" />
+		<result column="POST" property="post" jdbcType="VARCHAR" />
+		<result column="BUSINESSLICENSENO" property="businessLicenseNo"
+			jdbcType="VARCHAR" />
+		<result column="BUSINESSLICENSEIMAGE" property="businessLicenseImage"
+			jdbcType="VARCHAR" />
+		<result column="SAFETYLICENSENO" property="safetyLicenseNo"
+			jdbcType="VARCHAR" />
+		<result column="SAFETYLICENSEIMAGE" property="safetyLicenseImage"
+			jdbcType="VARCHAR" />
+		<result column="TURNOVER" property="turnover" jdbcType="DECIMAL" />
+		<result column="TAX" property="tax" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+		<result column="STANDARDLEVELIMAGE" property="standardLevelImage"
+			jdbcType="VARCHAR" />
+		<result column="RISKLEVEL" property="riskLevel" jdbcType="CHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="FAITHLEVEL" property="faithLevel" jdbcType="VARCHAR" />
+		<result column="STANDARDLEVEL" property="standardLevel"
+			jdbcType="VARCHAR" />
+		<result column="SUMSTANDARDLEVEL" property="sumstandardLevel"
+			jdbcType="VARCHAR" />
+		<result column="CLASSSIZE" property="classSize" jdbcType="VARCHAR" />
+		<result column="VALIDSTATUS" property="validStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		USERCODE, BUSINESSLICENSEDATE, COMPANYNAME, COMPANYADDRESS, SAFETYLICESEDATE,
+		LINKNAME,
+		CLASSCODE, BUSINESSCLASS, PROVINCE, CITY, COUNTY, CORPRATION, EMCOUNT,
+		TELEPHONE,
+		MOBILE, EMAIL, FAX, POST, BUSINESSLICENSENO, BUSINESSLICENSEIMAGE,
+		SAFETYLICENSENO,
+		SAFETYLICENSEIMAGE, TURNOVER, TAX, REMARK, STANDARDLEVELIMAGE, RISKLEVEL, FLAG,
+		FAITHLEVEL,
+		STANDARDLEVEL, SUMSTANDARDLEVEL, CLASSSIZE, VALIDSTATUS
+	</sql>
+	<!-- 根据主键查询企业详细信息 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GGUSERCORP
+		where USERCODE = #{usercode,jdbcType=VARCHAR}
+	</select>
+	<!-- 模糊查询企业 -->
+	<select id="getUserLikeName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GGUSERCORP
+		where COMPANYNAME LIKE '%'||#{companyName,jdbcType=VARCHAR}||'%' AND rownum&lt;10
+	</select>
+	<!-- 多表查询(企业状况) -->
+	<select id="getCorpBy_userCode1" parameterType="Pagination"
+		resultType="map">
+		<!-- SELECT
+		GU.USERCODE,
+		GU.COMPANYNAME,
+		GU.SAFETYLICENSENO,
+		GU.SAFETYLICESEDATE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.CLASSCODE AND
+		CODETYPE='IndustryCategories') CLASSCODE,
+		GM.BUSINESSNO,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.STANDARDLEVEL AND
+		CODETYPE='StandardLevel') STANDARDLEVEL,
+		CASE WHEN GM.ENDDATE IS NOT NULL THEN '已投保' ELSE '未投保' END ENDDATE,
+		NVL (GI.UNITAMOUNT/10000, 0) UNITAMOUNT,
+		NVL (GM.SUMAMOUNT/10000, 0) SUMAMOUNT,
+		CASE WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE
+		USERCODE=GU.USERCODE AND EVALUATION = '1' AND USERIND = '1') IS NOT
+		NULL
+		THEN '1'
+		WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE USERCODE=GU.USERCODE
+		AND EVALUATION = '1' AND USERIND ='3') IS NOT NULL
+		THEN '1'
+		WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE USERCODE=GU.USERCODE
+		AND EVALUATION = '1' AND USERIND = '4') IS NOT NULL
+		THEN '1'
+		ELSE '0' END SOURCE,
+		(SELECT COUNT(BUSINESS_NO) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO = GM.BUSINESSNO) EMCOUNT
+		FROM
+		GGUSERCORP GU
+		LEFT JOIN GUPOLICYMAIN GM ON GM.APPLICODE = GU.USERCODE
+		AND GM.ENDDATE &gt;= CURRENT_DATE
+		AND GM.STARTDATE &lt;= CURRENT_DATE
+		AND GM.UNDERWRITEFLAG = '3'
+		AND GM.PAYFLAG = '1'
+		LEFT JOIN GUPOLICYITEMKIND GI ON GI.BUSINESSNO = GM.BUSINESSNO
+		AND KINDCODE = '0901001'
+		
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">AND GU.COMPANYNAME LIKE '%'||#{queryCondition.companyName}||'%'
+			</if>
+			<if
+				test="queryCondition.businessLicenseNo != null and queryCondition.businessLicenseNo != ''">AND GU.BUSINESSLICENSENO LIKE
+				'%'||#{queryCondition.businessLicenseNo}||'%'  </if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''"> AND GU.CLASSCODE=#{queryCondition.classCode} </if>
+			ORDER BY GM.ENDDATE DESC
+		</where>
+		 -->
+<!-- 		
+	SELECT DISTINCT
+	GM_AND_GU_SUM_COMPANY.USERCODE,
+	GM_AND_GU_SUM_COMPANY.COMPANYNAME,
+	GM_AND_GU_SUM_COMPANY.SAFETYLICENSENO,
+	GM_AND_GU_SUM_COMPANY.SAFETYLICESEDATE,
+	GM_AND_GU_SUM_COMPANY.IDENTITYNUMBER,
+	CASE
+WHEN GM_AND_GU_SUM_COMPANY.POLICYNO IS NOT NULL
+AND GM_AND_GU_SUM_COMPANY.STARTDATE &lt; SYSDATE
+AND GM_AND_GU_SUM_COMPANY.ENDDATE &gt; SYSDATE THEN
+	'已投保'
+ELSE
+	'未投保'
+END ENDDATE,
+ (
+	SELECT
+		CODECNAME
+	FROM
+		GGCODE
+	WHERE
+		CODECODE = GM_AND_GU_SUM_COMPANY.CLASSCODE
+	AND CODETYPE = 'IndustryCategories'
+) CLASSCODE,
+ (
+	SELECT
+		CODECNAME
+	FROM
+		GGCODE
+	WHERE
+		CODECODE = GM_AND_GU_SUM_COMPANY.STANDARD_LEVEL
+	AND CODETYPE = 'StandardLevel'
+) STANDARDLEVEL,
+ GM_AND_GU_SUM_COMPANY.UNITAMOUNT,
+ GM_AND_GU_SUM_COMPANY.SUMAMOUNT,
+ GM_AND_GU_SUM_COMPANY.EMCOUNT,
+ GM_AND_GU_SUM_COMPANY.PROVINCE,
+ GM_AND_GU_SUM_COMPANY.CITY,
+ GM_AND_GU_SUM_COMPANY.COUNTY
+FROM
+	(
+		SELECT
+			GU.USERCODE,
+			GM.INSUREDNAME COMPANYNAME,
+			GI.INSUREDTYPE SAFETYLICENSENO,
+			GU.SAFETYLICESEDATE,
+			GI.IDENTITYNUMBER,
+			GM.POLICYNO,
+			GM.STARTDATE,
+			GM.ENDDATE,
+			GI.REMARK CLASSCODE,
+			GI.POLICYNO STANDARD_LEVEL,
+			GM.SUMAMOUNT / GM.CURRENCY UNITAMOUNT,
+			GM.SUMAMOUNT,
+			GM.CURRENCY EMCOUNT,
+			GM.PROVINCE,
+			GM.CITY,
+			GM.COUNTY
+		FROM
+			GUPOLICYMAIN GM
+		LEFT JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO
+		AND GI.SERIESNO = '2'
+		LEFT JOIN GGUSERCORP GU ON GI.IDENTITYNUMBER = GU.BUSINESSLICENSENO
+		UNION ALL
+			SELECT
+				GU.USERCODE,
+				GU.COMPANYNAME,
+				GU.SAFETYLICENSENO SAFETYLICENSENO,
+				GU.SAFETYLICESEDATE,
+				GU.BUSINESSLICENSENO,
+				GM.POLICYNO,
+				GM.STARTDATE,
+				GM.ENDDATE,
+				GI.REMARK CLASSCODE,
+				GI.POLICYNO STANDARD_LEVEL,
+				GM.SUMAMOUNT / GM.CURRENCY UNITAMOUNT,
+				GM.SUMAMOUNT,
+				GM.CURRENCY,
+				GM.PROVINCE,
+				GM.CITY,
+				GM.COUNTY
+			FROM
+				GGUSERCORP GU
+			LEFT JOIN GUPOLICYINSURED GI ON GU.BUSINESSLICENSENO = GI.IDENTITYNUMBER
+			AND GI.SERIESNO = '2'
+			LEFT JOIN GUPOLICYMAIN GM ON GM.BUSINESSNO = GI.BUSINESSNO
+	) GM_AND_GU_SUM_COMPANY
+
+
+		<where>
+			1=1
+			<if	test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND GM_AND_GU_SUM_COMPANY.USERCODE=#{queryCondition.userCode} 
+			</if>
+			<if	test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND GM_AND_GU_SUM_COMPANY.COMPANYNAME LIKE '%'||#{queryCondition.companyName}||'%'
+			</if>
+			<if	test="queryCondition.businessLicenseNo != null and queryCondition.businessLicenseNo != ''">
+				AND GM_AND_GU_SUM_COMPANY.IDENTITYNUMBER LIKE '%'||#{queryCondition.businessLicenseNo}||'%'
+		    </if>
+			<if	test="queryCondition.province != null and queryCondition.province != ''">
+				AND GM_AND_GU_SUM_COMPANY.PROVINCE=#{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GM_AND_GU_SUM_COMPANY.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GM_AND_GU_SUM_COMPANY.COUNTY=#{queryCondition.county} 
+			</if>
+			<if	test="queryCondition.classCode != null and queryCondition.classCode != ''"> 
+				AND GM_AND_GU_SUM_COMPANY.CLASSCODE=#{queryCondition.classCode} 
+			</if>
+			ORDER BY ENDDATE
+		</where> -->
+		
+		
+SELECT
+	*
+FROM
+	(
+		SELECT
+			GUC.USERCODE,
+			GUC.PROVINCE,
+			GUC.CITY,
+			GUC.COUNTY,
+			(
+				SELECT
+					CODECNAME
+				FROM
+					GGCODE
+				WHERE
+					CODECODE = GUC.CLASSCODE
+				AND CODETYPE = 'IndustryCategories'
+			) CLASSCODE,
+			GUC.COMPANYNAME,
+			GUC.BUSINESSLICENSENO,
+			GUC.SAFETYLICENSENO,
+			GUC.SAFETYLICESEDATE,
+			(
+				CASE
+				WHEN GPM.ENDDATE IS NULL THEN
+					'未投保'
+				ELSE
+					(
+						CASE
+						WHEN GPM.ENDDATE > SYSDATE THEN
+							'已投保'
+						ELSE
+							'已过期'
+						END
+					)
+				END
+			) ENDDATE,
+			(
+				SELECT
+					CODECNAME
+				FROM
+					GGCODE
+				WHERE
+					CODECODE = GUC.STANDARDLEVEL
+				AND CODETYPE = 'StandardLevel'
+			) STANDARDLEVEL,
+			GPM.SUMAMOUNT,
+			GPM.SUMAMOUNT / GPM.CURRENCY UNITAMOUNT,
+			GPM.CURRENCY EMCOUNT,
+			GPM.BUSINESSNO
+		FROM
+			(
+				SELECT
+					SUBSTR (
+						MIN (TEMP_POLICYMAIN2.TEMP_PK),
+						INSTR (
+							MIN (TEMP_POLICYMAIN2.TEMP_PK),
+							'-',
+							1
+						) + 1
+					) BUSINESSNO,
+					TEMP_POLICYMAIN2.IDENTITYNUMBER IDENTITYNUMBER
+				FROM
+					(
+						SELECT
+							ROWNUM || '-' || TEMP_POLICYMAIN.BUSINESSNO TEMP_PK,
+							TEMP_POLICYMAIN.*
+						FROM
+							(
+								SELECT
+									GM.*, GI.IDENTITYNUMBER
+								FROM
+									GUPOLICYMAIN GM
+								INNER JOIN GUPOLICYINSURED GI ON GM.BUSINESSNO = GI.BUSINESSNO
+								AND GI.SERIESNO = '2'
+								ORDER BY
+									GI.IDENTITYNUMBER,
+									GM.ENDDATE DESC
+							) TEMP_POLICYMAIN
+					) TEMP_POLICYMAIN2
+				GROUP BY
+					TEMP_POLICYMAIN2.IDENTITYNUMBER
+			) CENTER
+		LEFT JOIN GUPOLICYMAIN GPM ON CENTER.BUSINESSNO = GPM.BUSINESSNO
+		RIGHT JOIN GGUSERCORP GUC ON GUC.BUSINESSLICENSENO = CENTER.IDENTITYNUMBER
+		ORDER BY GPM.ENDDATE DESC
+	) RESULT
+	
+	<where>
+			1=1
+			<if	test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND RESULT.USERCODE=#{queryCondition.userCode} 
+			</if>
+			<if	test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND RESULT.COMPANYNAME LIKE '%'||#{queryCondition.companyName}||'%'
+			</if>
+			<if	test="queryCondition.businessLicenseNo != null and queryCondition.businessLicenseNo != ''">
+				AND RESULT.BUSINESSLICENSENO LIKE '%'||#{queryCondition.businessLicenseNo}||'%'
+		    </if>
+			<if	test="queryCondition.province != null and queryCondition.province != ''">
+				AND RESULT.PROVINCE=#{queryCondition.province}
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND RESULT.CITY=#{queryCondition.city}
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND RESULT.COUNTY=#{queryCondition.county} 
+			</if>
+			<if	test="queryCondition.classCode != null and queryCondition.classCode != ''"> 
+				AND RESULT.CLASSCODE=#{queryCondition.classCode} 
+			</if>
+		</where>
+					ORDER BY
+					RESULT.ENDDATE,
+					RESULT.USERCODE
+
+	</select>
+	<!-- 查询企业总数 -->
+	<select id="getSumCorpCount" parameterType="Pagination"
+		resultType="map">
+		select count(distinct GU.USERCODE) from GGUSERCORP GU
+		<where>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">GU.PROVINCE=#{queryCondition.province} AND</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">GU.CITY=#{queryCondition.city} AND</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">GU.COUNTY=#{queryCondition.county} </if>
+		</where>
+	</select>
+	<!-- 企业状况详细信息 -->
+	<select id="get_Main_itemBy_userCode" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GM.POLICYNO,GM.INSUREDNAME,GM.INSUREDADDRESS,GU.LINKNAME,GU.TELEPHONE,GM.SPREADSHEETPREMIUM
+		SSP,
+		GU.SAFETYLICENSENO,GM.STARTDATE,GM.ENDDATE,GM.SUMPREMIUM,NVL (GI.UNITAMOUNT/10000, 0) UNITAMOUNT,
+		NVL (GM.SUMAMOUNT/10000, 0) SUMAMOUNT,GI.SPREADSHEETPREMIUM
+		GISSP,GI.KINDCODE,
+		GM.ARGUESOLUTION,GU.COMPANYNAME,GU.COMPANYADDRESS,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.CLASSCODE AND
+		CODETYPE='IndustryCategories') CLASSCODE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.CLASSSIZE AND
+		CODETYPE='EnterpriseScale') CLASSSIZE,
+		GU.EMCOUNT,GU.BUSINESSLICENSENO,GU.BUSINESSLICENSEDATE,GU.BUSINESSLICENSEIMAGE,GU.SAFETYLICENSEIMAGE,GU.STANDARDLEVELIMAGE,
+		GU.RISKLEVEL,EVA.SOURCE
+		SOU,EVA.CONTENT,EVA.DOCADDRESS,EVA.EVALUATDATE,GU.USERCODE,GM.BUSINESSNO
+		BUSINESSNO,GU.SAFETYLICESEDATE
+		FROM GGUSERCORP GU
+		LEFT JOIN GUPOLICYMAIN GM ON
+		GU.USERCODE = GM.APPLICODE
+		<!-- AND GM.ENDDATE &gt;= CURRENT_DATE
+		AND GM.STARTDATE &lt;= CURRENT_DATE -->
+		AND GM.UNDERWRITEFLAG = '3'
+		AND GM.PAYFLAG = '1'
+		LEFT JOIN GUPOLICYITEMKIND GI ON
+		GI.BUSINESSNO = GM.BUSINESSNO
+		AND GI.KINDCODE = '0901001'
+		LEFT JOIN GGEVALUATEDANGERS EVA ON
+		EVA.USERCODE=GU.USERCODE
+		AND EVA.EVALUATION = '1'
+
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">AND GU.COMPANYNAME=#{queryCondition.companyName} </if>
+			<if
+				test="queryCondition.businessLicenseNo != null and queryCondition.businessLicenseNo != ''">AND GU.BUSINESSLICENSENO LIKE
+				'%'||#{queryCondition.businessLicenseNo}||'%'  </if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''"> AND GU.CLASSCODE=#{queryCondition.classCode} </if>
+		</where>
+	</select>
+	<!-- 查询企业总数 -->
+	<select id="getCorpBy_userCodeCount" parameterType="Pagination"
+		resultType="map">
+		SELECT COUNT(GU.USERCODE) USERCODE FROM GGUSERCORP GU
+		<where>
+			VALIDSTATUS='1'
+			<if test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county}</if>
+		</where>
+	</select>
+	<!-- 查询评估内容 -->
+	<select id="getContent" parameterType="string" resultType="map">
+		SELECT GOV.ORGNAME,(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GOV.GRADE AND CODETYPE = 'grade')
+		GRADE,EVA.USERIND,EVA.CONTENT,EVA.DOCADDRESS,TO_CHAR(EVA.EVALUATDATE,'YYYY-MM-DD')
+		EVALUATDATE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE =
+		GU.RISKLEVEL AND CODETYPE = 'riskLevel') RISKLEVEL FROM
+		GGEVALUATEDANGERS EVA
+		LEFT JOIN GGUSERCORP GU ON
+		EVA.USERCODE=GU.USERCODE
+		LEFT JOIN GOVORGAN GOV ON
+		EVA.EVALUATOR=GOV.ORGCODE
+		<where>
+			EVA.USERCODE=#{userCode,jdbcType=VARCHAR} AND EVA.USERIND
+			IN('1','3','4') AND EVA.EVALUATION='1'
+		</where>
+	</select>
+	<!-- 查询危险源 -->
+	<select id="get_Source" parameterType="string" resultType="map">
+		SELECT EVA.SOURCE,EVA.USERIND FROM GGEVALUATEDANGERS EVA
+		<where>
+			USERCODE=#{userCode} AND DANGERSCONDITION='1'
+		</where>
+	</select>
+	<!-- 请输入需要查询的企业名 -->
+	<select id="getCompanyName" resultType="GgUserCorp"
+		parameterType="string">
+		SELECT * FROM GGUSERCORP WHERE
+		COMPANYNAME LIKE '%'||#{id}||'%'
+	</select>
+	<!-- 请输入需要查询的企业名 -->
+	<select id="selectByCompanyName" resultType="GgUserCorp"
+		parameterType="String">
+		SELECT * FROM GGUSERCORP WHERE
+		COMPANYNAME = #{companyName}
+	</select>
+	<!-- 根据businessNo查询主险和附加险 -->
+	<select id="getBusinessNo" resultType="GuPolicyItemKind"
+		parameterType="string">
+		SELECT * FROM GUPOLICYITEMKIND WHERE
+		1=1
+		AND BUSINESSNO = #{_paramter} ORDER BY KINDCODE
+	</select>
+	<!-- 报表下载 -->
+	<select id="getUserCorpToExc" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT
+		GU.USERCODE,
+		GU.COMPANYNAME,
+		GU.SAFETYLICENSENO,
+		TO_CHAR(GU.SAFETYLICESEDATE, 'yyyy-MM-dd') SAFETYLICESEDATE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.CLASSCODE AND
+		CODETYPE='IndustryCategories') CLASSCODE,
+		GM.BUSINESSNO,
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GU.STANDARDLEVEL AND
+		CODETYPE='StandardLevel') STANDARDLEVEL,
+		CASE
+		WHEN GM.ENDDATE IS NOT NULL THEN '已投保' ELSE '未投保' END ENDDATE,
+		NVL (GI.UNITAMOUNT/10000, 0) UNITAMOUNT,
+		NVL (GM.SUMAMOUNT/10000,0) SUMAMOUNT,
+		CASE WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE
+		USERCODE=GU.USERCODE AND EVALUATION = '1' AND USERIND = '1') IS NOT
+		NULL
+		THEN '1'
+		WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE USERCODE=GU.USERCODE
+		AND EVALUATION = '1' AND USERIND ='3') IS NOT NULL
+		THEN '1'
+		WHEN (SELECT "SOURCE" FROM GGEVALUATEDANGERS WHERE USERCODE=GU.USERCODE
+		AND EVALUATION = '1' AND USERIND = '4') IS NOT NULL
+		THEN '1'
+		ELSE '0' END SOURCE
+		FROM
+		GGUSERCORP GU
+		LEFT JOIN GUPOLICYMAIN GM ON GM.APPLICODE = GU.USERCODE
+		AND GM.ENDDATE &gt;= CURRENT_DATE
+		AND GM.STARTDATE &lt;= CURRENT_DATE
+		AND GM.UNDERWRITEFLAG = '3'
+		AND GM.PAYFLAG = '1'
+		AND GM.POLICYNO IS NOT NULL
+		LEFT JOIN GUPOLICYITEMKIND GI ON GI.BUSINESSNO = GM.BUSINESSNO
+		AND KINDCODE = '0901001'
+
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GU.USERCODE=#{queryCondition.userCode} </if>
+			<if
+				test="queryCondition.companyName != null and queryCondition.companyName != ''">AND GU.COMPANYNAME=#{queryCondition.companyName} </if>
+			<if
+				test="queryCondition.businessLicenseNo != null and queryCondition.businessLicenseNo != ''"> AND GU.BUSINESSLICENSENO=#{queryCondition.businessLicenseNo}
+			</if>
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">AND GU.PROVINCE=#{queryCondition.province} </if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">AND GU.CITY=#{queryCondition.city} </if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">AND GU.COUNTY=#{queryCondition.county} </if>
+			<if
+				test="queryCondition.classCode != null and queryCondition.classCode != ''"> AND GU.CLASSCODE=#{queryCondition.classCode} </if>
+			ORDER BY GM.ENDDATE DESC
+		</where>
+	</select>
+
+	<!-- qiye企业信息 -->
+	<select id="getData" parameterType="String" resultType="GgUserCorp">
+		SELECT * FROM GGUSERCORP GU
+		<where >
+			1=1 AND
+			GU.VALIDSTATUS IN('1','2') AND GU.USERCODE=#{userCode}
+		</where>
+	</select>
+	
+	<select id="selectByBusinessLicenseNo" parameterType="String" resultType="GgUserCorp">
+		SELECT * FROM GGUSERCORP WHERE BUSINESSLICENSENO = #{BusinessLicenseNo}
+	</select>
+	
+	<select id="selectiveGgUserCorp" parameterType="GgUserCorp" resultType="GgUserCorp">
+		SELECT * FROM GGUSERCORP
+		<where>
+			1 = 1
+			<if test="businessLicenseDate != null and businessLicenseDate != ''">
+				AND BUSINESSLICENSEDATE = #{businessLicenseDate}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				AND USERCODE = #{userCode}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				AND COMPANYNAME = #{companyName}
+			</if>
+			<if test="companyAddress != null and companyAddress != ''">
+				AND COMPANYADDRESS = #{companyAddress}
+			</if>
+			<if test="safetyLiceseDate != null and safetyLiceseDate != ''">
+				AND SAFETYLICESEDATE = #{safetyLiceseDate}
+			</if>
+			<if test="linkName != null and linkName != ''">
+				AND LINKNAME = #{linkName}
+			</if>
+			<if test="classCode != null and classCode != ''">
+				AND CLASSCODE = #{classCode}
+			</if>
+			<if test="businessClass != null and businessClass != ''">
+				AND BUSINESSCLASS = #{businessClass}
+			</if>
+			<if test="province != null and province != ''">
+				AND PROVINCE = #{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY = #{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY = #{county}
+			</if>
+			<if test="corpration != null and corpration != ''">
+				AND CORPRATION = #{corpration}
+			</if>
+			<if test="emCount != null and emCount != ''">
+				AND EMCOUNT = #{emCount}
+			</if>
+			<if test="telephone != null and telephone != ''">
+				AND TELEPHONE = #{telephone}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND MOBILE = #{mobile}
+			</if>
+			<if test="email != null and email != ''">
+				AND EMAIL = #{email}
+			</if>
+			<if test="fax != null and fax != ''">
+				AND FAX = #{fax}
+			</if>
+			<if test="post != null and post != ''">
+				AND POST = #{post}
+			</if>
+			<if test="businessLicenseNo != null and businessLicenseNo != ''">
+				AND BUSINESSLICENSENO = #{businessLicenseNo}
+			</if>
+			<if test="businessLicenseImage != null and businessLicenseImage != ''">
+				AND BUSINESSLICENSEIMAGE = #{businessLicenseImage}
+			</if>
+			<if test="safetyLicenseNo != null and safetyLicenseNo != ''">
+				AND SAFETYLICENSENO = #{safetyLicenseNo}
+			</if>
+			<if test="safetyLicenseImage != null and safetyLicenseImage != ''">
+				AND SAFETYLICENSEIMAGE = #{safetyLicenseImage}
+			</if>
+			<if test="turnover != null and turnover != ''">
+				AND TURNOVER = #{turnover}
+			</if>
+			<if test="tax != null and tax != ''">
+				AND TAX = #{tax}
+			</if>
+			<if test="remark != null and remark != ''">
+				AND REMARK = #{remark}
+			</if>
+			<if test="standardLevelImage != null and standardLevelImage != ''">
+				AND STANDARDLEVELIMAGE = #{standardLevelImage}
+			</if>
+			<if test="riskLevel != null and riskLevel != ''">
+				AND RISKLEVEL = #{riskLevel}
+			</if>
+			<if test="flag != null and flag != ''">
+				AND FLAG = #{flag}
+			</if>
+			<if test="faithLevel != null and faithLevel != ''">
+				AND FAITHLEVEL = #{faithLevel}
+			</if>
+			<if test="standardLevel != null and standardLevel != ''">
+				AND STANDARDLEVEL = #{standardLevel}
+			</if>
+			<if test="sumstandardLevel != null and sumstandardLevel != ''">
+				AND SUMSTANDARDLEVEL = #{sumstandardLevel}
+			</if>
+			<if test="classSize != null and classSize != ''">
+				AND CLASSSIZE = #{classSize}
+			</if>
+			<if test="validStatus != null and validStatus != ''">
+				AND VALIDSTATUS = #{validStatus}
+			</if>
+		</where>
+	</select>
+	
+	
+
+	<!-- qiye更新企业信息 -->
+	<update id="updateUserCorp" parameterType="GgUserCorp">
+		UPDATE GGUSERCORP SET
+		<if test="companyName != null and companyName != ''">
+			COMPANYNAME=#{companyName,jdbcType=VARCHAR},
+		</if>
+		<if test="province != null and province != ''">
+			PROVINCE=#{province,jdbcType=VARCHAR},
+		</if>
+		<if test="city != null and city != ''">
+			CITY=#{city,jdbcType=VARCHAR},
+		</if>
+		<if test="county != null and county != ''">
+			COUNTY=#{county,jdbcType=VARCHAR},
+		</if>
+		<if test="classCode != null and classCode != ''">
+			CLASSCODE=#{classCode,jdbcType=VARCHAR},
+		</if>
+		<if test="businessClass != null and businessClass != ''">
+			BUSINESSCLASS=#{businessClass,jdbcType=VARCHAR},
+		</if>
+		<if test="emCount != null and emCount != ''">
+			EMCOUNT=#{emCount},
+		</if>
+		<if test="corpration != null and corpration != ''">
+			CORPRATION=#{corpration,jdbcType=VARCHAR},
+		</if>
+		<if test="linkName != null and linkName != ''">
+			LINKNAME=#{linkName,jdbcType=VARCHAR},
+		</if>
+		<if test="companyAddress != null and companyAddress != ''">
+			COMPANYADDRESS=#{companyAddress,jdbcType=VARCHAR},
+		</if>
+		<if test="mobile != null and mobile != ''">
+			MOBILE=#{mobile,jdbcType=VARCHAR},
+		</if>
+		<if test="fax != null and fax != ''">
+			FAX=#{fax,jdbcType=VARCHAR},
+		</if>
+		<if test="telephone != null and telephone != ''">
+			TELEPHONE=#{telephone,jdbcType=VARCHAR},
+		</if>
+		<if test="post != null and post != ''">
+			POST=#{post,jdbcType=VARCHAR},
+		</if>
+		<if test="businessLicenseNo != null and businessLicenseNo != ''">
+			BUSINESSLICENSENO=#{businessLicenseNo,jdbcType=VARCHAR},
+		</if>
+		<if test="businessLicenseDate != null">
+			BUSINESSLICENSEDATE=#{businessLicenseDate,jdbcType=DATE},
+		</if>
+		<if test="safetyLicenseNo != null and safetyLicenseNo != ''">
+			SAFETYLICENSENO=#{safetyLicenseNo,jdbcType=VARCHAR},
+		</if>
+		<if test="safetyLiceseDate != null">
+			SAFETYLICESEDATE=#{safetyLiceseDate,jdbcType=DATE},
+		</if>
+		<if test="turnover != null and turnover != ''">
+			TURNOVER=#{turnover},
+		</if>
+		<if test="standardLevel != null and standardLevel != ''">
+			STANDARDLEVEL=#{standardLevel,jdbcType=VARCHAR},
+		</if>
+		<if test="riskLevel != null and riskLevel != ''">
+			RISKLEVEL=#{riskLevel,jdbcType=CHAR},
+		</if>
+		<if test="businessLicenseImage != null and businessLicenseImage != ''">
+			BUSINESSLICENSEIMAGE=#{businessLicenseImage,jdbcType=VARCHAR},
+		</if>
+		<if test="safetyLicenseImage != null and safetyLicenseImage != ''">
+			SAFETYLICENSEIMAGE=#{safetyLicenseImage,jdbcType=VARCHAR},
+		</if>
+		<if test="standardLevelImage != null and standardLevelImage != ''">
+			STANDARDLEVELIMAGE=#{standardLevelImage,jdbcType=VARCHAR},
+		</if>
+		<if test="tax != null and tax != ''">
+			TAX=#{tax,jdbcType=VARCHAR},
+		</if>
+		<if test="userCode != null and userCode != ''">
+			USERCODE=#{userCode,jdbcType=VARCHAR},
+		</if>
+		<if test="email != null and email != ''">
+			EMAIL=#{email},
+		</if>
+		<if test="faithLevel != null and faithLevel != ''">
+			FAITHLEVEL=#{faithLevel},
+		</if>
+		<if test="classSize != null and classSize != ''">
+			CLASSSIZE=#{classSize}
+		</if>
+		<if test="flag != null and flag != ''">
+			FLAG=#{flag}
+		</if>
+		WHERE USERCODE=#{userCode}
+	</update>
+	<!-- 根据社会统一信用代码 qiye更新企业信息 -->
+	<update id="updateUserCorpByBusinessLicenseNo" parameterType="GgUserCorp">
+		UPDATE GGUSERCORP SET
+		<if test="companyName != null and companyName != ''">
+			COMPANYNAME=#{companyName,jdbcType=VARCHAR},
+		</if>
+		<if test="province != null and province != ''">
+			PROVINCE=#{province,jdbcType=VARCHAR},
+		</if>
+		<if test="city != null and city != ''">
+			CITY=#{city,jdbcType=VARCHAR},
+		</if>
+		<if test="county != null and county != ''">
+			COUNTY=#{county,jdbcType=VARCHAR},
+		</if>
+		<if test="classCode != null and classCode != ''">
+			CLASSCODE=#{classCode,jdbcType=VARCHAR},
+		</if>
+		<if test="businessClass != null and businessClass != ''">
+			BUSINESSCLASS=#{businessClass,jdbcType=VARCHAR},
+		</if>
+		<if test="emCount != null and emCount != ''">
+			EMCOUNT=#{emCount},
+		</if>
+		<if test="corpration != null and corpration != ''">
+			CORPRATION=#{corpration,jdbcType=VARCHAR},
+		</if>
+		<if test="linkName != null and linkName != ''">
+			LINKNAME=#{linkName,jdbcType=VARCHAR},
+		</if>
+		<if test="companyAddress != null and companyAddress != ''">
+			COMPANYADDRESS=#{companyAddress,jdbcType=VARCHAR},
+		</if>
+		<if test="mobile != null and mobile != ''">
+			MOBILE=#{mobile,jdbcType=VARCHAR},
+		</if>
+		<if test="fax != null and fax != ''">
+			FAX=#{fax,jdbcType=VARCHAR},
+		</if>
+		<if test="telephone != null and telephone != ''">
+			TELEPHONE=#{telephone,jdbcType=VARCHAR},
+		</if>
+		<if test="post != null and post != ''">
+			POST=#{post,jdbcType=VARCHAR},
+		</if>
+		<if test="businessLicenseNo != null and businessLicenseNo != ''">
+			BUSINESSLICENSENO=#{businessLicenseNo,jdbcType=VARCHAR},
+		</if>
+		<if test="businessLicenseDate != null">
+			BUSINESSLICENSEDATE=#{businessLicenseDate,jdbcType=DATE},
+		</if>
+		<if test="safetyLicenseNo != null and safetyLicenseNo != ''">
+			SAFETYLICENSENO=#{safetyLicenseNo,jdbcType=VARCHAR},
+		</if>
+		<if test="safetyLiceseDate != null">
+			SAFETYLICESEDATE=#{safetyLiceseDate,jdbcType=DATE},
+		</if>
+		<if test="turnover != null and turnover != ''">
+			TURNOVER=#{turnover},
+		</if>
+		<if test="standardLevel != null and standardLevel != ''">
+			STANDARDLEVEL=#{standardLevel,jdbcType=VARCHAR},
+		</if>
+		<if test="riskLevel != null and riskLevel != ''">
+			RISKLEVEL=#{riskLevel,jdbcType=CHAR},
+		</if>
+		<if test="businessLicenseImage != null and businessLicenseImage != ''">
+			BUSINESSLICENSEIMAGE=#{businessLicenseImage,jdbcType=VARCHAR},
+		</if>
+		<if test="safetyLicenseImage != null and safetyLicenseImage != ''">
+			SAFETYLICENSEIMAGE=#{safetyLicenseImage,jdbcType=VARCHAR},
+		</if>
+		<if test="standardLevelImage != null and standardLevelImage != ''">
+			STANDARDLEVELIMAGE=#{standardLevelImage,jdbcType=VARCHAR},
+		</if>
+		<if test="tax != null and tax != ''">
+			TAX=#{tax,jdbcType=VARCHAR},
+		</if>
+		<if test="userCode != null and userCode != ''">
+			USERCODE=#{userCode,jdbcType=VARCHAR},
+		</if>
+		<if test="email != null and email != ''">
+			EMAIL=#{email},
+		</if>
+		<if test="faithLevel != null and faithLevel != ''">
+			FAITHLEVEL=#{faithLevel},
+		</if>
+		<if test="classSize != null and classSize != ''">
+			CLASSSIZE=#{classSize}
+		</if>
+		<if test="flag != null and flag != ''">
+			FLAG=#{flag}
+		</if>
+		WHERE BUSINESSLICENSENO=#{businessLicenseNo}
+	</update>
+
+	<select id="getUserCorpCount" parameterType="java.util.Map"
+		resultType="map">
+		SELECT COUNT(USERCODE) TOTALCOUNT FROM GGUSERCORP
+		<where>
+			VALIDSTATUS='1'
+			<if test="province != null and province != ''">
+				AND PROVINCE =#{province}
+			</if>
+			<if test="city != null and city != ''">
+				AND CITY=#{city}
+			</if>
+			<if test="county != null and county != ''">
+				AND COUNTY=#{county}
+			</if>
+			<if test="classCode != null and classCode != ''">
+				AND CLASSCODE=#{classCode}
+			</if>
+		</where>
+	</select>
+	<!-- <insert id="insertUserCorp" parameterType="GgUserCorp">缺少字段，需要判断显示
+		INSERT INTO GGUSERCORP
+		(USERCODE,TELEPHONE,LINKNAME,BUSINESSLICENSEDATE,SAFETYLICESEDATE,CLASSCODE,BUSINESSCLASS,RISKLEVEL,VALIDSTATUS,COMPANYNAME)
+		VALUES(#{userCode},#{telephone,jdbcType=VARCHAR},#{linkName,jdbcType=VARCHAR},#{businessLicenseDate,jdbcType=VARCHAR},
+		#{safetyLiceseDate,jdbcType=VARCHAR},#{classCode,jdbcType=VARCHAR},#{businessClass,jdbcType=VARCHAR},#{riskLevel,jdbcType=VARCHAR},
+		#{validStatus,jdbcType=VARCHAR},#{companyName,jdbcType=VARCHAR})
+	</insert> -->
+	<insert id="insertUserCorp" parameterType="GgUserCorp">
+		INSERT INTO GGUSERCORP
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="userCode != null and userCode != ''">USERCODE,</if>
+		<if test="companyName != null and companyName != ''">COMPANYNAME,</if>
+		<if test="province != null and province != ''">PROVINCE,</if>
+		<if test="city != null and city != ''">CITY,</if>
+		<if test="county != null and county != ''">COUNTY,</if>
+		
+		<if test="classCode != null and classCode != ''">CLASSCODE,</if>
+		<if test="businessClass != null and businessClass != ''">BUSINESSCLASS,</if>
+		<if test="corpration != null and corpration != ''">CORPRATION,</if>
+		<if test="linkName != null and linkName != ''">LINKNAME,</if>
+		<if test="companyAddress != null and companyAddress != ''">COMPANYADDRESS,</if>
+		
+		<if test="mobile != null and mobile != ''">MOBILE,</if>
+		<if test="fax != null and fax != ''">FAX,</if>
+		<if test="telephone != null and telephone != ''">TELEPHONE,</if>
+		<if test="post != null and post != ''">POST,</if>
+		<if test="businessLicenseNo != null and businessLicenseNo != ''">BUSINESSLICENSENO,</if>
+		
+		<if test="businessLicenseDate != null">BUSINESSLICENSEDATE,</if>
+		<if test="safetyLicenseNo != null and safetyLicenseNo != ''">SAFETYLICENSENO,</if>
+		<if test="safetyLiceseDate != null">SAFETYLICESEDATE,</if>
+		<if test="turnover != null and turnover != ''">TURNOVER,</if>
+		<if test="standardLevel != null and standardLevel != ''">STANDARDLEVEL,</if>
+		
+		 <if test="riskLevel != null and riskLevel != ''">RISKLEVEL,</if>
+		<if test="businessLicenseImage != null and businessLicenseImage != ''">BUSINESSLICENSEIMAGE,</if>
+		<if test="safetyLicenseImage != null and safetyLicenseImage != ''">SAFETYLICENSEIMAGE,</if>
+		<if test="standardLevelImage != null and standardLevelImage != ''">STANDARDLEVELIMAGE,</if>
+		<if test="tax != null and tax != ''">TAX,</if>
+		
+		<if test="email != null and email != ''">EMAIL,</if>
+		<if test="classSize != null and classSize != ''">CLASSSIZE,</if>
+		<if test="validStatus != null and validStatus != ''">VALIDSTATUS</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		<if test="userCode != null and userCode != ''">#{userCode,jdbcType=VARCHAR},</if>
+		<if test="companyName != null and companyName != ''">#{companyName,jdbcType=VARCHAR},</if>
+		<if test="province != null and province != ''">#{province,jdbcType=VARCHAR},</if>
+		<if test="city != null and city != ''">#{city,jdbcType=VARCHAR},</if>
+		<if test="county != null and county != ''">#{county,jdbcType=VARCHAR},</if>
+		
+		<if test="classCode != null and classCode != ''">#{classCode,jdbcType=VARCHAR},</if>
+		<if test="businessClass != null and businessClass != ''">#{businessClass,jdbcType=VARCHAR},</if>
+		<if test="corpration != null and corpration != ''">#{corpration,jdbcType=VARCHAR},</if>
+		<if test="linkName != null and linkName != ''">#{linkName,jdbcType=VARCHAR},</if>
+		<if test="companyAddress != null and companyAddress != ''">#{companyAddress,jdbcType=VARCHAR},</if>
+
+		<if test="mobile != null and mobile != ''">#{mobile,jdbcType=VARCHAR},</if>
+		<if test="fax != null and fax != ''">#{fax,jdbcType=VARCHAR},</if>
+		<if test="telephone != null and telephone != ''">#{telephone,jdbcType=VARCHAR},</if>
+		<if test="post != null and post != ''">#{post,jdbcType=VARCHAR},</if>
+		<if test="businessLicenseNo != null and businessLicenseNo != ''">#{businessLicenseNo,jdbcType=VARCHAR},</if>
+
+		<if test="businessLicenseDate != null">#{businessLicenseDate,jdbcType=DATE} , </if>
+		<if test="safetyLicenseNo != null and safetyLicenseNo != ''">#{safetyLicenseNo,jdbcType=VARCHAR},</if>
+		<if test="safetyLiceseDate != null">#{safetyLiceseDate,jdbcType=DATE},</if>
+		<if test="turnover != null and turnover != ''">#{turnover},</if>
+		<if test="standardLevel != null and standardLevel != ''">#{standardLevel,jdbcType=VARCHAR},</if>
+
+		 <if test="riskLevel != null and riskLevel != ''">#{riskLevel,jdbcType=CHAR},</if>
+		<if test="businessLicenseImage != null and businessLicenseImage != ''">#{businessLicenseImage,jdbcType=VARCHAR},</if>
+		<if test="safetyLicenseImage != null and safetyLicenseImage != ''">#{safetyLicenseImage,jdbcType=VARCHAR},</if>
+		<if test="standardLevelImage != null and standardLevelImage != ''">#{standardLevelImage,jdbcType=VARCHAR},</if>
+		<if test="tax != null and tax != ''">#{tax,jdbcType=VARCHAR},</if>
+
+		<if test="email != null and email != ''">#{email},</if>
+		<if test="classSize != null and classSize != ''">#{classSize},</if>
+		<if test="validStatus != null and validStatus != ''">#{validStatus}</if>
+		</trim>
+	</insert>
+	
+	<select id="getBusinessLicenseNo" parameterType="string" resultType="com.dsib.entity.GgUserCorp">
+		SELECT * FROM GGUSERCORP WHERE BUSINESSLICENSENO = #{businessLicenseNo} AND VALIDSTATUS = '1'
+	</select>
+	<select id="getsafetyLicenseNo" parameterType="string" resultType="com.dsib.entity.GgUserCorp">
+		SELECT * FROM GGUSERCORP WHERE SAFETYLICENSENO = #{safetyLicenseNo} AND VALIDSTATUS = '1'
+	</select>
+	<select id="getUserName" parameterType="string" resultType="com.dsib.entity.GgUserCorp">
+		SELECT * FROM GGUSERCORP WHERE COMPANYNAME =#{userName} AND VALIDSTATUS = '1'
+	</select>
+	<select id="checkTelePhone" parameterType="string" resultType="com.dsib.entity.GgUserCorp">
+	   SELECT * FROM GGUSERCORP WHERE TELEPHONE =#{telePhone}
+	</select>
+</mapper>

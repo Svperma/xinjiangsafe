@@ -1,0 +1,150 @@
+package com.dsib.entity;
+
+
+public class GovOrgan {
+	private String orgCode;/* 机构代码 */
+	private String orgName;/* 机构名称 */
+	private String orgOwner;/* 机构负责人 */
+	private String phone;/* 联系方式 */
+	private String validStatus;/* 有效标志：0无效，1有效 */
+	private String province;/* 省 */
+	private String city;/* 市 */
+	private String county;/* 区县 */
+	private String remark;
+	private String flag;
+	private String registrAtion;/* 注册证号 */
+	private String grade;// 机构等级
+	private String address; // 地址
+	private String businessType;// 企业评估类型
+	private String photo;// 评估机构图片
+	private String langUage;// 行业大类
+
+	public String getOrgCode() {
+		return orgCode;
+	}
+
+	public void setOrgCode(String orgCode) {
+		this.orgCode = orgCode;
+	}
+
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
+	public String getOrgOwner() {
+		return orgOwner;
+	}
+
+	public void setOrgOwner(String orgOwner) {
+		this.orgOwner = orgOwner;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getValidStatus() {
+		return validStatus;
+	}
+
+	public void setValidStatus(String validStatus) {
+		this.validStatus = validStatus;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public void setCounty(String county) {
+		this.county = county;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+
+	public String getRegistrAtion() {
+		return registrAtion;
+	}
+
+	public void setRegistrAtion(String registrAtion) {
+		this.registrAtion = registrAtion;
+	}
+
+	public String getGrade() {
+		return grade;
+	}
+
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getBusinessType() {
+		return businessType;
+	}
+
+	public void setBusinessType(String businessType) {
+		this.businessType = businessType;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public String getLangUage() {
+		return langUage;
+	}
+
+	public void setLangUage(String langUage) {
+		this.langUage = langUage;
+	}
+
+}

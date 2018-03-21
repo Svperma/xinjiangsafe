@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgNewsMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GgNews" >
+	    <id column="DOCID" property="docid" jdbcType="VARCHAR" />
+	    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+	    <result column="DOCTYPE" property="doctype" jdbcType="CHAR" />
+	    <result column="PUBLISHDATE" property="publishdate" jdbcType="DATE" />
+	    <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+	    <result column="CREATEDATE" property="createdate" jdbcType="DATE" />
+	    <result column="FLAG" property="flag" jdbcType="VARCHAR" />
+	    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	    <result column="IMAGEPATH" property="imagepath" jdbcType="VARCHAR" />
+	    <result column="ISINDEX" property="isindex" jdbcType="VARCHAR" />
+	    <result column="ISRECOMMEND" property="isrecommend" jdbcType="VARCHAR" />
+	    <result column="ISTOP" property="istop" jdbcType="VARCHAR" />
+	    <result column="DECRIPTION" property="decription" jdbcType="VARCHAR" />
+	    <result column="DISPLAYNO" property="displayno" jdbcType="VARCHAR" />
+	    <result column="EXPECTNO" property="expectno" jdbcType="VARCHAR" />
+	    <result column="VARSTATUS" property="varstatus" jdbcType="VARCHAR" />
+	  </resultMap>
+	  <resultMap id="ResultMapWithBLOBs" type="com.dsib.entity.GgNews" extends="BaseResultMap" >
+	    <result column="DOCCONTENT" property="doccontent" jdbcType="CLOB" />
+	  </resultMap>
+	<select id="initIndex" resultType="Map">
+		SELECT
+		DOCID,TITLE,DOCTYPE,PUBLISHDATE,TO_CHAR(DOCCONTENT),IMAGEPATH FROM (
+		SELECT
+		DOCID,TITLE,DOCTYPE,PUBLISHDATE,NULL DOCCONTENT,IMAGEPATH FROM GGNEWS
+		WHERE DOCTYPE = '1' AND VARSTATUS='1' AND ROWNUM &lt; 11
+		UNION
+		SELECT DOCID,TITLE,DOCTYPE,PUBLISHDATE,NULL
+		DOCCONTENT,IMAGEPATH FROM GGNEWS WHERE DOCTYPE = '2' AND VARSTATUS='1' AND ROWNUM &lt; 6
+		UNION
+		SELECT DOCID,TITLE,DOCTYPE,PUBLISHDATE,NULL
+		DOCCONTENT,IMAGEPATH FROM GGNEWS WHERE DOCTYPE = '3' AND VARSTATUS='1' AND ROWNUM &lt; 3
+		UNION
+		SELECT DOCID,TITLE,DOCTYPE,PUBLISHDATE,NULL
+		DOCCONTENT,IMAGEPATH FROM GGNEWS WHERE DOCTYPE = '4' AND VARSTATUS='1' AND ROWNUM &lt; 3
+		) ORDER BY PUBLISHDATE DESC
+	</select>
+	<select id="getUpdatePhoto" resultType="Map">
+		SELECT * FROM (
+		SELECT * FROM GGNEWS WHERE
+		<!-- EXPECTNO = (SELECT "MAX"(EXPECTNO) FROM GGNEWS WHERE DOCTYPE='5' AND ISINDEX='1') -->
+		1=1
+		AND DOCTYPE = '5'
+		AND VARSTATUS='1'
+		
+		ORDER BY PUBLISHDATE DESC) 
+		WHERE ROWNUM &lt;= 5
+	</select>
+
+	<select id="newsDetail" parameterType="string" resultType="map">
+		SELECT  DOCID, TITLE, DOCTYPE, PUBLISHDATE, CREATOR, CREATEDATE, FLAG, REMARK, IMAGEPATH, 
+    ISINDEX, ISRECOMMEND, ISTOP, DECRIPTION, DISPLAYNO, EXPECTNO, VARSTATUS, DOCCONTENT FROM
+		GGNEWS WHERE DOCID = #{ID} ORDER BY PUBLISHDATE
+	</select>
+
+	<select id="getPreviousNews" parameterType="map" resultType="map">
+		SELECT DOCID,DOCTYPE,PUBLISHDATE FROM GGNEWS WHERE PUBLISHDATE =
+		(SELECT "MIN"(PUBLISHDATE) PUBLISHDATE FROM GGNEWS WHERE DOCTYPE =
+		#{docType} AND PUBLISHDATE &gt; TO_DATE(#{docDate},'YYYY-MM-DD
+		HH24:MI:SS')
+		GROUP BY DOCTYPE)
+	</select>
+	<select id="getNextNews" parameterType="string" resultType="map">
+		SELECT DOCID,DOCTYPE,PUBLISHDATE FROM GGNEWS WHERE PUBLISHDATE =
+		(SELECT "MAX"(PUBLISHDATE) PUBLISHDATE FROM GGNEWS WHERE DOCTYPE =
+		#{docType} AND PUBLISHDATE &lt; TO_DATE(#{docDate},'YYYY-MM-DD
+		HH24:MI:SS')
+		GROUP BY DOCTYPE)
+	</select>
+	<!-- 查看更多 -->
+	<select id="newsLookUp" parameterType="Pagination" resultType="map">
+		SELECT DOCID,TITLE,DOCTYPE,PUBLISHDATE,DOCCONTENT,IMAGEPATH FROM
+		GGNEWS WHERE DOCTYPE=#{queryCondition} 
+		AND VARSTATUS = '1'
+		ORDER BY PUBLISHDATE DESC
+	</select>
+	<!-- 公众查询 -->
+	<select id="getPolicy" parameterType="string" resultType="map">
+		SELECT
+		GU.APPLINAME,GU.SUMAMOUNT/10000 SUMAMOUNT,(SELECT GC.CODECNAME FROM
+		GGCODE GC WHERE GC.CODECODE = GU.INSURERCODE AND
+		GC.CODETYPE='CICompanycode') INSURER,
+		CASE WHEN GU.ENDDATE &lt; SYSDATE
+		THEN '无效' ELSE '有效' END STATUS FROM GUPOLICYMAIN GU WHERE
+		GU.INSUREDNAME LIKE '%'||#{_parameter}||'%' AND ROWNUM &lt; 11 
+	</select>
+	<!-- 公众参与 -->
+	<select id="getComplainAndFeedback" parameterType="Pagination"
+		resultMap="feedbackMap">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE
+		<where>
+			(GE.ATTRIBUTEID='4' OR GE.ATTRIBUTEID='5')
+			ORDER BY
+			GE.EVALUATETIME DESC
+		</where>
+	</select>
+	<resultMap type="GgEvaluate" id="feedbackMap">
+		<id property="seriesNo" column="SERIESNO" />
+		<result property="beEvaluator" column="BEEVALUATOR" />
+		<result property="item" column="ITEM" />
+		<result property="content" column="CONTENT" />
+		<result property="score" column="SCORE" />
+		<result property="evaluator" column="EVALUATOR" />
+		<result property="evaluateTime" column="EVALUATETIME" />
+		<result property="AttributeId" column="ATTRIBUTEID" />
+		<result property="markId" column="MARKID" />
+		<result property="province" column="PROVINCE" />
+		<result property="city" column="CITY" />
+		<result property="county" column="COUNTY" />
+		<result property="remark" column="REMARK" />
+		<result property="flag" column="FLAG" />
+		<association property="list" column="SERIESNO" select="getFeedback" />
+	</resultMap>
+	<select id="getFeedback" parameterType="string" resultType="GgEvaluate">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE WHERE MARKID = #{ID} AND ATTRIBUTEID='2' ORDER BY
+		EVALUATETIME ASC
+	</select>
+
+	<select id="getContinueByDocType" parameterType="Pagination" resultType="map">
+		SELECT * FROM GGNEWS
+		<where>
+			1=1
+			<if test="queryCondition != null and queryCondition != ''">
+			AND DOCTYPE = #{queryCondition}
+			</if>
+			<if test="queryCondition == null or queryCondition == ''">
+			AND DOCTYPE IN('1','2','3','4')
+			</if>
+			AND VARSTATUS='1'
+			ORDER BY PUBLISHDATE DESC
+		</where>
+	</select>
+	<!-- 轮播查询 -->
+	<select id="getAlternateImg" parameterType="Pagination" resultType="map">
+		SELECT DOCID, TITLE, DOCTYPE, PUBLISHDATE, CREATOR, CREATEDATE, FLAG, REMARK, IMAGEPATH, 
+    ISINDEX, ISRECOMMEND, ISTOP, DECRIPTION, DISPLAYNO, EXPECTNO, VARSTATUS, DOCCONTENT FROM GGNEWS 
+		<where>
+			1=1
+<!-- 			AND ISINDEX = '1' -->
+			AND VARSTATUS = '1'
+			<if test="queryCondition.docId != null and queryCondition.docId != ''">
+			AND DOCID = #{queryCondition.docId}
+			</if>
+			<if test="queryCondition.docType != null and queryCondition.docType != '' and queryCondition.docType != 0">
+			AND DOCTYPE=#{queryCondition.docType}
+			</if>
+			<if test="queryCondition.docType == 0">
+			AND DOCTYPE IN('1','2','3','4')
+			</if>
+			ORDER BY PUBLISHDATE DESC
+		</where>
+	</select>
+	
+	<select id="getAlternateAll" parameterType="Pagination" resultType="map">
+		SELECT * FROM GGNEWS 
+		<where>
+			1=1
+			<if test="queryCondition.docId != null and queryCondition.docId != ''">
+				AND DOCID = #{queryCondition.docId}
+			</if>
+			
+			<if test="queryCondition.docType != null and queryCondition.docType != ''">
+				AND DOCTYPE = #{queryCondition.docType}
+			</if>
+			<if test="queryCondition.docType == null or queryCondition.docType == ''">
+				AND DOCTYPE IN('1','2','3','4')
+			</if>
+			
+			<if test="queryCondition.isIndex != null and queryCondition.isIndex != ''">
+				AND ISINDEX = #{queryCondition.isIndex}
+			</if>
+			<if test="queryCondition.isRecommend != null and queryCondition.isRecommend != ''">
+				AND ISRECOMMEND = #{queryCondition.isRecommend}
+			</if>
+			<if test="queryCondition.isTop != null and queryCondition.isTop != ''">
+				AND ISTOP = #{queryCondition.isTop}
+			</if>
+			<!-- 如果检索关键字不为空，则搜索这三项 -->
+			<if test="queryCondition.keywords != null and queryCondition.keywords != ''">
+<!-- 				<if test="queryCondition.title != null and queryCondition.title != ''"> -->
+<!-- 					<if test="queryCondition.decription != null and queryCondition.decription != ''"> -->
+						AND (DOCCONTENT LIKE '%${queryCondition.keywords}%' 
+							OR
+							TITLE LIKE '%${queryCondition.keywords}%'
+							)
+<!-- 					OR
+							DECRIPTION LIKE '%${queryCondition.keywords}%'
+						</if> -->
+<!-- 				</if> -->
+			</if>
+			
+			<!-- <if test="queryCondition.expectNo != null and queryCondition.expectNo != ''">
+				AND EXPECTNO = #{queryCondition.expectNo}
+			</if> -->
+			
+<!-- 			EXPECTNO = (SELECT MAX(EXPECTNO) FROM GGNEWS WHERE DOCTYPE=#{docType}) -->
+			AND VARSTATUS = '1'
+			ORDER BY EXPECTNO DESC
+		</where>
+	</select>
+	<select id="selectExpeNo" parameterType="com.dsib.entity.GgNews"
+		resultType="String">
+		SELECT MAX(EXPECTNO) FROM GGNEWS 
+		<where>
+			1=1 AND
+			CREATOR = #{creator} AND
+			DOCTYPE = #{doctype}
+		</where>
+	</select>
+	<!-- 添加新闻动态 HSLT -->
+	<insert id="getAddNewsAndTrends"  parameterType="com.dsib.entity.GgNews">
+		INSERT INTO GGNEWS
+		(DOCID,CREATEDATE,CREATOR,
+		DOCCONTENT,IMAGEPATH,ISINDEX,ISRECOMMEND,ISTOP,
+		PUBLISHDATE,TITLE,DOCTYPE,VARSTATUS)
+		VALUES
+		(#{docid},#{createdate},#{creator},
+		#{doccontent},#{imagepath},#{isindex},#{isrecommend},#{istop},
+		#{publishdate},#{title},#{doctype},#{varstatus})
+	</insert>
+	<!-- 修改内容信息中提交的信息 -->
+	<update id="getUpdateNewsAndTrends"  parameterType="com.dsib.entity.GgNews">
+		UPDATE GGNEWS
+		SET
+		<!-- DOCID=#{docId}, -->
+		<!-- EXPECTNO=#{expectNo},DOCTYPE=#{docType}, -->
+		<!-- DECRIPTION = #{decription},DISPLAYNO = #{displayNo}, -->
+		CREATEDATE = #{createdate},
+		CREATOR = #{creator},DOCCONTENT = #{doccontent},
+		<if test="imagePath != null and imagePath != ''">IMAGEPATH = #{imagepath},</if>
+		ISINDEX = #{isindex},ISRECOMMEND = #{isrecommend},ISTOP = #{istop},
+		PUBLISHDATE = #{publishdate},TITLE = #{title},
+		VARSTATUS = #{varstatus}
+		WHERE
+		DOCID = #{docid}
+	</update>
+	<!-- 逻辑删除轮播信息 HSLT-->
+	<update id="deleteExpect" parameterType="com.dsib.entity.GgNews">
+		UPDATE GGNEWS SET VARSTATUS='0' WHERE DOCID=#{docid}
+	</update>
+	<!-- 根据id修改一条轮播信息 -->
+	<update id="updateExpect" parameterType="com.dsib.entity.GgNews">
+		UPDATE 
+			GGNEWS 
+		SET 
+			TITLE=#{title}, DOCCONTENT=#{doccontent},
+			DOCTYPE=#{doctype},PUBLICDATE=#{publicdate},CREATOR=#{creator},
+			CREATEDATE=#{createdate},IMAGEPATH=#{imagepath},ISINDEX=#{isindex},
+			ISRECOMMEND=#{isrecommend},ISTOP=#{istop},DECRIPTION=#{decription},DISPLAYNO=#{displayno}
+		<where> 
+			1=1 AND
+			DOCID=#{docid}
+		</where>
+	</update>
+	<sql id="Base_Column_List" >
+    DOCID, TITLE, DOCTYPE, PUBLISHDATE, CREATOR, CREATEDATE, FLAG, REMARK, IMAGEPATH, 
+    ISINDEX, ISRECOMMEND, ISTOP, DECRIPTION, DISPLAYNO, EXPECTNO, VARSTATUS
+  </sql>
+  <sql id="Blob_Column_List" >
+    DOCCONTENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from GGNEWS
+    where DOCID = #{docid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from GGNEWS
+    where DOCID = #{docid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dsib.entity.GgNews" >
+    insert into GGNEWS (DOCID, TITLE, DOCTYPE, 
+      PUBLISHDATE, CREATOR, CREATEDATE, 
+      FLAG, REMARK, IMAGEPATH, 
+      ISINDEX, ISRECOMMEND, ISTOP, 
+      DECRIPTION, DISPLAYNO, EXPECTNO, 
+      VARSTATUS, DOCCONTENT)
+    values (#{docid,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{doctype,jdbcType=CHAR}, 
+      #{publishdate,jdbcType=DATE}, #{creator,jdbcType=VARCHAR}, #{createdate,jdbcType=DATE}, 
+      #{flag,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{imagepath,jdbcType=VARCHAR}, 
+      #{isindex,jdbcType=VARCHAR}, #{isrecommend,jdbcType=VARCHAR}, #{istop,jdbcType=VARCHAR}, 
+      #{decription,jdbcType=VARCHAR}, #{displayno,jdbcType=VARCHAR}, #{expectno,jdbcType=VARCHAR}, 
+      #{varstatus,jdbcType=VARCHAR}, #{doccontent,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dsib.entity.GgNews" >
+    insert into GGNEWS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="docid != null" >
+        DOCID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="doctype != null" >
+        DOCTYPE,
+      </if>
+      <if test="publishdate != null" >
+        PUBLISHDATE,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+      <if test="createdate != null" >
+        CREATEDATE,
+      </if>
+      <if test="flag != null" >
+        FLAG,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="imagepath != null" >
+        IMAGEPATH,
+      </if>
+      <if test="isindex != null" >
+        ISINDEX,
+      </if>
+      <if test="isrecommend != null" >
+        ISRECOMMEND,
+      </if>
+      <if test="istop != null" >
+        ISTOP,
+      </if>
+      <if test="decription != null" >
+        DECRIPTION,
+      </if>
+      <if test="displayno != null" >
+        DISPLAYNO,
+      </if>
+      <if test="expectno != null" >
+        EXPECTNO,
+      </if>
+      <if test="varstatus != null" >
+        VARSTATUS,
+      </if>
+      <if test="doccontent != null" >
+        DOCCONTENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="docid != null" >
+        #{docid,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="doctype != null" >
+        #{doctype,jdbcType=CHAR},
+      </if>
+      <if test="publishdate != null" >
+        #{publishdate,jdbcType=DATE},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=DATE},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="imagepath != null" >
+        #{imagepath,jdbcType=VARCHAR},
+      </if>
+      <if test="isindex != null" >
+        #{isindex,jdbcType=VARCHAR},
+      </if>
+      <if test="isrecommend != null" >
+        #{isrecommend,jdbcType=VARCHAR},
+      </if>
+      <if test="istop != null" >
+        #{istop,jdbcType=VARCHAR},
+      </if>
+      <if test="decription != null" >
+        #{decription,jdbcType=VARCHAR},
+      </if>
+      <if test="displayno != null" >
+        #{displayno,jdbcType=VARCHAR},
+      </if>
+      <if test="expectno != null" >
+        #{expectno,jdbcType=VARCHAR},
+      </if>
+      <if test="varstatus != null" >
+        #{varstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="doccontent != null" >
+        #{doccontent,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GgNews" >
+    update GGNEWS
+    <set >
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="doctype != null" >
+        DOCTYPE = #{doctype,jdbcType=CHAR},
+      </if>
+      <if test="publishdate != null" >
+        PUBLISHDATE = #{publishdate,jdbcType=DATE},
+      </if>
+      <if test="creator != null" >
+        CREATOR = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CREATEDATE = #{createdate,jdbcType=DATE},
+      </if>
+      <if test="flag != null" >
+        FLAG = #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="imagepath != null" >
+        IMAGEPATH = #{imagepath,jdbcType=VARCHAR},
+      </if>
+      <if test="isindex != null" >
+        ISINDEX = #{isindex,jdbcType=VARCHAR},
+      </if>
+      <if test="isrecommend != null" >
+        ISRECOMMEND = #{isrecommend,jdbcType=VARCHAR},
+      </if>
+      <if test="istop != null" >
+        ISTOP = #{istop,jdbcType=VARCHAR},
+      </if>
+      <if test="decription != null" >
+        DECRIPTION = #{decription,jdbcType=VARCHAR},
+      </if>
+      <if test="displayno != null" >
+        DISPLAYNO = #{displayno,jdbcType=VARCHAR},
+      </if>
+      <if test="expectno != null" >
+        EXPECTNO = #{expectno,jdbcType=VARCHAR},
+      </if>
+      <if test="varstatus != null" >
+        VARSTATUS = #{varstatus,jdbcType=VARCHAR},
+      </if>
+      <if test="doccontent != null" >
+        DOCCONTENT = #{doccontent,jdbcType=CLOB},
+      </if>
+    </set>
+    where DOCID = #{docid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.dsib.entity.GgNews" >
+    update GGNEWS
+    set TITLE = #{title,jdbcType=VARCHAR},
+      DOCTYPE = #{doctype,jdbcType=CHAR},
+      PUBLISHDATE = #{publishdate,jdbcType=DATE},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      CREATEDATE = #{createdate,jdbcType=DATE},
+      FLAG = #{flag,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      IMAGEPATH = #{imagepath,jdbcType=VARCHAR},
+      ISINDEX = #{isindex,jdbcType=VARCHAR},
+      ISRECOMMEND = #{isrecommend,jdbcType=VARCHAR},
+      ISTOP = #{istop,jdbcType=VARCHAR},
+      DECRIPTION = #{decription,jdbcType=VARCHAR},
+      DISPLAYNO = #{displayno,jdbcType=VARCHAR},
+      EXPECTNO = #{expectno,jdbcType=VARCHAR},
+      VARSTATUS = #{varstatus,jdbcType=VARCHAR},
+      DOCCONTENT = #{doccontent,jdbcType=CLOB}
+    where DOCID = #{docid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dsib.entity.GgNews" >
+    update GGNEWS
+    set TITLE = #{title,jdbcType=VARCHAR},
+      DOCTYPE = #{doctype,jdbcType=CHAR},
+      PUBLISHDATE = #{publishdate,jdbcType=DATE},
+      CREATOR = #{creator,jdbcType=VARCHAR},
+      CREATEDATE = #{createdate,jdbcType=DATE},
+      FLAG = #{flag,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      IMAGEPATH = #{imagepath,jdbcType=VARCHAR},
+      ISINDEX = #{isindex,jdbcType=VARCHAR},
+      ISRECOMMEND = #{isrecommend,jdbcType=VARCHAR},
+      ISTOP = #{istop,jdbcType=VARCHAR},
+      DECRIPTION = #{decription,jdbcType=VARCHAR},
+      DISPLAYNO = #{displayno,jdbcType=VARCHAR},
+      EXPECTNO = #{expectno,jdbcType=VARCHAR},
+      VARSTATUS = #{varstatus,jdbcType=VARCHAR}
+    where DOCID = #{docid,jdbcType=VARCHAR}
+  </update>
+</mapper>

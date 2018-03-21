@@ -1,0 +1,107 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="/tlds/ggCodeTld" prefix="tlds"%>
+
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<jsp:include page="${basePath }/common/include.jsp" />
+<script type="text/javascript" src="${basePath }/js/common.js"></script>
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>My JSP 'administrationResult.jsp' starting page</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="This is my page">
+<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="js/select2css.js"></script>
+<script type="text/javascript" src="js/readXml.js"></script>
+<script type="text/javascript" src="${basePath }/js/common.js"></script>
+</head>
+
+<body>
+	<div class="neicont_imga">
+		<img src="images/icotit2.jpg">查询结果
+	</div>
+	<div class="neicont_main_left_cont_main">
+		<form action="${basePath }/dsmanager/PreventiveContinue" id="fm" method="GET">
+			<table cellpadding="0" cellspacing="0" width="100%" border="1"
+				style="margin-top: 10px;">
+				<tr class="table_lista">
+					<td>序号</td>
+					<td>省份</td>
+					<td>城市</td>
+					<td>区县</td>
+					<td>保险公司</td>
+					<td>保单号</td>
+					<td>行业大类</td>
+					<td>行业小类</td>
+					<td>保费金额</td>
+					<td>预防费用总金额</td>
+<!-- 					<td>已使用金额(万元)</td> -->
+<!-- 					<td>申请日期</td> -->
+<!-- 					<td>支付日期</td> -->
+<!-- 					<td>使用人</td> -->
+<!-- 					<td>具体用途</td> -->
+<!-- 					<td>未使用金额</td> -->
+<!-- 					<td style="border-top-right-radius: 5px;">操作&nbsp;</td> -->
+				</tr>
+			<c:forEach items="${sessionScope.pagination.resultList }" var="DsManagerPreventive" varStatus="listSize">
+					<c:if test="${listSize.index %2 ==0 }">
+				<tr class="table_listb">
+					</c:if>
+					<c:if test="${listSize.index %2 != 0 }">
+				<tr class="">
+					</c:if>
+					<td>${listSize.index+1 }</td>
+					<td>
+						<tlds:name codeType="Province" codeCode="${DsManagerPreventive.PROVINCE }" />
+					</td>
+					<td>
+						<tlds:name codeType="City" codeCode="${DsManagerPreventive.CITY }" />
+					</td>
+					<td>
+						<tlds:name codeType="County" codeCode="${DsManagerPreventive.COUNTY }" />
+					</td>
+					<td >${DsManagerPreventive.INSURANCENAME }</td>
+					<td>${DsManagerPreventive.POLICYNO }</td>
+					<td><tlds:name codeType="IndustryCategories" codeCode="${DsManagerPreventive.CLASSCODE }"></tlds:name></td>
+					<td><tlds:name codeType="IndustryType" codeCode="${DsManagerPreventive.BUSINESSCLASS }"></tlds:name></td>
+					<td>${DsManagerPreventive.SPREADSHEETPREMIUM }</td>
+					<td>
+						<c:if test="${empty DsManagerPreventive.ACCIDENTPREVENTFEE }">
+							<fmt:formatNumber pattern="##.##">
+								${DsManagerPreventive.SPREADSHEETPREMIUM *0.1}
+							</fmt:formatNumber>
+						</c:if>
+						<c:if test="${not empty DsManagerPreventive.ACCIDENTPREVENTFEE }">
+							<fmt:formatNumber  pattern="##.##">
+								${DsManagerPreventive.ACCIDENTPREVENTFEE }
+							</fmt:formatNumber>
+						</c:if>
+					</td>
+				</tr>
+				</c:forEach>
+			</table>
+		<div class="pages">
+			<jsp:include page="${basePath }/common/pagination.jsp"></jsp:include>
+		</div>
+			</form>
+		<div style="clear:both;"></div>
+	</div>
+</body>
+</html>

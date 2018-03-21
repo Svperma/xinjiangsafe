@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgNoticeMapper">
+
+	<!-- “发送消息”按钮 -->
+	<select id="selectList" parameterType="Pagination" resultType="map">
+		SELECT DISTINCT GU.USERCODE
+		USERCODE,GU.COMPANYNAME,GU.LINKNAME,GER."CONTENT",GER.EVALUATOR,GER.USERIND
+		FROM
+		GGEVALUATEDANGERS GER
+		LEFT JOIN GGUSERCORP GU ON
+		GU.USERCODE=GER.USERCODE
+		WHERE GER.USERCODE=#{queryCondition.userCode}
+		AND GER.USERIND='1'
+	</select>
+	<!-- 插入通知信息 -->
+	<insert id="insertList" parameterType="GgNotice">
+		INSERT INTO
+		GGNOTICE(SERIESNO,TITLE,CONTENTSOURCE,PUBLISHER,PUBLISHTIME,RECIPIENT,STATUS,MARKREAD)
+		VALUES(#{seriesNo},#{title},#{contentSource},#{publisher},#{publishTime},#{recipient},1,0)
+	</insert>
+	<!-- -->
+	<select id="queryList" parameterType="Pagination" resultType="map">
+		SELECT SERIESNO,RECIPIENT FROM GGNOTICE GNT
+		<where>
+			1=1
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">AND GNT.RECIPIENT=#{queryCondition.userCode }</if>
+			AND GNT.STATUS='1'
+		</where>
+	</select>
+	<!-- 根据seriesNo查看通知详情 -->
+	<select id="selectListAllByRecipient" parameterType="string"
+		resultType="string">
+		SELECT CONTENTSOURCE FROM GGNOTICE WHERE SERIESNO =
+		#{seriesNo}
+	</select>
+	<!-- 发送过信息的，更新通知信息状态 -->
+	<update id="updateList" parameterType="GgNotice">
+		UPDATE GGNOTICE SET STATUS='0'
+		<where>
+			1=1
+			AND RECIPIENT=#{recipient }
+			AND STATUS='1'
+		</where>
+	</update>
+	<!-- 查询所有通知信息 -->
+	<select id="queryListAll" parameterType="Pagination" resultType="map">
+		SELECT GN.SERIESNO,
+		GN.RECIPIENT,
+		GN.PUBLISHER, GN.MARKREAD, GN.STATUS,
+		GN.PUBLISHTIME, GN.TITLE, GN.CONTENTSOURCE,
+		GU.USERCODE, GU.USERNAME
+		FROM GGNOTICE GN ,GGUSER GU
+		<where>
+			1=1
+			AND GN.RECIPIENT=GU.USERCODE
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''"> AND GN.RECIPIENT=#{queryCondition.userCode}</if>
+			<if
+				test="queryCondition.userSendCode != null and queryCondition.userSendCode != ''">
+				AND GN.RECIPIENT=#{queryCondition.userSendCode}
+				AND GN.PUBLISHER
+				= #{queryCondition.sendUser}
+			</if>
+			<if
+				test="queryCondition.markRead != null and queryCondition.markRead != ''">
+				AND GN.MARKREAD=#{queryCondition.markRead}
+				ORDER BY MARKREAD
+				,PUBLISHTIME DESC
+			</if>
+			<if
+				test="queryCondition.markRead == null or queryCondition.markRead == ''">
+				AND GN.MARKREAD in('0','1')
+				ORDER BY PUBLISHTIME DESC
+			</if>
+		</where>
+	</select>
+	<select id="queryListSend" parameterType="Pagination"
+		resultType="map">
+		SELECT GN.SERIESNO,
+		GN.RECIPIENT,
+		GN.PUBLISHER, GN.MARKREAD, GN.STATUS,
+		GN.PUBLISHTIME, GN.TITLE, GN.CONTENTSOURCE,
+		GU.USERCODE, GU.USERNAME
+		FROM GGNOTICE GN ,GGUSER GU
+		<where>
+			1=1
+			<if
+				test="queryCondition.markRead != null and queryCondition.markRead != ''"> AND GU.MARKREAD=#{queryCondition.markRead}</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''"> AND GN.PUBLISHER=#{queryCondition.userCode}</if>
+			AND GN.RECIPIENT=GU.USERCODE
+			AND GN.MARKREAD='0'
+			ORDER BY MARKREAD
+			,PUBLISHTIME DESC
+		</where>
+	</select>
+	<!-- 查询未读信息条数 -->
+	<select id="getCountByNotice" parameterType="com.dsib.entity.GgNotice"
+		resultType="Integer">
+		SELECT "COUNT"(*) FROM GGNOTICE
+		<where>
+			1=1
+			AND MARKREAD='0'
+			<if test="seriesNo != null and seriesNo != ''">
+				AND SERIESNO = #{seriesNo}
+			</if>
+			<if test="recipient != null and recipient != ''">
+				AND RECIPIENT = #{recipient}
+			</if>
+		</where>
+	</select>
+	<!-- 查看未读信息 -->
+	<select id="querySeriesNo" parameterType="Pagination"
+		resultType="map">
+		SELECT GN.CONTENTSOURCE,GN.SERIESNO,GN.TITLE,GN.PUBLISHER,
+		GN.PUBLISHTIME,
+		GN.RECIPIENT,
+		GN.STATUS,GN.MARKREAD ,GU.USERCODE
+		,GU.USERNAME FROM GGNOTICE GN ,GGUSER GU
+		<where>
+			1=1
+			<if
+				test="queryCondition.seriesNo != null and queryCondition.seriesNo != ''">
+				AND GN.SERIESNO = #{queryCondition.seriesNo}
+			</if>
+			AND GN.PUBLISHER = GU.USERCODE
+		</where>
+	</select>
+	<!-- 查询按钮_信息查询方法 -->
+	<select id="selectNotice" parameterType="Pagination" resultType="map">
+		SELECT GN.SERIESNO,
+		GN.RECIPIENT,
+		GN.PUBLISHER, GN.MARKREAD, GN.STATUS,
+		GN.PUBLISHTIME, GN.TITLE, GN.CONTENTSOURCE,
+		GU.USERCODE, GU.USERNAME
+		FROM GGNOTICE GN ,GGUSER GU
+		<where>
+			1=1
+			AND GN.RECIPIENT = GU.USERCODE
+			<!-- 开始日期要比评估日期小 &gt; 代表大于号 -->
+			<if
+				test="queryCondition.startNoticeDate != null and queryCondition.startNoticeDate != ''">
+				AND TO_CHAR (GN.PUBLISHTIME,'yyyy-MM-dd') &gt; =
+				#{queryCondition.startNoticeDate}
+			</if>
+			<!-- 结束日期要比评估日期大 &lt; 代表小于号 -->
+			<if
+				test="queryCondition.endNoticeDate != null and queryCondition.endNoticeDate != ''">
+				AND TO_CHAR (GN.PUBLISHTIME,'yyyy-MM-dd') &lt; =
+				#{queryCondition.endNoticeDate}
+			</if>
+			<if
+				test="queryCondition.recipient != null and queryCondition.recipient != ''">
+				AND GU.USERNAME LIKE '%${queryCondition.recipient }%'
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''"> AND GN.RECIPIENT=#{queryCondition.userCode}</if>
+			<if
+				test="queryCondition.userSendCode != null and queryCondition.userSendCode != ''"> AND GN.RECIPIENT=#{queryCondition.userSendCode}</if>
+			<if
+				test="queryCondition.markRead != null and queryCondition.markRead != ''"> AND GN.MARKREAD=#{queryCondition.markRead}</if>
+			<if
+				test="queryCondition.Readtype != null and queryCondition.Readtype != ''">
+				AND GN.MARKREAD = #{queryCondition.Readtype }
+			</if>
+			<if test="queryCondition.person != null and queryCondition.person != ''">
+				AND GN.RECIPIENT = #{queryCondition.person }
+			</if>
+			<if
+				test="queryCondition.sendperson != null and queryCondition.sendperson != ''">
+				AND GN.PUBLISHER = #{queryCondition.sendperson }
+			</if>
+			<if test="queryCondition.reci == 1 ">
+				AND GN.RECIPIENT = #{queryCondition.user }
+				ORDER BY
+				GN.MARKREAD,GN.PUBLISHTIME DESC
+			</if>
+			<if test="queryCondition.reci == 0 ">
+				AND GN.PUBLISHER = #{queryCondition.user }
+				ORDER BY
+				GN.PUBLISHTIME DESC
+			</if>
+		</where>
+	</select>
+	<!-- 企业用户登录首页，查看通知信息 -->
+	<select id="noticeList" parameterType="Pagination" resultType="map">
+		SELECT GN.TITLE,
+		TO_CHAR(GN.PUBLISHTIME,'yyyy-MM-dd')PUBLISHTIME,
+		GN.SERIESNO,GN.RECIPIENT,(SELECT USERNAME FROM GGUSER WHERE
+		USERCODE=GN.PUBLISHER) AS PUBLISHER
+		FROM GGNOTICE GN
+		<where> 1=1
+			AND GN.RECIPIENT=#{queryCondition}
+			AND GN.STATUS='1'
+			AND
+			GN.MARKREAD='0'
+			ORDER BY GN.PUBLISHTIME DESC
+		</where>
+	</select>
+	<update id="updateMarkRead" parameterType="GgNotice">
+		UPDATE GGNOTICE GN SET
+		GN.MARKREAD='1'
+		WHERE
+		1 = 1
+		<if test="seriesNo != null and seriesNo != ''">
+			AND SERIESNO = #{seriesNo}
+		</if>
+	</update>
+	<!-- hslt -->
+	<select id="forSeriesNo" parameterType="GgNotice" resultType="GgNotice">
+		SELECT DISTINCT(GE.RECIPIENT) RECIPIENT FROM
+		GGNOTICE GE
+		LEFT JOIN
+		GGUSERCORP GU
+		ON
+		GE.RECIPIENT= GU.USERCODE
+		<where>
+			GE.STATUS = '1'
+		</where>
+	</select>
+
+</mapper>

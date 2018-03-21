@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=GB18030">
+<title>订单明细查询</title>
+</head>
+<script language="javascript">
+function forsubmit(){
+	if(form1.check[0].checked == true){
+	
+		form1.queryMode.value = '0'
+		
+		
+	}
+	else if(form1.check[1].checked ==true){
+	
+		form1.queryMode.value = '1'
+		
+	}
+	
+}
+</script>
+<body>
+<form name="form1" method="post" onSubmit="forsubmit()" action="orderDetailQuerys.jsp">
+<input  name="check" type="radio"   checked="checked"  /> 按订单号查询
+<input  name="check" type="radio" />按商户号查询
+<input  type="hidden" name="queryMode" />
+<br />
+<br />
+
+订单号：&nbsp;&nbsp;&nbsp;&nbsp;<input name="orderNo"></input>
+<br /> 
+<br />
+商户客户号：<input name="merchantNo" />
+<br />
+<br />
+商户检索号：<input name="merOrderNo" />
+<br />
+<br />
+<input type="submit"  />
+</form>
+注：一次最多请不要超过20笔
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;查询多笔请用|分隔
+</body>
+</html>

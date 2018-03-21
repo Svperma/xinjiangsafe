@@ -1,0 +1,12 @@
+<html>
+<head>
+</head>
+<body>
+<p />
+<a href="buy/index.html">买方业务</a> 
+<p />
+<a href="middleman/index.html">中间商业务</a>
+<p />
+<a href="sell/index.html">卖方业务</a>
+</body>
+</html>

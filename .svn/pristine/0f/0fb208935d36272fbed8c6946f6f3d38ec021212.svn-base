@@ -1,0 +1,95 @@
+package com.dsib.entity;
+
+public class GuPolicyAdjustRate {
+	private String businessno;
+
+	private String amountadjust;
+
+	private String sumamountadjust;
+
+	private String shortrate;
+
+	private String renewalrate;
+
+	private String lossrate;
+
+	private String standardlevelrate;
+
+	private String flag;
+
+	private String remark;
+
+	public String getBusinessno() {
+		return businessno;
+	}
+
+	public void setBusinessno(String businessno) {
+		this.businessno = businessno == null ? null : businessno.trim();
+	}
+
+	public String getAmountadjust() {
+		return amountadjust;
+	}
+
+	public void setAmountadjust(String amountadjust) {
+		this.amountadjust = amountadjust == null ? null : amountadjust.trim();
+	}
+
+	public String getSumamountadjust() {
+		return sumamountadjust;
+	}
+
+	public void setSumamountadjust(String sumamountadjust) {
+		this.sumamountadjust = sumamountadjust == null ? null : sumamountadjust
+				.trim();
+	}
+
+	public String getShortrate() {
+		return shortrate;
+	}
+
+	public void setShortrate(String shortrate) {
+		this.shortrate = shortrate == null ? null : shortrate.trim();
+	}
+
+	public String getRenewalrate() {
+		return renewalrate;
+	}
+
+	public void setRenewalrate(String renewalrate) {
+		this.renewalrate = renewalrate == null ? null : renewalrate.trim();
+	}
+
+	public String getLossrate() {
+		return lossrate;
+	}
+
+	public void setLossrate(String lossrate) {
+		this.lossrate = lossrate == null ? null : lossrate.trim();
+	}
+
+	public String getStandardlevelrate() {
+		return standardlevelrate;
+	}
+
+	public void setStandardlevelrate(String standardlevelrate) {
+		this.standardlevelrate = standardlevelrate == null ? null
+				: standardlevelrate.trim();
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag == null ? null : flag.trim();
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark == null ? null : remark.trim();
+	}
+}

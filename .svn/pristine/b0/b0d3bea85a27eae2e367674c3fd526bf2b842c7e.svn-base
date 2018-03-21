@@ -1,0 +1,17 @@
+#\u5546\u6237\u7F16\u53F7
+#p1_MerId=10001126856
+#DSIB
+#p1_MerId=10012359777
+#xinjiang
+p1_MerId=10014727770
+#\u5546\u6237\u5BC6\u94A5
+#keyValue=69cl522AV6q613Ii4W6u8K6XuW8vM1N6bFgyv769220IuYe9u37N4y7rI4Pl
+#DSIB
+#keyValue=7DWwP20569MNDh1UzHEC77i4k74ei121288JW065G71278k2hesID06oP174
+#XINJIANG
+keyValue=2o2h75K88J4YIkt02329y21Ps38003578Cb0DG7ke7z73720KwuEdRa5E9n2
+#\u4EA4\u6613\u8BF7\u6C42\u5730\u5740
+onlinePaymentReqURL=https://www.yeepay.com/app-merchant-proxy/node
+yeepayCommonReqURL=https://www.yeepay.com/app-merchant-proxy/node
+#\u67E5\u8BE2\u548C\u9000\u6B3E\u5730\u5740
+queryRefundReqURL=https://www.yeepay.com/app-merchant-proxy/command

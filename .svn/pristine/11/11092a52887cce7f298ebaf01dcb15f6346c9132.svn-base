@@ -1,0 +1,56 @@
+<html>
+<head>
+<title>订单入录</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<script language="javascript">
+function subAuthForm(){
+	document.payForm.submit();
+}
+
+function createOrderInfo(){
+	var tmpDate = new Date();
+	var day = tmpDate.getDate();
+	var month= tmpDate.getMonth() + 1 ;
+	var year= tmpDate.getYear();
+   	var hours = tmpDate.getHours()
+   	var minutes = tmpDate.getMinutes()
+   	var seconds = tmpDate.getSeconds()
+    	
+   	month = ((month < 10) ? "0" : "") + month;
+   	day = ((day < 10) ? "0" : "") + day;
+   	hours = ((hours < 10) ? "0" : "") + hours;
+   	minutes = ((minutes < 10) ? "0" : "") + minutes;
+   	seconds = ((seconds < 10) ? "0" : "") + seconds;
+   	
+   	document.all.merchant_order_no.value = year + month + day + hours + minutes + seconds;
+}
+</script>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" >
+
+<form  name ="payForm" method="post" action="WEBDirectMerOrder.jsp" >
+
+	商户编号:<input type="text" name="merchant_no" value="301310015209504"/><br>
+	商户检索号:<input type="text" name="merchant_order_no" value=""/>
+			<input type = "button" name = "createOrderId" value = "随机生成商户检索号" onClick = "javascript:createOrderInfo();" ><br> 
+    订单模式:<input type="text" name="order_mode" value="10">直接商户-一次性支付<br>    
+    付款模式:<input type="text" name="pay_mode" value="02">授权付款<br> 
+    有效天数:<input type="text" name="validate_period"  value="11"/>天<br> 
+    订单名字:<input type="text" name="order_name"  value="B2B Test Order"/><br>
+    订单币种:<input type="text" name="order_currency"  value="CNY"/><br>
+    订单金额:<input type="text" name="order_amount"  value="10.00"/><br>
+    订单备注:<input type="text" name="order_comment" value=""/><br>
+    卖方备注:<input type="text" name="bargainor_comment"  value=""/><br>
+    买方备注:<input type="text" name="purchaser_comment"  value=""/><br>
+    付款帐号:<input type="text" name="pay_acc_no" value="310066661010123079617"/><br>
+    收款帐号:<input type="text" name="rec_acc_no" value="310066496018003846558"/><br>
+    收款类型:<input type="text" name="rec_bank_type" value="01"/>01:交行<br>
+    ERP编号:<input type="text" name="erp_serial_no" value=""/><br>
+	<input type="button" onclick="subAuthForm();" value="submit order"/>
+</form>
+</body>
+</html>
+
+  
+
+ 

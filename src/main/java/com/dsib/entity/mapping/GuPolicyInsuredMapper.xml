@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyInsuredMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyInsured">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<id column="SERIESNO" property="seriesno" jdbcType="DECIMAL" />
+		<result column="POLICYNO" property="policyno" jdbcType="VARCHAR" />
+		<result column="RISKCODE" property="riskcode" jdbcType="VARCHAR" />
+		<result column="INSUREDTYPE" property="insuredtype" jdbcType="VARCHAR" />
+		<result column="INSUREDCODE" property="insuredcode" jdbcType="VARCHAR" />
+		<result column="INSUREDNAME" property="insuredname" jdbcType="VARCHAR" />
+		<result column="INSUREDADDRESS" property="insuredaddress"
+			jdbcType="VARCHAR" />
+		<result column="INSUREDFLAG" property="insuredflag" jdbcType="VARCHAR" />
+		<result column="IDENTITYTYPE" property="identitytype" jdbcType="VARCHAR" />
+		<result column="IDENTITYNUMBER" property="identitynumber"
+			jdbcType="VARCHAR" />
+		<result column="LINKNAME" property="linkname" jdbcType="VARCHAR" />
+		<result column="PHONENUMBER" property="phonenumber" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, SERIESNO, POLICYNO, RISKCODE, INSUREDTYPE,
+		INSUREDCODE, INSUREDNAME,
+		INSUREDADDRESS, INSUREDFLAG, IDENTITYTYPE,
+		IDENTITYNUMBER, LINKNAME,
+		PHONENUMBER,
+		EMAIL, FLAG, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyInsuredKey">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYINSURED
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyInsuredKey">
+		delete from
+		GUPOLICYINSURED
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and
+		SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyInsured">
+		insert into GUPOLICYINSURED
+		(BUSINESSNO, SERIESNO, POLICYNO,
+		RISKCODE, INSUREDTYPE, INSUREDCODE,
+		INSUREDNAME, INSUREDADDRESS, INSUREDFLAG,
+		IDENTITYTYPE, IDENTITYNUMBER,
+		LINKNAME,
+		PHONENUMBER, EMAIL, FLAG,
+		REMARK)
+		values
+		(#{businessno,jdbcType=VARCHAR}, #{seriesno,jdbcType=DECIMAL},
+		#{policyno,jdbcType=VARCHAR},
+		#{riskcode,jdbcType=VARCHAR},
+		#{insuredtype,jdbcType=VARCHAR}, #{insuredcode,jdbcType=VARCHAR},
+		#{insuredname,jdbcType=VARCHAR}, #{insuredaddress,jdbcType=VARCHAR},
+		#{insuredflag,jdbcType=VARCHAR},
+		#{identitytype,jdbcType=VARCHAR},
+		#{identitynumber,jdbcType=VARCHAR}, #{linkname,jdbcType=VARCHAR},
+		#{phonenumber,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+		#{flag,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyInsured">
+		insert into GUPOLICYINSURED
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="seriesno != null">
+				SERIESNO,
+			</if>
+			<if test="policyno != null">
+				POLICYNO,
+			</if>
+			<if test="riskcode != null">
+				RISKCODE,
+			</if>
+			<if test="insuredtype != null">
+				INSUREDTYPE,
+			</if>
+			<if test="insuredcode != null">
+				INSUREDCODE,
+			</if>
+			<if test="insuredname != null">
+				INSUREDNAME,
+			</if>
+			<if test="insuredaddress != null">
+				INSUREDADDRESS,
+			</if>
+			<if test="insuredflag != null">
+				INSUREDFLAG,
+			</if>
+			<if test="identitytype != null">
+				IDENTITYTYPE,
+			</if>
+			<if test="identitynumber != null">
+				IDENTITYNUMBER,
+			</if>
+			<if test="linkname != null">
+				LINKNAME,
+			</if>
+			<if test="phonenumber != null">
+				PHONENUMBER,
+			</if>
+			<if test="email != null">
+				EMAIL,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="seriesno != null">
+				#{seriesno,jdbcType=DECIMAL},
+			</if>
+			<if test="policyno != null">
+				#{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				#{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredtype != null">
+				#{insuredtype,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredcode != null">
+				#{insuredcode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredname != null">
+				#{insuredname,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredaddress != null">
+				#{insuredaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredflag != null">
+				#{insuredflag,jdbcType=VARCHAR},
+			</if>
+			<if test="identitytype != null">
+				#{identitytype,jdbcType=VARCHAR},
+			</if>
+			<if test="identitynumber != null">
+				#{identitynumber,jdbcType=VARCHAR},
+			</if>
+			<if test="linkname != null">
+				#{linkname,jdbcType=VARCHAR},
+			</if>
+			<if test="phonenumber != null">
+				#{phonenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyInsured">
+		update GUPOLICYINSURED
+		<set>
+			<if test="policyno != null">
+				POLICYNO = #{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="riskcode != null">
+				RISKCODE = #{riskcode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredtype != null">
+				INSUREDTYPE = #{insuredtype,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredcode != null">
+				INSUREDCODE = #{insuredcode,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredname != null">
+				INSUREDNAME = #{insuredname,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredaddress != null">
+				INSUREDADDRESS = #{insuredaddress,jdbcType=VARCHAR},
+			</if>
+			<if test="insuredflag != null">
+				INSUREDFLAG = #{insuredflag,jdbcType=VARCHAR},
+			</if>
+			<if test="identitytype != null">
+				IDENTITYTYPE = #{identitytype,jdbcType=VARCHAR},
+			</if>
+			<if test="identitynumber != null">
+				IDENTITYNUMBER = #{identitynumber,jdbcType=VARCHAR},
+			</if>
+			<if test="linkname != null">
+				LINKNAME = #{linkname,jdbcType=VARCHAR},
+			</if>
+			<if test="phonenumber != null">
+				PHONENUMBER = #{phonenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				EMAIL = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO =
+		#{seriesno,jdbcType=DECIMAL}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyInsured">
+		update
+		GUPOLICYINSURED
+		set POLICYNO = #{policyno,jdbcType=VARCHAR},
+		RISKCODE =
+		#{riskcode,jdbcType=VARCHAR},
+		INSUREDTYPE =
+		#{insuredtype,jdbcType=VARCHAR},
+		INSUREDCODE =
+		#{insuredcode,jdbcType=VARCHAR},
+		INSUREDNAME =
+		#{insuredname,jdbcType=VARCHAR},
+		INSUREDADDRESS =
+		#{insuredaddress,jdbcType=VARCHAR},
+		INSUREDFLAG =
+		#{insuredflag,jdbcType=VARCHAR},
+		IDENTITYTYPE =
+		#{identitytype,jdbcType=VARCHAR},
+		IDENTITYNUMBER =
+		#{identitynumber,jdbcType=VARCHAR},
+		LINKNAME =
+		#{linkname,jdbcType=VARCHAR},
+		PHONENUMBER =
+		#{phonenumber,jdbcType=VARCHAR},
+		EMAIL = #{email,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO =
+		#{seriesno,jdbcType=DECIMAL}
+	</update>
+</mapper>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.QyMypolicyMapper">
+	<select id="getQymyPolicy" parameterType="Pagination"
+		resultType="map">
+		SELECT DISTINCT GU.BUSINESSNO,GU.INSUREDNAME,GU.STARTDATE,GU.ENDDATE,GU.SPREADSHEETPREMIUM,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=GU.BUSINESSNO) EMCOUNT,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE INSURANCECODE = GU.INSURERCODE ) INSURERCODE,
+		GU.UNDERWRITEFLAG,GU.PAYFLAG,GU.POLICYNO
+		FROM GUPOLICYMAIN GU , GGUSERCORP GE ,GUPOLICYINSURED GI
+		<where>
+			GU.INSUREDCODE = GE.USERCODE AND GU.BUSINESSNO = GI.BUSINESSNO AND 
+			(GU.INSUREDCODE = #{queryCondition.user } OR GI.IDENTITYNUMBER = #{queryCondition.identifiNo })
+			 AND GU.POLICYNO IS NULL AND GU.UNDERWRITEFLAG != '6'
+			<if
+				test="queryCondition.insuredcode != null and queryCondition.insuredcode !=''">
+				AND GU.INSUREDNAME LIKE '%'||#{queryCondition.insuredcode
+				}||'%'
+			</if>
+			<if
+				test="queryCondition.languagec != null and queryCondition.languagec !=''">
+				AND GU.UNDERWRITEFLAG = #{queryCondition.languagec }
+			</if>
+		</where>
+	</select>
+	<!-- 经济公司查询投保单 -->
+	<select id="getQymyPolicyJj" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GU.BUSINESSNO,GU.INSUREDNAME,GU.STARTDATE,GU.ENDDATE,GU.SPREADSHEETPREMIUM,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=GU.BUSINESSNO) EMCOUNT,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE INSURANCECODE = GU.INSURERCODE ) INSURERCODE,
+		GU.UNDERWRITEFLAG,GU.PAYFLAG,GU.POLICYNO,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GU.APPLICODE) ORDERNAME,
+		GU.FLAG,(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GU.APPLICODE)) GUISHU
+		FROM GUPOLICYMAIN GU INNER JOIN GUPOLICYINSURED GI ON GU.BUSINESSNO = GI.BUSINESSNO AND GI.SERIESNO = '1'
+		<where>
+			GU.POLICYNO IS NULL and (GU.UNDERWRITEFLAG = '3' or GU.UNDERWRITEFLAG = '1' or 
+									 GU.UNDERWRITEFLAG = '5' or GU.UNDERWRITEFLAG = '2') 
+			<if test="queryCondition.insuredcode != null and queryCondition.insuredcode !=''">
+				AND GU.INSUREDNAME LIKE '%'||#{queryCondition.insuredcode }||'%'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GU.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GU.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.languagec != null and queryCondition.languagec !=''">
+				AND GU.UNDERWRITEFLAG = #{queryCondition.languagec }
+			</if>
+			<if test="queryCondition.languagea != null and queryCondition.languagea !=''">
+				AND GU.FLAG = #{queryCondition.languagea }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GU.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK = #{queryCondition.classCode } 
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG = #{queryCondition.businessClass }
+			</if>
+			<!-- 业务员查询自己的业务 -->
+			<if test="queryCondition.yewuguishu != null and queryCondition.yewuguishu !=''">
+				AND GU.OPERATORCODE = #{queryCondition.yewuguishu }
+			</if>
+		</where>
+	</select>
+	<!-- 保险公司查询投保单 -->
+	<select id="getQymyPolicyPolicy" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GU.BUSINESSNO,GU.INSUREDNAME,GU.STARTDATE,GU.ENDDATE,GU.SPREADSHEETPREMIUM,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=GU.BUSINESSNO) EMCOUNT,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE INSURANCECODE = GU.INSURERCODE ) INSURERCODE,
+		GU.UNDERWRITEFLAG,GU.PAYFLAG,GU.POLICYNO,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GU.APPLICODE) ORDERNAME
+		,(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GU.APPLICODE)) GUISHU,GU.FLAG
+		FROM GUPOLICYMAIN GU 
+		<where>
+			GU.POLICYNO IS NULL AND GU.UNDERWRITEFLAG != '6'
+			<if
+				test="queryCondition.insuredcode != null and queryCondition.insuredcode !=''">
+				AND GU.INSUREDNAME LIKE '%'||#{queryCondition.insuredcode
+				}||'%'
+			</if>
+			<if
+				test="queryCondition.languagec != null and queryCondition.languagec !=''">
+				AND GU.UNDERWRITEFLAG = #{queryCondition.languagec }
+			</if>
+			<if
+				test="queryCondition.MYUSERCODE != '' and queryCondition.MYUSERCODE != null ">
+				AND GU.OPERATORCODE = #{queryCondition.MYUSERCODE }
+			</if>
+			<if
+				test="queryCondition.USERLEFLAG != '' and queryCondition.USERLEFLAG != null ">
+				AND GU.REMARK = #{queryCondition.USERLEFLAG }
+			</if>
+			<if
+				test="queryCondition.GodLevel != '' and queryCondition.GodLevel != null ">
+				AND GU.REMARK IS NOT NULL AND INSURERCODE=#{queryCondition.GodLevel } AND FLAG='1'
+			</if>
+			<if test="queryCondition.province != null and queryCondition.province !=''">
+				AND GU.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city !=''">
+				AND GU.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county !=''">
+				AND GU.COUNTY = #{queryCondition.county }
+			</if>
+		</where>
+	</select>
+	<select id="getMypolicyShow" parameterType="String" resultType="map">
+		SELECT GM.STARTDATE , GM.ENDDATE , (SELECT KINDNAME FROM
+		GUPOLICYITEMKIND WHERE BUSINESSNO = GM.BUSINESSNO AND KINDCODE =
+		'0901001') KINDEDNAME , GM.SPECIALPROVISIONS ,
+		GM.CURRENCY EMCOUNT , GP.UNITAMOUNT , GM.SUMAMOUNT ,
+		GM.ARGUESOLUTION ,GM.ARBITBOARDNAME,
+		GM.SPECIALPROVISIONS , GM.INSURERCODE ,GM.PAYBILLNO,
+		GM.SPREADSHEETPREMIUM,GM.POLICYNO,(SELECT LINKNAME FROM GGUSER WHERE USERCODE = GM.APPLICODE) ORDERNAME,
+		(SELECT USERNAME FROM GGUSER WHERE USERCODE=(SELECT UPDATOR FROM GGUSER WHERE USERCODE = GM.APPLICODE)) GUISHU
+		FROM
+		GUPOLICYMAIN GM LEFT JOIN GUPOLICYITEMKIND GP
+		ON GM.BUSINESSNO =
+		GP.BUSINESSNO AND GP.KINDCODE = '0901001'
+		LEFT JOIN
+		GGUSERCORP GE ON
+		GM.INSUREDCODE = GE.USERCODE
+		WHERE GM.BUSINESSNO =
+		#{BUSINESSNO }
+	</select>
+	<select id="getMypolicyAppend" parameterType="Pagination"
+		resultType="map">
+		SELECT GI.KINDNAME,GI.AMOUNT,GI.SPREADSHEETPREMIUM ,
+		GI.KINDCODE,GI.UNITAMOUNT
+		FROM
+		GUPOLICYITEMKIND GI
+		WHERE GI.BUSINESSNO =
+		#{queryCondition.businessno }
+	</select>
+	<!-- 查看审核不通过的 保单 -->
+	<select id="getMypolicyNOShow" parameterType="String"
+		resultType="map">
+		SELECT GM.STARTDATE , GM.ENDDATE , (SELECT KINDNAME FROM
+		GUPOLICYITEMKIND WHERE BUSINESSNO = GM.BUSINESSNO AND KINDCODE =
+		'0901001') KINDEDNAME,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=#{BUSINESSNO }) EMCOUNT , GP.UNITAMOUNT , GM.SUMAMOUNT ,
+		GM.ARGUESOLUTION ,
+		GM.SPECIALPROVISIONS , GM.INSURERCODE ,
+		GM.SPREADSHEETPREMIUM, GM.UNDERWRITEFLAG,GM.UNDERDIRECTIONS
+		FROM
+		GUPOLICYMAIN GM LEFT JOIN GUPOLICYITEMKIND GP
+		ON GM.BUSINESSNO =
+		GP.BUSINESSNO AND GP.KINDCODE = '0901001'
+		LEFT JOIN
+		GGUSERCORP GE ON
+		GM.INSUREDCODE = GE.USERCODE
+		WHERE GM.BUSINESSNO =
+		#{BUSINESSNO } AND GM.UNDERWRITEFLAG = '2'
+	</select>
+	<!-- 保险公司修改保单查询 -->
+	<select id="getMypolicyModfy" parameterType="String"
+		resultType="map">
+		SELECT GM.STARTDATE , GM.ENDDATE , (SELECT KINDNAME FROM
+		GUPOLICYITEMKIND WHERE BUSINESSNO = GM.BUSINESSNO AND KINDCODE =
+		'0901001') KINDEDNAME,
+		(SELECT COUNT(*) FROM GUPOLICYEMPLOYEE WHERE BUSINESS_NO=#{BUSINESSNO }) EMCOUNT , GP.UNITAMOUNT , GM.SUMAMOUNT ,
+		GM.ARGUESOLUTION ,
+		GM.SPECIALPROVISIONS , GM.INSURERCODE ,
+		GM.SPREADSHEETPREMIUM
+		FROM
+		GUPOLICYMAIN GM LEFT JOIN GUPOLICYITEMKIND GP
+		ON GM.BUSINESSNO =
+		GP.BUSINESSNO AND GP.KINDCODE = '0901001'
+		LEFT JOIN
+		GGUSERCORP GE ON
+		GM.INSUREDCODE = GE.USERCODE
+		WHERE GM.BUSINESSNO =
+		#{BUSINESSNO } 
+	</select>
+	<select id="myPolicyAdditional" parameterType="String"
+		resultType="map">
+		SELECT GD.KINDCNAME , GD.REMARK , GM.SPREADSHEETPREMIUM
+		FROM GGKIND GD LEFT
+		JOIN GUPOLICYITEMKIND GM ON GD.KINDCODE =
+		GM.KINDCODE AND
+		GM.BUSINESSNO = #{BUSINESSNO }
+		WHERE GD.KINDCODE NOT
+		LIKE '%001'
+		ORDER
+		BY GD.KINDCODE
+	</select>
+	<!-- 去年投保单方案 -->
+	<select id="myPolicyyeared" parameterType="String" resultType="map">
+		SELECT RISKCODE , PLANCODE FROM GUPOLICYMAIN
+		WHERE BUSINESSNO =
+		#{BUSINESSNO }
+	</select>
+	<!-- showpolicy.jsp查看去年的policyNo -->
+	<select id="showPolicyNo" parameterType="String" resultType="Map">
+		SELECT BUSINESSNO,POLICYNO
+		FROM GUPOLICYMAIN
+		WHERE BUSINESSNO =
+		#{business }
+	</select>
+	<select id="showSpecial" parameterType="string" resultType="map">
+		SELECT SPECIALPROVISIONS FROM GUPOLICYMAIN WHERE BUSINESSNO = #{business }
+	</select>
+	
+</mapper>
+

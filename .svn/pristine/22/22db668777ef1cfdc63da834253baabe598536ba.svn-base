@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>商户联机API演示</title>
+</head>
+
+<body>
+<form name="from1">
+<p />
+<p />
+<table align="center" width="75%">
+	<tr align="center">
+		<td>
+		<p>交通银行B2B支付</p>
+		<p>商户联机交易演示（卖方）</p>
+		</td>
+	<tr align="center">
+		<td>
+		<p>订单生成</p>
+		</td>
+	<tr align="center">
+		<td>
+		<p>---------------------------</p>
+		</td>
+	</tr>
+	<tr align="center">
+		<td>
+		<p><a href="B2BDireMerAgrOrder.html">直接商户-协议支付订单</a></p>
+		</td>
+	</tr>
+	<tr align="center">
+		<td>
+		<p><a href="B2BDireMerOrder.html">直接商户-授权支付订单(api方式)</a></p>
+		</td>
+	</tr>
+	<tr align="center">
+		<td>
+		<p><a href="WEBDirectMerOrder.html">直接商户-授权支付订单(web方式)</a></p>
+		</td>
+	</tr>
+	
+	<tr align="center">
+		<td>
+		<p>---------------------------</p>
+		</td>
+	</tr>
+	<tr align="center">
+		<td>
+		<p><a href="orderDetailQuerys.html">订单明细查询</a></p>
+		</td>
+	</tr>
+	<tr align="center">
+		<td>
+		<p><a href="queryOrders.html">批量订单查询</a></p>
+		</td>
+	</tr>
+	<tr align="center">
+
+		<td>
+		<p><a href="queryOrderFlow.html">交易流水查询</a></p>
+		</td>
+	</tr>
+
+	
+	<tr align="center">
+		<td>
+		<p>---------------------------</p>
+		</td>
+	</tr>
+	<tr align="center">
+
+		<td>
+		<p><a href="RefundDireMerAgrOrder.html">直接商户协议支付退款</a></p>
+		</td>
+	</tr>
+	<tr align="center">
+
+		<td>
+		<p><a href="refundQuery.html">退款明细查询</a></p>
+		</td>
+	</tr>
+</table>
+
+
+</form>
+</body>
+</html>

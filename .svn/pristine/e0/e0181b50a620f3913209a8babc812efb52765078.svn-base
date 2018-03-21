@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dsib.dao.GgCommonwealMapper">
+	<select id="getCommonwealQuery" parameterType="Pagination"
+		resultType="map">
+		SELECT GP.ID , GP.COSTNAME , GP.PAYDATE , GP.PAYAMOUNT ,
+		(SELECT
+		GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GP.COUNTY AND
+		GU.CODETYPE = 'County' )COUNTY,
+		(SELECT GU.CODECNAME FROM GGCODE GU
+		WHERE GU.CODECODE = GP.PROVINCE AND
+		GU.CODETYPE = 'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GP.CITY AND
+		GU.CODETYPE = 'City')CITY,
+		GP.ACCEPTOR
+		FROM GUPREVENTFEEDETAIL GP
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GP.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GP.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GP.COUNTY = #{queryCondition.county }
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != '' ">
+				AND to_char(GP.PAYDATE,'yyyy-mm-dd') &gt;=
+				#{queryCondition.beginDate }
+			</if>
+			<if
+				test="queryCondition.endDate != null and queryCondition.endDate != '' ">
+				AND to_char(GP.PAYDATE-1,'yyyy-mm-dd') &lt;
+				#{queryCondition.endDate }
+			</if>
+			<if test="queryCondition.active != null and queryCondition.active != '' ">
+				AND (GP.ACCEPTOR LIKE '%'||#{queryCondition.active }||'%' 
+					OR GP.COSTNAME LIKE '%'||#{queryCondition.active }||'%')
+			</if>
+
+		</where>
+
+
+		ORDER BY PAYDATE DESC
+
+	</select>
+	<update id="quePromthous" parameterType="java.lang.String">
+		update GUPREVENTFEEDETAIL SET FLAG = '1' WHERE ID = #{businessno,jdbcType=VARCHAR}
+	</update>
+	<!-- 查询事故预防费 -->
+	<select id="findpromthous" parameterType="Pagination" resultType="map">
+		SELECT GP.ID , GP.COSTNAME , GP.PAYDATE , GP.PAYAMOUNT ,
+		GP.ACCEPTOR , GP.PRINCIPAL , GP.FLAG ,GP.DUEBANK ,GP.SHROFFNUMBER
+		FROM GUPREVENTFEEDETAIL GP
+		<where>
+			1=1
+			<if test="queryCondition.flag != null and queryCondition.flag != '' ">
+				AND GP.FLAG = '1'
+			</if>
+			<if test="queryCondition.flag2 != null and queryCondition.flag2 != '' ">
+				AND GP.FLAG IS NULL
+			</if>
+		</where>
+	</select>
+	<select id="selectDsManager_commonweal" parameterType="Pagination" resultType="map">
+			SELECT 
+				M.PROVINCE,M.CITY,M.COUNTY,M.INSURERCODE,GI.INSURANCENAME,POLICYNO,
+				GU.CLASSCODE CLASSCODE,
+				GU.BUSINESSCLASS BUSINESSCLASS,
+				SPREADSHEETPREMIUM,ACCIDENTPREVENTFEE,
+				GU.USERCODE INSUREDCODE
+			FROM
+				GUPOLICYMAIN M 
+			LEFT JOIN 
+				GGUSERCORP GU 
+			ON GU.USERCODE = M.INSUREDCODE
+			LEFT JOIN
+				GGINSURECONFIG GI 
+			ON M.INSURERCODE = GI.INSURANCECODE
+		<where>
+			1=1
+			AND M.UNDERWRITEFLAG='3'
+			AND M.PAYFLAG='1' 
+			AND STARTDATE &lt; SYSDATE AND ENDDATE &gt; SYSDATE
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND M.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND M.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND M.COUNTY = #{queryCondition.county }
+			</if><!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND M.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GU.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据使用人查询 -->
+			<!-- <if test="queryCondition.insurerdCode != null and queryCondition.insurerdCode != ''">
+				AND INSUREDNAME LIKE'%#{queryCondition.insurerdCode}%'
+			</if> -->
+			<!-- 
+			<if test="queryCondition.beginDate != null and queryCondition.beginDate != '' ">
+				AND to_char(GP.PAYDATE,'yyyy-mm-dd') &gt;=
+				#{queryCondition.beginDate }
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != '' ">
+				AND to_char(GP.PAYDATE-1,'yyyy-mm-dd') &lt;
+				#{queryCondition.endDate }
+			</if>
+			<if test="queryCondition.active != null and queryCondition.active != '' ">
+				AND (GP.ACCEPTOR LIKE '%'||#{queryCondition.active }||'%' 
+					OR GP.COSTNAME LIKE '%'||#{queryCondition.active }||'%')
+			</if> -->
+		</where>
+			ORDER BY ENDDATE DESC
+	</select>
+	
+	<!-- -->
+	<select id="getCommonsumQuery" parameterType="Pagination"
+		resultType="map">
+		SELECT SUM(PREMMIUM) PREMMIUM , SUM(COUNTE) COUNTE, SUM(HAVEINGR)
+		HAVEINGR , SUM(USEE) USEE
+		FROM(
+		SELECT SUM(PREMIUM) PREMMIUM
+		,SUM(PEHAVEING) COUNTE,HAVEINGR,SUM(USED) USEE
+		FROM (
+		SELECT
+		GR.SPREADSHEETPREMIUM/10000 AS PREMIUM,
+		GR.ACCIDENTPREVENTFEE/10000 AS
+		PEHAVEING,
+		(SELECT SUM(ACCIDENTPREVENTFEE/10000) FROM GUPOLICYMAIN
+		WHERE PAYFLAG = 1) AS
+		HAVEINGR,
+		0 USED
+		FROM GUPOLICYMAIN GR
+
+		<where>
+			GR.UNDERWRITEFLAG='3' AND GR.PAYFLAG='1' AND GR.POLICYNO IS NOT NULL
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GR.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GR.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GR.COUNTY = #{queryCondition.county }
+			</if>
+
+		</where>
+		UNION ALL
+		SELECT
+		0 AS PREMIUM,
+		0 AS PEHAVEING,
+		0 AS HAVEING,
+		PAYAMOUNT/10000 USED
+		FROM GUPREVENTFEEDETAIL GL
+
+
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GL.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GL.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GL.COUNTY = #{queryCondition.county }
+			</if>
+		</where>
+		)
+		GROUP BY HAVEINGR
+		)
+	</select>
+
+	<insert id="getCommonInsert" parameterType="Guprevent">
+		INSERT INTO
+		GUPREVENTFEEDETAIL (ID
+		,COSTCODE,COSTNAME,PAYAMOUNT,PAYDATE,PRINCIPAL,DUEBANK,SHROFFNUMBER,USERPROVE,ACCEPTOR,PROVINCE,CITY,COUNTY)
+		VALUES(#{id },#{costcode,jdbcType=VARCHAR}, #{costname,jdbcType=VARCHAR },
+		#{paymount,jdbcType=VARCHAR
+		},#{paydate,jdbcType=DATE},#{principal,jdbcType=VARCHAR
+		},#{duebank,jdbcType=VARCHAR },#{shroffnumber,jdbcType=VARCHAR
+		},#{userprove,jdbcType=VARCHAR },#{acceptor,jdbcType=VARCHAR },
+		#{province,jdbcType=VARCHAR },#{city,jdbcType=VARCHAR
+		},#{county,jdbcType=VARCHAR })
+	</insert>
+
+	<select id="getCommonShow" parameterType="String" resultType="map">
+		SELECT GU.COSTNAME , GU.PAYAMOUNT , GU.PAYDATE , GU.PRINCIPAL ,
+		GU.DUEBANK , GU.SHROFFNUMBER , GU.USERPROVE , GU.ACCEPTOR
+		FROM
+		GUPREVENTFEEDETAIL GU
+		WHERE GU.ID = #{ID }
+	</select>
+
+	<select id="getCommonwealExel" parameterType="ConditionAdapter"
+		resultType="map">
+		SELECT
+		GP.COSTNAME , GP.PAYDATE , GP.PAYAMOUNT ,
+		GP.ACCEPTOR
+		FROM
+		GUPREVENTFEEDETAIL GP
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GP.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GP.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GP.COUNTY = #{queryCondition.county }
+			</if>
+			<if
+				test="queryCondition.beginDate != null and queryCondition.beginDate != '' ">
+				AND to_char(GP.PAYDATE,'YYYY-MM-DD') &gt;=
+				#{queryCondition.beginDate }
+			</if>
+			<if
+				test="queryCondition.endDate != null and queryCondition.endDate != '' ">
+				AND to_char(GP.PAYDATE-1,'YYYY-MM-DD') &lt;
+				#{queryCondition.endDate }
+			</if>
+			<if test="queryCondition.active != null and queryCondition.active != '' ">
+				AND GP.COSTNAME LIKE '%'||#{queryCondition.active }||'%'
+			</if>
+
+		</where>
+	</select>
+	<!-- 经纪公司：事故预防费下载 -->
+	<select id="getDsManagerPreventiveToExc" parameterType="ConditionAdapter" resultType="map">
+			SELECT 
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=M.PROVINCE) PROVINCE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=M.CITY) CITY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=M.COUNTY) COUNTY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='CICompanycode' AND CODECODE=M.INSURERCODE) INSURERCODE,POLICYNO,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='IndustryCategories' AND CODECODE=(SELECT CLASSCODE FROM GGUSERCORP WHERE USERCODE=M.INSUREDCODE)) CLASSCODE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='IndustryType' AND CODECODE=(SELECT BUSINESSCLASS FROM GGUSERCORP WHERE USERCODE=M.INSUREDCODE)) BUSINESSNO,
+			SPREADSHEETPREMIUM,ACCIDENTPREVENTFEE,
+			(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=M.INSUREDCODE) INSUREDCODE
+
+			FROM GUPOLICYMAIN M LEFT JOIN GGUSERCORP GU ON GU.USERCODE = M.INSUREDCODE
+		<where>
+			1=1
+			AND M.UNDERWRITEFLAG='3'
+			AND M.PAYFLAG='1' 
+			AND STARTDATE &lt; SYSDATE AND ENDDATE &gt; SYSDATE
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND M.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND M.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND M.COUNTY = #{queryCondition.county }
+			</if><!-- 根据保险公司查询 -->
+			<if test="queryCondition.insurerCode != null and queryCondition.insurerCode != ''">
+				AND M.INSURERCODE = (SELECT CODECODE FROM GGCODE WHERE CODETYPE ='CICompanycode' AND CODECNAME LIKE'%#{queryCondition.insurerCode }%')
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GU.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GU.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据使用人查询 -->
+			<!-- <if test="queryCondition.insurerdCode != null and queryCondition.insurerdCode != ''">
+				AND INSUREDNAME LIKE'%#{queryCondition.insurerdCode}%'
+			</if> -->
+			<!-- 
+			<if test="queryCondition.beginDate != null and queryCondition.beginDate != '' ">
+				AND to_char(GP.PAYDATE,'yyyy-mm-dd') &gt;=
+				#{queryCondition.beginDate }
+			</if>
+			<if test="queryCondition.endDate != null and queryCondition.endDate != '' ">
+				AND to_char(GP.PAYDATE-1,'yyyy-mm-dd') &lt;
+				#{queryCondition.endDate }
+			</if>
+			<if test="queryCondition.active != null and queryCondition.active != '' ">
+				AND (GP.ACCEPTOR LIKE '%'||#{queryCondition.active }||'%' 
+					OR GP.COSTNAME LIKE '%'||#{queryCondition.active }||'%')
+			</if> -->
+		</where>
+			ORDER BY ENDDATE DESC
+	</select>
+
+	<select id="getqian" resultType="map">
+		SELECT CODECODE , CODECNAME FROM
+		GGCODE WHERE CODETYPE = 'ProjectName'
+	</select>
+	<!-- 查询企业投保情况 -->
+	<select id="companyQuery" parameterType="Pagination" resultType="map">
+			SELECT GG.COMPANYNAME, GG.BUSINESSLICENSENO, GG.PROVINCE, GG.CITY, GG.COUNTY, 
+	(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GU.INSURERCODE) INSURERCODE,
+	(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GG.CLASSCODE AND CODETYPE='IndustryCategories') CLASSCODE,
+	(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GG.BUSINESSCLASS AND CODETYPE='IndustryType') BUSINESSCLASS,
+	(SELECT COUNT(*) FROM GGEMPLOYEE where USERCODE = GG.USERCODE) EMCOUNT,
+	GG.LINKNAME,GG.TELEPHONE,
+	GU.APPLICODE FROM GGUSERCORP GG LEFT JOIN GUPOLICYMAIN GU ON GG.USERCODE = GU.APPLICODE 
+	AND GU.UNDERWRITEFLAG = '3' AND GU.ENDDATE > SYSDATE 
+		<where>
+			1=1
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND GG.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GG.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GG.COUNTY = #{queryCondition.county }
+			</if><!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GU.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GG.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GG.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据企业名称查询 -->
+			<if test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND GG.COMPANYNAME LIKE'%${queryCondition.companyName}%'
+			</if> 
+			<!-- 根据信用代码查询 -->
+			<if test="queryCondition.businesslicenseNo != null and queryCondition.businesslicenseNo != ''">
+				AND GG.BUSINESSLICENSENO ='${queryCondition.businesslicenseNo}'
+			</if> 
+			<!-- 根据已投保查询 -->
+			<if test="queryCondition.whyInsureT != null and queryCondition.whyInsureT != ''">
+				AND GU.UNDERWRITEFLAG = '3' AND GU.ENDDATE > SYSDATE 
+			</if> 
+			<!-- 根据未投保查询 -->
+			<if test="queryCondition.whyInsureF != null and queryCondition.whyInsureF != ''">
+				AND (GU.UNDERWRITEFLAG != '3' OR BUSINESSNO IS NULL)
+			</if> 
+		</where>
+	</select>
+	<!-- 导出企业投保情况 -->
+	<select id="exportCompany" parameterType="Pagination" resultType="map">
+			SELECT GG.COMPANYNAME, GG.BUSINESSLICENSENO,GG.COMPANYADDRESS,GG.LINKNAME,GG.TELEPHONE
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GG.PROVINCE) PROVINCE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GG.CITY) CITY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GG.COUNTY) COUNTY,
+			(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GU.INSURERCODE) INSURERCODE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GG.CLASSCODE AND CODETYPE='IndustryCategories') CLASSCODE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE=GG.BUSINESSCLASS AND CODETYPE='IndustryType') BUSINESSCLASS,
+			(SELECT COUNT(*) FROM GGEMPLOYEE where USERCODE = GG.USERCODE) EMCOUNT,
+			(CASE GU.PROVINCE WHEN '650000' THEN '已投保' ELSE '未投保' END) APPLICODE 
+			FROM GGUSERCORP GG LEFT JOIN GUPOLICYMAIN GU ON GG.USERCODE = GU.APPLICODE 
+			AND GU.UNDERWRITEFLAG = '3' AND GU.ENDDATE > SYSDATE 
+		<where>
+			1=1
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND GG.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GG.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GG.COUNTY = #{queryCondition.county }
+			</if>
+			<!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GU.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GG.CLASSCODE=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GG.BUSINESSCLASS=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据企业名称查询 -->
+			<if test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND GG.COMPANYNAME LIKE'%${queryCondition.companyName}%'
+			</if> 
+			<!-- 根据信用代码查询 -->
+			<if test="queryCondition.businesslicenseNo != null and queryCondition.businesslicenseNo != ''">
+				AND GG.BUSINESSLICENSENO ='${queryCondition.businesslicenseNo}'
+			</if> 
+			<!-- 根据已投保查询 -->
+			<if test="queryCondition.whyInsureT != null and queryCondition.whyInsureT != ''">
+				AND GU.UNDERWRITEFLAG = '3' AND GU.ENDDATE > SYSDATE 
+			</if> 
+			<!-- 根据未投保查询 -->
+			<if test="queryCondition.whyInsureF != null and queryCondition.whyInsureF != ''">
+				AND (GU.UNDERWRITEFLAG != '3' OR BUSINESSNO IS NULL)
+			</if> 
+		</where>
+	</select>
+	<!-- 经济公司查询理赔情况 -->
+	<select id="claimQuery" parameterType="Pagination" resultType="map">
+		SELECT
+		GM.POLICYNO ,GC.PEIANNO ,GC.PAYAMOUNT , to_char(GC.LOSSDATE,'yyyy-mm-dd') LOSSDATE,GC.STATUS , GC.LOSSCAUSE, to_char(GC.CLOSEDATE,'yyyy-mm-dd') CLOSEDATE,GM.INSUREDNAME ,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GM.PROVINCE) PROVINCE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GM.CITY) CITY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GM.COUNTY) COUNTY,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE
+		FROM
+		GCCLAIM GC,
+		GUPOLICYMAIN GM
+		<where>
+			GM.POLICYNO = GC.POLICYNO 
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if><!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据企业名称查询 -->
+			<if test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND GM.INSUREDNAME LIKE'%${queryCondition.companyName}%'
+			</if> 
+			<!-- 根据保单号查询 -->
+			<if test="queryCondition.businesslicenseNo != null and queryCondition.businesslicenseNo != ''">
+				AND GM.POLICYNO ='${queryCondition.businesslicenseNo}'
+			</if> 
+			<!-- 根据已结案查询 -->
+			<if test="queryCondition.whyInsureT != null and queryCondition.whyInsureT != ''">
+				AND GC.STATUS = '5' 
+			</if> 
+			<!-- 根据未结案查询 -->
+			<if test="queryCondition.whyInsureF != null and queryCondition.whyInsureF != ''">
+				AND GC.STATUS != '5'
+			</if> 
+		</where>
+	</select>
+	<!-- 经济公司查询理赔详情 -->
+	<select id="claimListQuery" parameterType="Pagination" resultType="map">
+		SELECT
+		GM.POLICYNO ,GC.PEIANNO ,GC.PAYAMOUNT , to_char(GC.LOSSDATE,'yyyy-mm-dd') LOSSDATE,GC.STATUS , GC.LOSSCAUSE, to_char(GC.CLOSEDATE,'yyyy-mm-dd') CLOSEDATE,GM.INSUREDNAME ,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GM.PROVINCE) PROVINCE,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GM.CITY) CITY,
+		(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GM.COUNTY) COUNTY,
+		(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE
+		FROM
+		GCCLAIM_HISTORY GC,
+		GUPOLICYMAIN GM
+		<where>
+			GM.POLICYNO = GC.POLICYNO 
+			<if test="queryCondition.policyno != null and queryCondition.policyno != ''">
+				AND GC.POLICYNO = #{queryCondition.policyno }
+			</if>
+		</where>
+		order by GC.CREATEDATE
+	</select>
+	<!-- 经济公司导出理赔情况 -->
+	<select id="exportClaim" parameterType="Pagination" resultType="map">
+			SELECT
+			GM.POLICYNO ,GC.PEIANNO ,GC.PAYAMOUNT ,GC.LOSSDATE ,GC.CLOSEDATE ,GM.INSUREDNAME ,
+			GC.LOSSAMOUNT ,GC.LOSSCAUSE ,GC.LOSSDATE ,GC.LOSSLOCAITON ,GC.CREATERCODE ,GC.CREATEDATE ,GC.PAYAMOUNT ,
+			GC.CLOSEDATE ,GC.BAOANDATE ,GC.LOSSDETAIL ,GC.LINKNAME ,GC.LINKPHONE ,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='Province' AND CODECODE=GM.PROVINCE) PROVINCE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='City' AND CODECODE=GM.CITY) CITY,
+			(SELECT CODECNAME FROM GGCODE WHERE CODETYPE='County' AND CODECODE=GM.COUNTY) COUNTY,
+			(SELECT INSURANCENAME FROM GGINSURECONFIG WHERE AREACODE='650000' AND INSURANCECODE=GM.INSURERCODE) INSURERCODE,
+			(CASE GC.STATUS WHEN '1' THEN '报案' WHEN '2' THEN '勘察' WHEN '3' THEN '定损核损' WHEN '4' THEN '赔付' ELSE '结案完成' END ) STATUS,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.REMARK AND CODETYPE='IndustryCategories') CLASSCODE,
+			(SELECT CODECNAME FROM GGCODE WHERE CODECODE = GI.FLAG AND CODETYPE='IndustryType') BUSINESSCODE
+			FROM
+			GCCLAIM GC,
+			GUPOLICYMAIN GM,
+			GUPOLICYINSURED GI
+		<where>
+			GM.BUSINESSNO = GC.BUSINESSNO AND GI.BUSINESSNO=GC.BUSINESSNO AND GI.SERIESNO='1'
+			<if test="queryCondition.province != null and queryCondition.province != ''">
+				AND GM.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GM.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GM.COUNTY = #{queryCondition.county }
+			</if><!-- 根据保险公司查询 -->
+			<if test="queryCondition.inserdCode != null and queryCondition.inserdCode != ''">
+				AND GM.INSURERCODE = #{queryCondition.inserdCode }
+			</if>
+			<!-- 根据行业大类查询 -->
+			<if test="queryCondition.classCode != null and queryCondition.classCode != ''">
+				AND GI.REMARK=#{queryCondition.classCode}
+			</if>
+			<!-- 根据行业小类查询 -->
+			<if test="queryCondition.businessClass != null and queryCondition.businessClass != ''">
+				AND GI.FLAG=#{queryCondition.businessClass}
+			</if>
+			<!-- 根据企业名称查询 -->
+			<if test="queryCondition.companyName != null and queryCondition.companyName != ''">
+				AND GM.INSUREDNAME LIKE'%${queryCondition.companyName}%'
+			</if> 
+			<!-- 根据保单号查询 -->
+			<if test="queryCondition.businesslicenseNo != null and queryCondition.businesslicenseNo != ''">
+				AND GM.POLICYNO ='${queryCondition.businesslicenseNo}'
+			</if> 
+			<!-- 根据已结案查询 -->
+			<if test="queryCondition.whyInsureT != null and queryCondition.whyInsureT != ''">
+				AND GC.STATUS = '5' 
+			</if> 
+			<!-- 根据未结案查询 -->
+			<if test="queryCondition.whyInsureF != null and queryCondition.whyInsureF != ''">
+				AND GC.STATUS != '5'
+			</if> 
+		</where>
+	</select>
+</mapper>

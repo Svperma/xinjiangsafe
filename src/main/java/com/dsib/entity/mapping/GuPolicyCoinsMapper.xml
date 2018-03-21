@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyCoinsMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyCoins">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<id column="SERIESNO" property="seriesno" jdbcType="DECIMAL" />
+		<result column="POLICYNO" property="policyno" jdbcType="VARCHAR" />
+		<result column="COINSCODE" property="coinscode" jdbcType="VARCHAR" />
+		<result column="COINSNAME" property="coinsname" jdbcType="VARCHAR" />
+		<result column="COINSRATE" property="coinsrate" jdbcType="DECIMAL" />
+		<result column="COINSFLAG" property="coinsflag" jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, SERIESNO, POLICYNO, COINSCODE, COINSNAME, COINSRATE, COINSFLAG, FLAG
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.dsib.entity.GuPolicyCoinsKey">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYCOINS
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.dsib.entity.GuPolicyCoinsKey">
+		delete from GUPOLICYCOINS
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyCoins">
+		insert into GUPOLICYCOINS (BUSINESSNO, SERIESNO, POLICYNO,
+		COINSCODE, COINSNAME, COINSRATE,
+		COINSFLAG, FLAG)
+		values (#{businessno,jdbcType=VARCHAR}, #{seriesno,jdbcType=DECIMAL},
+		#{policyno,jdbcType=VARCHAR},
+		#{coinscode,jdbcType=VARCHAR}, #{coinsname,jdbcType=VARCHAR}, #{coinsrate,jdbcType=DECIMAL},
+		#{coinsflag,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyCoins">
+		insert into GUPOLICYCOINS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="seriesno != null">
+				SERIESNO,
+			</if>
+			<if test="policyno != null">
+				POLICYNO,
+			</if>
+			<if test="coinscode != null">
+				COINSCODE,
+			</if>
+			<if test="coinsname != null">
+				COINSNAME,
+			</if>
+			<if test="coinsrate != null">
+				COINSRATE,
+			</if>
+			<if test="coinsflag != null">
+				COINSFLAG,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="seriesno != null">
+				#{seriesno,jdbcType=DECIMAL},
+			</if>
+			<if test="policyno != null">
+				#{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="coinscode != null">
+				#{coinscode,jdbcType=VARCHAR},
+			</if>
+			<if test="coinsname != null">
+				#{coinsname,jdbcType=VARCHAR},
+			</if>
+			<if test="coinsrate != null">
+				#{coinsrate,jdbcType=DECIMAL},
+			</if>
+			<if test="coinsflag != null">
+				#{coinsflag,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyCoins">
+		update GUPOLICYCOINS
+		<set>
+			<if test="policyno != null">
+				POLICYNO = #{policyno,jdbcType=VARCHAR},
+			</if>
+			<if test="coinscode != null">
+				COINSCODE = #{coinscode,jdbcType=VARCHAR},
+			</if>
+			<if test="coinsname != null">
+				COINSNAME = #{coinsname,jdbcType=VARCHAR},
+			</if>
+			<if test="coinsrate != null">
+				COINSRATE = #{coinsrate,jdbcType=DECIMAL},
+			</if>
+			<if test="coinsflag != null">
+				COINSFLAG = #{coinsflag,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyCoins">
+		update GUPOLICYCOINS
+		set POLICYNO = #{policyno,jdbcType=VARCHAR},
+		COINSCODE = #{coinscode,jdbcType=VARCHAR},
+		COINSNAME = #{coinsname,jdbcType=VARCHAR},
+		COINSRATE = #{coinsrate,jdbcType=DECIMAL},
+		COINSFLAG = #{coinsflag,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+		and SERIESNO = #{seriesno,jdbcType=DECIMAL}
+	</update>
+</mapper>

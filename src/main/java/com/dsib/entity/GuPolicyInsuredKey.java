@@ -1,0 +1,25 @@
+package com.dsib.entity;
+
+import java.io.Serializable;
+
+public class GuPolicyInsuredKey  implements Serializable{
+	private String businessno;
+
+	private Long seriesno;
+
+	public String getBusinessno() {
+		return businessno;
+	}
+
+	public void setBusinessno(String businessno) {
+		this.businessno = businessno == null ? null : businessno.trim();
+	}
+
+	public Long getSeriesno() {
+		return seriesno;
+	}
+
+	public void setSeriesno(Long seriesno) {
+		this.seriesno = seriesno;
+	}
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>无标题文档</title>
+</head>
+
+<body>
+
+<form name="form1" method="post" action="queryOrders.jsp">
+
+起始日期：&nbsp;&nbsp;<input name="startDate" /> 格式yyyyMMdd <font color = "red" size= "4"> *</font>
+
+<br />
+
+<br />
+
+结束日期：&nbsp;&nbsp;<input name="endDate"   /> 格式yyyyMMdd <font color = "red" size= "4"> *</font>
+
+<br />
+
+<br />
+
+订单状态：&nbsp;&nbsp;<input name="orderStatus" /> 010：等待付款 / 020：已付款 / 050：已发货 / 100：订单关闭 / 110：订单撤销  不输默认为全部状态
+
+<br />
+
+<br />
+
+付款账号：&nbsp;&nbsp;<input name="payAcc"	/>
+
+<br />
+
+<br />
+
+收款账号：&nbsp;&nbsp;<input name="recAcc"  />
+
+<br />
+
+<br />
+
+订单流程号：<input name="orderMode" /> 10:直接商户-一次性支付 / 11:直接商户-交互支付 / 21:中间商户-交互支付 / 31:中间商户-保证金支付 / 33:中间商户-交付佣金
+
+<br />
+
+<br />
+
+商户编号：&nbsp;&nbsp;<input name= "merchantNo" />
+
+<br />
+
+<br />
+
+付款比率：&nbsp;&nbsp;<input name="payRate"	/>
+
+<br />
+
+<br />
+
+关联订单号：<input name="refOrder" />
+
+<br />
+
+<br />
+
+页码索引:&nbsp;&nbsp;&nbsp;<input name="pageNo" /> &nbsp;默认为第1页
+<br />
+<br />
+
+
+
+<input type="submit" value="提交" />
+
+</form>
+
+</body>
+
+</html>
+

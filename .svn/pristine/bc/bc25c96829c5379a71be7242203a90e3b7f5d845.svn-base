@@ -1,0 +1,317 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<link rel="stylesheet" type="text/css"
+	href="${basePath }/etpcss/style.css">
+<link href="${basePath }/etpcss/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="${basePath }/etpcss/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" type="text/css" href="${basePath }/css/tab-tou.css">
+<script type="text/javascript" src="${basePath }/js/jquery.min.js"></script>
+<script type="text/javascript" src="${basePath }/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+	src="${basePath }/js/bootstrap-datetimepicker.js"></script>
+<html>
+  <body style="height:100%;background:#fff;">
+  <form action="" enctype="multipart/form-data" method="post" name="fom">
+  <input type="hidden" name="riskCode" id="riskCode" value="${policyManager.riskCode }"/>
+  <input type="hidden" name="insureCode" id="insureCode" value="${policyManager.insureCode }"/>
+  <input type="hidden" name="areaCode" id="areaCode" value="${policyManager.areaCode }"/>
+  <input type="hidden" name="paymentFlag" id="paymentFlag" value="${paymentFlag }"/>
+  <div class="maincont_mid_cont_right">
+  	<div class="tab-top-div">
+		<h2 class="title-h1">新疆维吾尔自治区安全生产责任保险&nbsp;&nbsp;<c:if test="${sessionScope.resultMap.POLICYNO != null }">保单</c:if><c:if test="${sessionScope.resultMap.POLICYNO == null }">投保单</c:if></h2>
+		<c:if test="${sessionScope.resultMap.POLICYNO != null }">
+			<p class="title-p">保单号码:</p>
+			<c:if test="${sessionScope.resultMap.POLICYNO != null }">
+			<p class="title-p">归属机构:</p>
+			<p class="title-p">业务员:</p>
+			</c:if>
+		</c:if>
+		<table class="nav-tab">
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">投保提示：</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="right-border bottom-border top-border">
+					1、
+				</td>
+				<td colspan="6" class="left-border bottom-border top-border">
+					请您填写投保单前详细阅读保险条款，特别注意条款中的保险责任、责任免除、投保人被保险人义务、赔偿处理等内容并听取保险人就条款（包括前述需特别注意的内容）所作的说明。。
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="right-border bottom-border top-border">
+					2、
+				</td>
+				<td colspan="6" colspan="6" class="left-border bottom-border top-border">
+					为保障您的合法权益，请您如实、完整、准确地填写本投保单。投保信息如有变动请及时办理变更手续。
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="right-border bottom-border top-border">
+					3、
+				</td>
+				<td colspan="6" class="left-border bottom-border top-border">
+					请您按本投保单的约定及时交纳保险费。
+				</td>
+			</tr>
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">投保人信息</td>
+			</tr>
+			<tr>
+				<td colspan="1">投保人名称</td>
+				<td colspan="7">${policyManager.inName}</td>
+			</tr>
+			<tr>
+				<td colspan="2">联系地址</td>
+				<td colspan="2">${policyManager.inAddress }</td>
+				<td colspan="2">邮箱</td>
+				<td colspan="2">${policyManager.inEmail }</td>
+			</tr>
+			<tr>
+				<td colspan="2">联系电话</td>
+				<td colspan="2">${policyManager.inTelePhone }</td>
+				<td colspan="2">联系人</td>
+				<td colspan="2">${policyManager.inLinkName }</td>
+			</tr>
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">被保险人信息</td>
+			</tr>
+			<tr>
+				<td colspan="2">被保险人名称</td>
+				<td colspan="2">${policyManager.alName }</td>
+				<td colspan="2">邮箱</td>
+				<td colspan="2">${policyManager.alEmail }</td>
+			</tr>
+			<tr>
+				<td colspan="2">联系电话</td>
+				<td colspan="2">${policyManager.alTelePhone }</td>
+				<td colspan="2">联系人</td>
+				<td colspan="2">${policyManager.alLinkName }</td>
+			</tr>
+			<tr>
+				<td colspan="2">联系地址</td>
+				<td colspan="2">${policyManager.alAddress }</td>
+				<td colspan="2">归属省份</td>
+				<td colspan="2">
+					<select style="width: 160px;"
+						name="province" id="province"
+						onchange="modifyArea('province','city','City')">
+							<c:forEach items="${list_pro}" var="pro" varStatus="st">
+							<option value="${pro.codeCode }">${pro.codeCName }</option>
+							</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">归属市</td>
+				<td colspan="2">
+					<select style="width: 160px;"
+						name="city" id="city"
+						onchange="modifyArea('city','county','County')">
+							<c:forEach items="${list_city}" var="ci" varStatus="st">
+								<option value="${ci.codeCode}">${ci.codeCName }</option>
+							</c:forEach>
+					</select>
+				</td>
+				<td colspan="2">归属县区</td>
+				<td colspan="2">
+					<select style="width: 160px;"
+						name="county" id="county">
+							<c:forEach items="${list_county}" var="co" varStatus="st">
+								<option value="${co.codeCode}">${co.codeCName }</option>
+							</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">行业类别</td>
+				<td colspan="2">
+					<select style="width: 160px;"
+						name="classCode" id="classCode"
+						onchange="getClassCode('classCode','businessClass')">
+							<c:forEach items="${list_classCode}" var="cl" varStatus="st">
+								<option value="${cl.codeCode}">${cl.codeCName }</option>
+							</c:forEach>
+					</select>
+				</td>
+				<td colspan="2">经营范围</td>
+				<td colspan="2">
+					<select style="width: 160px;" name="businessClass" id="businessClass">
+						<c:forEach items="${list_businessClass}" var="bc"
+							varStatus="st">
+								<option value="${bc.codeCode}">${bc.codeCName }</option>
+						</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">统一社会信用代码</td>
+				<td colspan="2">
+					${sessionScope.policyManager.alBusinessLicenseNo }
+				</td>
+				<td colspan="2">安全生产许可证号</td>
+				<td colspan="2">
+					${sessionScope.policyManager.alSafetyLicenseNo}
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">从业人员人数</td>
+				<td colspan="2">
+					<input readonly="readonly" id="pepSum" name="pepSum" type="text" value="${policyManager.pepSum }" style="width:50%;">
+                    <div class="maincont_mid_cont_right_bot" style="display:inline-block;">
+						<a style="cursor:pointer;" onclick="goPep()">查看员工</a>
+					</div>
+					<input type="hidden" name="pepSums" id="pepSums" value="${policyManager.pepSums}">
+				</td>
+				<td colspan="2">安全标准化等级</td>
+				<td colspan="2">
+					<select style="width: 160px;"
+						name="standardLevel" id="standardLevel">
+							<c:forEach items="${list_safe}" var="sa" varStatus="st">
+								<option value="${sa.codeCode}">${sa.codeCName }</option>
+							</c:forEach>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">投保明细</td>
+			</tr>
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">主险：</td>
+			</tr>
+			<tr>
+				<td rowspan="4">安全生产责任保险</td>
+				<td colspan="3">每人每次赔偿限额</td>
+				<td colspan="4">${sessionScope.policyManager.amount}元</td>
+			</tr>
+			<tr>
+				<td colspan="3">每次事故赔偿限额</td>
+				<td colspan="4"><fmt:formatNumber value="${sessionScope.policyManager.sumAmount}" pattern="##.##"></fmt:formatNumber>元</td>
+			</tr>
+			<tr>
+				<td colspan="3">年度累计赔偿限额</td>
+				<td colspan="4"><fmt:formatNumber value="${sessionScope.policyManager.sumAmount}" pattern="##.##"></fmt:formatNumber>元</td>
+			</tr>
+			<tr>
+				<td colspan="3">每次事故绝对免赔额</td>
+				<td colspan="4">人身伤亡无免赔额</td>
+			</tr>
+			<tr>
+				<td>保险费  ￥：</td>
+				<td colspan="7"><fmt:formatNumber value="${policyManager.pr }" pattern="##.##"></fmt:formatNumber>元</td>
+			</tr>
+			<tr>
+				<td colspan="8" class="bg-tab-ddd">附加险（可选）：</td>
+			</tr>
+			<tr>
+				<td colspan="1" class="text-bold">附加险种名称</td>
+				<td colspan="3" class="text-bold">赔偿限额</td>
+				<td colspan="1" class="text-bold">保费(元)</td>
+				<td colspan="3" class="text-bold">每次事故免赔额</td>
+			</tr>
+			<tr>
+				<td colspan="1">附加第三者责任保险</td>
+				<td colspan="3">
+					每次事故及累计赔偿限额${policyManager.sanamount / 10000 }万元，其中：每次事故每人人身伤亡赔偿限额与主险一致；
+每次事故每人医疗费用赔偿限额为每人人身伤亡赔偿限额的30%；每次事故财产损失为每次事故及累计赔偿限额的50%；
+				</td>
+				<td colspan="1">${policyManager.itemOne == null ? '未投保' : policyManager.itemOne}</td>
+				<td colspan="3">每人医疗费用免赔额为人民币500元；
+财产损失免赔额为人民币1000元</td>
+			</tr>
+			<tr>
+				<td colspan="1">附加从业人员医疗费用保险</td>
+				<td colspan="3">
+					每人医疗费用赔偿限额为主险每人死亡赔偿限额的30%，医疗费用每次事故及累计赔偿限额为主险每次事故及累计赔偿限额的30%。
+				</td>
+				<td colspan="1">${policyManager.itemTwo == null ? '未投保' : policyManager.itemTwo}</td>
+				<td colspan="3">每人医疗费用免赔额为人民币500元。</td>
+			</tr>
+			<tr>
+				<td colspan="1">附加救援费用保险</td>
+				<td colspan="3">
+					每次事故及累计赔偿限额为主险每次及累计赔偿限额的30%。
+				</td>
+				<td colspan="1">${policyManager.itemThree == null ? '未投保' : policyManager.itemThree}</td>
+				<td colspan="3">免赔额为人民币2000元。</td>
+			</tr>
+			<tr>
+				<td colspan="1">附加法律费用保险</td>
+				<td colspan="3">
+					每次事故及累计赔偿限额为主险每次事故及累计赔偿限额的5%。
+				</td>
+				<td colspan="1">${policyManager.itemFour == null ? '未投保' : policyManager.itemFour}</td>
+				<td colspan="3">免赔额为人民币500元。</td>
+			</tr>
+			<tr>
+				<td colspan="4">人民币（大写）:${policyManager.sumPr}</td>
+				<td colspan="4">总保险费:${zbf }元</td>
+			</tr>
+			<tr>
+				<td colspan="2">保险期间</td>
+				<td colspan="6">自<fmt:formatDate value="${policyManager.startDate }" pattern="yyyy-MM-dd" />日00:00:00时起 至
+				<fmt:formatDate value="${policyManager.endDate }" pattern="yyyy-MM-dd" />日23:59:59止
+				(以最终签发的保险单为准)为保证保险合同在拟定的保险起期生效，请您在保险起期前5个工作日前办理投保手续、提交投保资料并支付保费。如您未能按时办理投保手续或保费未能按时到账，导致保险合同未在拟定的保险起期生效，发生保险事故，本公司不承担保险责任。</td>
+			</tr>
+			<tr>
+				<td colspan="2">司法管辖</td>
+				<td colspan="6">中华人民共和国司法（港、澳、台除外）</td>
+			</tr>
+			<tr>
+				<td rowspan="7">特别约定</td>
+				<td colspan="7">1、本保险项下的赔偿责任不因被保险人非故意地延迟、错误或遗漏向保险公司申报与保险合同有关的重要事项而失效，一旦被保险人得知其疏忽或遗漏应在合理的时间内尽快向保险公司申报。</td>
+			</tr>
+			<tr>
+				<td colspan="7">2、被保险人因为自身无法控制的原因或并非其主观过失的原因而导致违反本保险条款，此保单的保障不受影响。</td>
+			</tr>
+			<tr>
+				<td colspan="7">3、保险人对被保险人举证提出的损失额度有异议的，应当承担相应的举证责任。</td>
+			</tr>
+			<tr>
+				<td colspan="7">4、本保险合同于确认无误的投保信息录入新疆安责险信息平台且保费到达安责险专收账户的次日零时生效。</td>
+			</tr>
+			<tr>
+				<td colspan="7">5、保险人仅对本保单明细表中列明的从业人员的伤亡承担赔偿责任。</td>
+			</tr>
+			<tr>
+				<td colspan="7">6、发生生产安全事故或按照职业病防治法规定被诊断、鉴定为职业病，被保险人应当自事故发生之日或者被诊断、鉴定为职业病之日起30日内，向保险人报案。被保险人未按约定时限报案的，对属于保险责任事故伤害的保险人也不负责赔偿。</td>
+			</tr>
+			<tr>
+				<td colspan="7">7、本保险单未约定事项，以保险人与自治区安全监管局委托的德圣经纪公司签署的《新疆维吾尔自治区安生生产责任保险项目合作协议》为准。</td>
+			</tr>
+		</table>
+		<div style="text-align:left;">
+        	争议解决方式：<select id="toTalk" name="toTalk" style="width:150px;">
+                            <option <c:if test="${policyManager.toTalk==1 }">selected</c:if> value="1">诉讼</option>
+                            <option <c:if test="${policyManager.toTalk==2 }">selected</c:if> value="2">仲裁</option>
+                        </select>
+                        <c:if test="${policyManager.toTalk==2 }">
+                        <input id="inp" name="toTalkName" class="select_list_inputa" type="text" maxlength="20" value="${policyManager.toTalkName }" readonly="readonly" style="float:none;height: 30px;">
+        				</c:if>
+        </div>   
+		<div class="maincont_mid_cont_right_bot" style="width: 100%;">
+			<a style="cursor:pointer; display: block;margin: auto;width: 108px;height: 22px;padding: 5px 0px;float: none;" onclick="goZus()">提交投保单</a>
+		</div>
+		</br>
+		</br>
+	 </div>
+	</div>
+	</form>
+	<script type="text/javascript">
+		function goZus() {
+			fom.action = "${basePath}/dsmanager/insertPolicyEnd";
+			fom.target = "mainFrame";
+			fom.submit();
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgExperMapper">
+	<select id="getGgEXperQuery" parameterType="Pagination"
+		resultType="map">
+		SELECT GO.ORGNAME , GO.ORGCODE , GO.ORGOWNER , GO.PHONE , (SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE = GO.GRADE AND CODETYPE =
+		'OrganClass') GRADE, GO.ADDRESS , COUNT(GE.USERCODE) AS GECOM ,
+		COUNT(GV.BEEVALUATOR ) AS GVCOM
+		FROM GOVORGAN GO LEFT JOIN
+		GGEVALUATEDANGERS GE ON GO.ORGCODE =
+		GE.EVALUATOR AND GE.EVALUATION
+		='1'
+		LEFT JOIN GGEVALUATE GV ON GO.ORGCODE = GV.BEEVALUATOR AND GV.ITEM
+		= '3'
+		<where>
+			GO.VALIDSTATUS = 1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND GO.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND GO.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND GO.COUNTY = #{queryCondition.county }
+			</if>
+			<if
+				test="queryCondition.languageh != null and queryCondition.languageh != ''">
+				AND GO.LANGUAGE = #{queryCondition.languageh }
+			</if>
+			<if
+				test="queryCondition.classcode != null and queryCondition.classcode !=''">
+				AND GO.BUSINESSTYPE = #{queryCondition.classcode }
+			</if>
+			<if test="queryCondition.organ != null and queryCondition.organ !='' ">
+				AND GO.ORGNAME LIKE '%'||#{queryCondition.organ }||'%'
+			</if>
+
+			GROUP BY GO.ORGNAME , GO.ORGCODE , GO.ORGOWNER , GO.PHONE , GO.GRADE
+			, GO.ADDRESS
+		</where>
+	</select>
+	<select id="getGgExperShow" parameterType="Pagination"
+		resultType="map">
+		SELECT GO.ORGNAME , GO.ORGOWNER , (SELECT GU.CODECNAME FROM GGCODE GU
+		WHERE GU.CODECODE = GO.GRADE AND GU.CODETYPE='grade') GRADE , GO.PHONE
+		GOPHONE, GO.ADDRESS ,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GO.COUNTY AND
+		GU.CODETYPE = 'County' )COUNTY,
+		(SELECT
+		GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GO.PROVINCE AND
+		GU.CODETYPE = 'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU
+		WHERE GU.CODECODE = GO.CITY AND
+		GU.CODETYPE = 'City')CITY, GO.ORGCODE,
+		GO.PHOTO ,GU.EXNAME EXPERNAME , GU.SEX , GU.PHONE GUPHONE, GU.IDNUMBER
+		FROM GOVORGAN GO LEFT JOIN GOVEXPERT GU ON GO.ORGCODE = GU.ORGCODE
+		<where>
+			<if test="queryCondition.OrgCode != null and queryCondition.OrgCode !=''">
+				GO.ORGCODE = #{queryCondition.OrgCode }
+			</if>
+		</where>
+	</select>
+	<update id="getGgExperDel" parameterType="String">
+		UPDATE GOVORGAN SET
+		VALIDSTATUS = 2 WHERE ORGCODE = #{OrgCode }
+	</update>
+
+	<!-- 二级页面 右连接一个企业可以被多家机构进行评估一对多 -->	<!--连接主表找到该企业的保险公司 -->
+	<select id="getGgExpercimpany" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		GC.COMPANYNAME ,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GC.PROVINCE AND
+		GU.CODETYPE = 'Province')PROVINCE,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE GU.CODECODE = GC.CITY AND
+		GU.CODETYPE = 'City')CITY,
+		(SELECT GU.CODECNAME FROM GGCODE GU WHERE
+		GU.CODECODE = GC.COUNTY AND
+		GU.CODETYPE = 'County' )COUNTY,
+		GG.EVALUATDATE ,
+		(SELECT OG.ORGNAME FROM GOVORGAN OG WHERE OG.ORGCODE =
+		GG.EVALUATOR)EVALUATOR,
+		GC.RISKLEVEL,
+		GG.DOCADDRESS
+		FROM
+		GOVORGAN OG
+		LEFT
+		JOIN GGEVALUATEDANGERS GG ON OG.ORGCODE = GG.EVALUATOR
+		LEFT JOIN
+		GGUSERCORP GC ON GC.USERCODE = GG.USERCODE
+		<where>
+			1=1
+			AND GG.EVALUATION ='1'
+			AND OG.ORGCODE =
+			#{queryCondition.OrgCode }
+		</where>
+	</select>
+	<select id="getGgExperTalk" parameterType="Pagination"
+		resultMap="Expert">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME
+		FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT
+		CODECNAME FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE
+
+		WHERE GE.ITEM = '3' AND GE.ATTRIBUTEID='1' OR
+		GE.ATTRIBUTEID='2' AND
+		GE.BEEVALUATOR=#{queryCondition.OrgCode}
+
+		ORDER BY
+		GE.EVALUATETIME DESC
+
+	</select>
+	<resultMap type="GgEvaluate" id="Expert">
+		<id property="seriesNo" column="SERIESNO" />
+		<result property="beEvaluator" column="BEEVALUATOR" />
+		<result property="item" column="ITEM" />
+		<result property="content" column="CONTENT" />
+		<result property="score" column="SCORE" />
+		<result property="evaluator" column="EVALUATOR" />
+		<result property="evaluateTime" column="EVALUATETIME" />
+		<result property="AttributeId" column="ATTRIBUTEID" />
+		<result property="markId" column="MARKID" />
+		<result property="province" column="PROVINCE" />
+		<result property="city" column="CITY" />
+		<result property="county" column="COUNTY" />
+		<result property="remark" column="REMARK" />
+		<result property="flag" column="FLAG" />
+		<association property="list" column="SERIESNO" select="getFeedback" />
+	</resultMap>
+	<select id="getFeedback" parameterType="string" resultType="GgEvaluate">
+		SELECT GE.SERIESNO,CASE WHEN (SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.BEEVALUATOR) IS NULL THEN
+		(SELECT CODECNAME FROM GGCODE
+		WHERE CODECODE=GE.BEEVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.BEEVALUATOR) END
+		BEEVALUATOR,
+		GE.ITEM,GE.CONTENT,GE.SCORE,CASE WHEN (SELECT COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR)
+		IS NULL THEN
+		(SELECT CODECNAME
+		FROM GGCODE WHERE CODECODE=GE.EVALUATOR ) ELSE (SELECT
+		COMPANYNAME FROM
+		GGUSERCORP WHERE USERCODE=GE.EVALUATOR) END
+		EVALUATOR,
+		GE.EVALUATETIME,GE.ATTRIBUTEID,GE.MARKID,GE.PROVINCE,GE.CITY,GE.COUNTY,GE.REMARK,GE.FLAG
+		FROM GGEVALUATE GE WHERE MARKID = #{ID } AND ATTRIBUTEID='2' ORDER BY
+		EVALUATETIME ASC
+	</select>
+	<!-- hslt -->
+	<select id="selectGovExperts" parameterType="com.dsib.entity.GGovexpert"
+		resultType="com.dsib.entity.GGovexpert">
+		SELECT * FROM GOVEXPERT
+		<where>
+			1=1
+			<if test="orgcode != null and orgcode != ''">
+				AND ORGCODE=#{orgcode}
+			</if>
+		</where>
+	</select>
+	<!-- HSLT -->
+	<select id="addInveStigateByExpert" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		DISTINCT(GO.EXPCODE)
+		EXPCODE,GO.ORGCODE,GO.EXNAME,GO.BUSINESSCLASS,GO.IDENTITYTYPE,
+		GO.IDNUMBER,GO.IDIMAGE,GO.SEX,GO.AGE,GO.PHONE,
+		GO.ADDRESS,GO.BIRTHDAY,GO.PROVINCE,GO.CITY,GO.COUNTY ,GS.ORGCODE
+		SUBORGCODE
+		FROM (
+		SELECT * FROM GOVEXPERT G
+		<where>
+			1=1
+			<if
+				test="queryCondition.province != null and queryCondition.province != ''">
+				AND G.PROVINCE = #{queryCondition.province }
+			</if>
+			<if test="queryCondition.city != null and queryCondition.city != ''">
+				AND G.CITY = #{queryCondition.city }
+			</if>
+			<if test="queryCondition.county != null and queryCondition.county != ''">
+				AND G.COUNTY = #{queryCondition.county }
+			</if>
+			<if test="queryCondition.orgName != null and queryCondition.orgName != ''">
+				AND G.EXNAME LIKE '%${queryCondition.orgName }%'
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode !=''">
+				AND G.BUSINESSCLASS =(SELECT classcode FROM GGUSERCORP WHERE
+				USERCODE=#{queryCondition.userCode})
+			</if>
+			) GO LEFT JOIN GGSUBSCRIBE GS ON GO.EXPCODE = GS.ORGCODE
+			ORDER BY
+			GS.ORGCODE,GO.EXPCODE,GO.ORGCODE,GO.BUSINESSCLASS
+		</where>
+	</select>
+	<select id="selectGovorganByCode" parameterType="com.dsib.entity.GGovexpert"
+		resultType="com.dsib.entity.GGovexpert">
+		SELECT * FROM GOVEXPERT GE
+		<where>
+			1=1
+			<if test="expcode != null and expcode != ''">
+				AND EXPCODE=#{expcode}
+			</if>
+		</where>
+	</select>
+</mapper>

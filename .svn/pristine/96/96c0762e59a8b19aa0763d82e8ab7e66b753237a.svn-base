@@ -1,0 +1,83 @@
+package com.dsib.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.dsib.entity.GgCode;
+import com.dsib.service.GgCodeService;
+
+@Controller
+@RequestMapping("/codeControl")
+public class GgCodeController extends BaseController {
+
+	@Resource(name = "ggCodeService")
+	private GgCodeService codeService;
+
+	@RequestMapping(value = "/getArea")
+	public void getArea(@RequestBody JSONObject obj,
+			HttpServletResponse response) {
+		String remark = obj.getString("remark");
+		List<GgCode> list = codeService.getGgCodeList(remark);
+		String areaList = "";
+		areaList = JSON.toJSONString(list);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		try {
+			PrintWriter write = response.getWriter();
+			write.write(areaList);
+			write.flush();
+			write.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping(value = "/getClassCode")
+	public void getClassCode(@RequestBody JSONObject obj,
+			HttpServletResponse response) {
+		String remark = obj.getString("remark");
+		List<GgCode> list = codeService.getIndustryCode(remark);
+		String codeList = "";
+		codeList = JSON.toJSONString(list);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		try {
+			PrintWriter write = response.getWriter();
+			write.write(codeList);
+			write.flush();
+			write.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping(value = "/getGgCodeByObj")
+	public void getGgCodeByObj(GgCode ggCode, HttpServletResponse response) {
+		List<GgCode> list = codeService.getGgCodeByObj(ggCode);
+		String codeList = "";
+		codeList = JSON.toJSONString(list);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		try {
+			PrintWriter write = response.getWriter();
+			write.write(codeList);
+			write.flush();
+			write.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

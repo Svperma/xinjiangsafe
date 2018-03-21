@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dsib.dao.GuPolicyAdjustRateMapper">
+	<resultMap id="BaseResultMap" type="com.dsib.entity.GuPolicyAdjustRate">
+		<id column="BUSINESSNO" property="businessno" jdbcType="VARCHAR" />
+		<result column="AMOUNTADJUST" property="amountadjust" jdbcType="VARCHAR" />
+		<result column="SUMAMOUNTADJUST" property="sumamountadjust"
+			jdbcType="VARCHAR" />
+		<result column="SHORTRATE" property="shortrate" jdbcType="VARCHAR" />
+		<result column="RENEWALRATE" property="renewalrate" jdbcType="VARCHAR" />
+		<result column="LOSSRATE" property="lossrate" jdbcType="VARCHAR" />
+		<result column="STANDARDLEVELRATE" property="standardlevelrate"
+			jdbcType="VARCHAR" />
+		<result column="FLAG" property="flag" jdbcType="VARCHAR" />
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		BUSINESSNO, AMOUNTADJUST, SUMAMOUNTADJUST, SHORTRATE, RENEWALRATE, LOSSRATE,
+		STANDARDLEVELRATE,
+		FLAG, REMARK
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from GUPOLICYADJUSTRATE
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from GUPOLICYADJUSTRATE
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dsib.entity.GuPolicyAdjustRate">
+		insert into GUPOLICYADJUSTRATE (BUSINESSNO, AMOUNTADJUST,
+		SUMAMOUNTADJUST,
+		SHORTRATE, RENEWALRATE, LOSSRATE,
+		STANDARDLEVELRATE, FLAG, REMARK
+		)
+		values (#{businessno,jdbcType=VARCHAR}, #{amountadjust,jdbcType=VARCHAR},
+		#{sumamountadjust,jdbcType=VARCHAR},
+		#{shortrate,jdbcType=VARCHAR}, #{renewalrate,jdbcType=VARCHAR}, #{lossrate,jdbcType=VARCHAR},
+		#{standardlevelrate,jdbcType=VARCHAR}, #{flag,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.dsib.entity.GuPolicyAdjustRate">
+		insert into GUPOLICYADJUSTRATE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				BUSINESSNO,
+			</if>
+			<if test="amountadjust != null">
+				AMOUNTADJUST,
+			</if>
+			<if test="sumamountadjust != null">
+				SUMAMOUNTADJUST,
+			</if>
+			<if test="shortrate != null">
+				SHORTRATE,
+			</if>
+			<if test="renewalrate != null">
+				RENEWALRATE,
+			</if>
+			<if test="lossrate != null">
+				LOSSRATE,
+			</if>
+			<if test="standardlevelrate != null">
+				STANDARDLEVELRATE,
+			</if>
+			<if test="flag != null">
+				FLAG,
+			</if>
+			<if test="remark != null">
+				REMARK,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="businessno != null">
+				#{businessno,jdbcType=VARCHAR},
+			</if>
+			<if test="amountadjust != null">
+				#{amountadjust,jdbcType=VARCHAR},
+			</if>
+			<if test="sumamountadjust != null">
+				#{sumamountadjust,jdbcType=VARCHAR},
+			</if>
+			<if test="shortrate != null">
+				#{shortrate,jdbcType=VARCHAR},
+			</if>
+			<if test="renewalrate != null">
+				#{renewalrate,jdbcType=VARCHAR},
+			</if>
+			<if test="lossrate != null">
+				#{lossrate,jdbcType=VARCHAR},
+			</if>
+			<if test="standardlevelrate != null">
+				#{standardlevelrate,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				#{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dsib.entity.GuPolicyAdjustRate">
+		update GUPOLICYADJUSTRATE
+		<set>
+			<if test="amountadjust != null">
+				AMOUNTADJUST = #{amountadjust,jdbcType=VARCHAR},
+			</if>
+			<if test="sumamountadjust != null">
+				SUMAMOUNTADJUST = #{sumamountadjust,jdbcType=VARCHAR},
+			</if>
+			<if test="shortrate != null">
+				SHORTRATE = #{shortrate,jdbcType=VARCHAR},
+			</if>
+			<if test="renewalrate != null">
+				RENEWALRATE = #{renewalrate,jdbcType=VARCHAR},
+			</if>
+			<if test="lossrate != null">
+				LOSSRATE = #{lossrate,jdbcType=VARCHAR},
+			</if>
+			<if test="standardlevelrate != null">
+				STANDARDLEVELRATE = #{standardlevelrate,jdbcType=VARCHAR},
+			</if>
+			<if test="flag != null">
+				FLAG = #{flag,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dsib.entity.GuPolicyAdjustRate">
+		update GUPOLICYADJUSTRATE
+		set AMOUNTADJUST = #{amountadjust,jdbcType=VARCHAR},
+		SUMAMOUNTADJUST = #{sumamountadjust,jdbcType=VARCHAR},
+		SHORTRATE = #{shortrate,jdbcType=VARCHAR},
+		RENEWALRATE = #{renewalrate,jdbcType=VARCHAR},
+		LOSSRATE = #{lossrate,jdbcType=VARCHAR},
+		STANDARDLEVELRATE = #{standardlevelrate,jdbcType=VARCHAR},
+		FLAG = #{flag,jdbcType=VARCHAR},
+		REMARK = #{remark,jdbcType=VARCHAR}
+		where BUSINESSNO = #{businessno,jdbcType=VARCHAR}
+	</update>
+</mapper>

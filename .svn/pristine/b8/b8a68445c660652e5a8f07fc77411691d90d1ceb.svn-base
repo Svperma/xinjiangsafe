@@ -1,0 +1,415 @@
+package com.dsib.submitInterface;
+
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.dsib.dao.GuPolicyMainMapper;
+import com.dsib.entity.GgUser;
+import com.dsib.entity.GgUserCorp;
+import com.dsib.entity.GuPolicyEmployee;
+import com.dsib.entity.GuPolicyInsured;
+import com.dsib.entity.GuPolicyInsuredKey;
+import com.dsib.entity.GuPolicyItemKind;
+import com.dsib.entity.GuPolicyMain;
+import com.dsib.service.GcClaimService;
+import com.dsib.service.GgUserService;
+import com.dsib.service.GpOrderDetailService;
+import com.dsib.service.GuInterfaceService;
+import com.dsib.service.GuPolicyInsuredService;
+import com.dsib.service.InsurePolicyService;
+import com.dsib.service.JobWebServiceClientService;
+import com.dsib.webService.AZX.bean.common.xsd.ApplicantEhm;
+import com.dsib.webService.AZX.bean.common.xsd.InsuredEhm;
+import com.dsib.webService.AZX.bean.common.xsd.InsuredSubjectEhm;
+import com.dsib.webService.AZX.bean.common.xsd.ItemKindEhm;
+import com.dsib.webService.AZX.bean.common.xsd.MainEhm;
+import com.dsib.webService.AZX.insuranceSingle.dto.xsd.InsuranceSingleRequest;
+import com.dsib.webService.AZX.insuranceSingle.dto.xsd.InsuranceSingleResponse;
+import com.dsib.webService.AZX.insuranceSingle.service.AZXInsuranceSingleServicePortType;
+import com.dsib.webService.AZX.insuranceSingle.service.AZXInsuranceSingleServicePortTypeProxy;
+import com.dsib.webService.AZX.manualUnderwriteAfterSingle.dto.xsd.ManualUnderwriteAfterSingleRequest;
+import com.dsib.webService.AZX.manualUnderwriteAfterSingle.dto.xsd.ManualUnderwriteAfterSingleResponse;
+import com.dsib.webService.AZX.manualUnderwriteAfterSingle.service.AZXManualUnderwriteAfterSingleServicePortType;
+import com.dsib.webService.AZX.manualUnderwriteAfterSingle.service.AZXManualUnderwriteAfterSingleServicePortTypeProxy;
+
+
+/**
+ * 提交人工核保和自动核保出单工具
+ * @author Administrator
+ *
+ */
+@Component
+public class SubmitInsureAfterUtil {
+	
+	@Autowired
+	GuPolicyMainMapper mainMapper;
+	
+	@Resource(name = "insurePolicyService")
+	private InsurePolicyService insurePolicyService;
+	
+	@Resource(name = "gpOrderDetailService")
+	private GpOrderDetailService detailService;
+	
+	@Resource(name="JobWebService")
+	JobWebServiceClientService client;
+	
+	@Resource
+	private GcClaimService claimService;//理赔信息工具
+	
+	@Resource(name = "ggUserService")
+	private GgUserService userService;//用户查询
+
+	@Resource(name = "GuInterface")
+	private GuInterfaceService guinter;
+	
+	@Resource(name = "guPolicyInsuredService")
+	private GuPolicyInsuredService policyInsuredService;//关系人信息
+	
+	
+
+	/**
+	 * 提交自动核保并出单请求.成功:返回1 并且修改发送时间,投保单号,保单号,和电子保单地址,失败:返回0
+	 * @param businessnos
+	 * @return 0:失敗 1:成功
+	 */
+	public int insuranceSingle(String businessnos) {
+		
+		int flag = 0;
+		
+		/**
+		  * 把根据businessNo查询出来的一条数据，分别存在需要的对象中
+		  * 缴费完后如果没有投保单号的组织自动核保出单请求
+		  */
+//		GuPolicyMain m = mainMapper.selectByPrimaryKey(businessnos);
+		
+		InsuranceSingleRequest insurance = new InsuranceSingleRequest();//入参对象
+		
+		MainEhm mainEhm = new MainEhm();//投保单主信息模块
+		ApplicantEhm applicantEhm = new ApplicantEhm();//投保人模块	对象
+		InsuredEhm insuredEhm = new InsuredEhm();//被保险人模块	对象
+		ItemKindEhm itemKindEhm = new ItemKindEhm();//险别信息模块
+		ItemKindEhm[] itemKindEhmArray = null;
+		InsuredSubjectEhm insuredSubject = new InsuredSubjectEhm();//标的信息模块
+		InsuredSubjectEhm[] insuredSubjectArray = null;
+		
+		
+		
+		/*********			查询方法				start		*******************************************/
+		//根据businessNo查询出一条投保人主信息
+		GuPolicyMain policyMain = mainMapper.selectByPrimaryKey(businessnos);
+		//查看该企业是否有已经生效的保单
+		List<GuPolicyMain> RenewalFlag = mainMapper.selectRenewalFlag(policyMain);
+		//根据投保主信息查询标的人数信息
+		Integer employeecount = mainMapper.selectGuPolicyEmployeeCount(businessnos);
+		String emp = String.valueOf(employeecount);
+		
+		/*********			查询方法				end			*******************************************/
+		insurance.setRequestType("10");
+		insurance.setPrimaryKey(businessnos);
+		//格式化日期格式为		String		类型
+		SimpleDateFormat simDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String SstartDate = simDate.format(policyMain.getStartDate());//格式化起保日期为	String	类型
+		String SendDate = simDate.format(policyMain.getEndDate());//格式化终保日期为	String	类型
+		String SoperateDate = simDate.format(policyMain.getOperateDate());//格式化操作时间为	string	类型
+		String SspreadsheetPremium = String.valueOf(policyMain.getSpreadsheetPremium());//试算保费
+		String SactualPremium = String.valueOf(policyMain.getActualPremium());//实际保费
+		String SdisCount = String.valueOf(policyMain.getDisCount());//总折扣
+//		String SsumDiscount = String.valueOf(policyMain.getSumDiscount());//总折扣金额
+		String SsumAmount = String.valueOf(policyMain.getSumAmount());//格式化总保额为	string	类型
+		//格式化当前时间
+		String newDate = simDate.format(new Date());
+		/**********	往各个对象中传参数	**********	start	**********		**********/
+		
+		//投保单主信息模块
+		mainEhm.setSystemCode("AZBX");//接口对接标识固定
+		mainEhm.setPrimaryKey(businessnos);
+		//如果续保查询结果有值，则代表是续保，否则是新保
+		if (RenewalFlag.size() > 0) {
+			mainEhm.setPreviousPolicyNo(RenewalFlag.get(0).getPolicyNo());//上一年保单号			可不传，但是续保单时，必填
+			mainEhm.setRenewalFlag("1");//是否续保	0：新保 	1：续保
+		}else {
+			mainEhm.setRenewalFlag("0");//是否续保	0：新保 	1：续保
+		}
+		mainEhm.setStartDate(SstartDate);//起保日期
+		mainEhm.setEndDate(SendDate);//终保日期
+		mainEhm.setArgueSolution("1");//争议解决方式：固定为1			可不传
+		mainEhm.setOperatorCode(policyMain.getOperatorCode());//平台操作员代码
+		
+		GgUser user = userService.getUser(policyMain.getOperatorCode());//根据保单的操作人找到用户用户
+		mainEhm.setOperatorCompany(user.getUserName());//平台操作员机构
+		
+		mainEhm.setOperateDate(SoperateDate);//平台操作日期
+		mainEhm.setSignDate(newDate);//签单日期
+		if(!"AICS".equals(policyMain.getInsurerCode())) {
+			mainEhm.setSumAmount(SsumAmount);//总限额
+		}
+		mainEhm.setDisCount(SdisCount);//总折扣率
+		mainEhm.setSpreadsheetPremium(SspreadsheetPremium);//试算保费
+		mainEhm.setActualPremium(SactualPremium);//实际保费
+
+		if (!"".equals(policyMain.getSpecialprovisions())) {
+			mainEhm.setSpecialProvisions(policyMain.getSpecialprovisions());//特殊约定			可不传
+		}
+		mainEhm.setInsuredNumber(emp);//标的人数
+		//mainEhm.setInsurerCode("BPIC");//保险公司代码
+		mainEhm.setInsurerCode(policyMain.getInsurerCode());//保险公司代码
+		mainEhm.setProvince(policyMain.getProvince());//省
+		mainEhm.setCity(policyMain.getCity());//市
+		mainEhm.setCounty(policyMain.getCounty());//区县
+		
+		insurance.setMainEhm(mainEhm);
+		/*********************************************************************************************************/
+		//查询投保人信息/被保险人信息
+//		GgUserCorp userCorp = mainMapper.selectGgUserCorp(businessnos);
+		//投保人信息
+		GgUserCorp userCorp = guinter.getUserCorp(policyMain.getAppliCode()) == 
+				null ? new GgUserCorp() : guinter.getUserCorp(policyMain.getAppliCode());//查询投保人公司信息
+				
+		GuPolicyInsuredKey guPolicyInsuredKey = new GuPolicyInsuredKey();
+		guPolicyInsuredKey.setBusinessno(policyMain.getBusinessNo());
+		guPolicyInsuredKey.setSeriesno(1L);
+		GuPolicyInsured usere = policyInsuredService.selectByPrimaryKey(guPolicyInsuredKey);//投保人跟单信息
+		
+		applicantEhm.setAppliName(usere.getInsuredname());
+		applicantEhm.setIdentifyNumber(StringUtils.isEmpty(usere.getIdentitynumber())
+				== true ? "0" : usere.getIdentitynumber());
+		applicantEhm.setCertificateno(usere.getInsuredtype());
+		applicantEhm.setSafetyLevel(usere.getPolicyno());
+		applicantEhm.setAddressName(usere.getInsuredaddress());
+		applicantEhm.setLinkerName(usere.getLinkname());
+		applicantEhm.setPostCode(userCorp.getPost());
+		applicantEhm.setPhone(StringUtils.isEmpty(userCorp.getMobile()) == 
+				true ? usere.getPhonenumber() : userCorp.getMobile());
+		applicantEhm.setMobile(usere.getPhonenumber());
+		applicantEhm.setEmail(usere.getEmail());
+		applicantEhm.setClassCode(usere.getRemark());
+		applicantEhm.setBusinessClass(usere.getFlag());
+		applicantEhm.setProvince(policyMain.getProvince());
+		applicantEhm.setCity(policyMain.getCity());
+		applicantEhm.setCounty(policyMain.getCounty());
+		applicantEhm.setScale(userCorp.getClassSize());
+		insurance.setApplicantEhm(applicantEhm);
+		//被保险人信息
+		GgUserCorp userCorp2 = guinter.getUserCorp(policyMain.getInsuredCode()) == 
+				null ? new GgUserCorp() : guinter.getUserCorp(policyMain.getInsuredCode());//查询被保人公司信息
+				
+		GuPolicyInsuredKey guPolicyInsuredKey2 = new GuPolicyInsuredKey();
+		guPolicyInsuredKey2.setBusinessno(policyMain.getBusinessNo());
+		guPolicyInsuredKey2.setSeriesno(2L);
+		GuPolicyInsured usere2 = policyInsuredService.selectByPrimaryKey(guPolicyInsuredKey2);//被保人跟单信息
+		
+		insuredEhm.setInsuredName(usere2.getInsuredname());
+		insuredEhm.setIdentifyNumber(usere2.getIdentitynumber());
+		insuredEhm.setCertificateno(usere2.getInsuredtype());
+		insuredEhm.setSafetyLevel(usere2.getPolicyno());
+		insuredEhm.setAddressName(usere2.getInsuredaddress());
+		insuredEhm.setLinkerName(usere2.getLinkname());
+		insuredEhm.setPostCode(userCorp2.getPost());
+		insuredEhm.setPhone(StringUtils.isEmpty(userCorp.getMobile()) == 
+				true ? usere.getPhonenumber() : userCorp.getMobile());
+		insuredEhm.setMobile(usere2.getPhonenumber());
+		insuredEhm.setEmail(usere2.getEmail());
+		insuredEhm.setClassCode(usere2.getRemark());
+		insuredEhm.setBusinessClass(usere2.getFlag());
+		insuredEhm.setProvince(policyMain.getProvince());
+		insuredEhm.setCity(policyMain.getCity());
+		insuredEhm.setCounty(policyMain.getCounty());
+		insuredEhm.setScale(userCorp2.getClassSize());
+		insurance.setInsuredEhm(insuredEhm);
+		/*********************************************************************************************/
+		List<GuPolicyItemKind> guPolicyItemKind = mainMapper.selectGuPolicyItemKind(businessnos);
+		//险别信息模块
+		String mainUnitAmount = "";
+		itemKindEhmArray =  new ItemKindEhm[guPolicyItemKind.size()                                              ];
+		for (int i = 0; i < guPolicyItemKind.size(); i++) {
+			
+			if("0901001".equals(guPolicyItemKind.get(i).getKindcode())) {
+				mainUnitAmount = guPolicyItemKind.get(i).getUnitamount().toString();
+			}
+			
+			itemKindEhm = new ItemKindEhm();
+			String kindcode = guPolicyItemKind.get(i).getKindcode();//险别代码
+			String kindname = guPolicyItemKind.get(i).getKindname();//险别名称
+			BigDecimal amount = guPolicyItemKind.get(i).getAmount();//保额
+			//BigDecimal rate = guPolicyItemKind.get(i).getRate();//费率
+			BigDecimal rate = BigDecimal.valueOf(Double.parseDouble(SdisCount));
+			BigDecimal actualpremium2 = guPolicyItemKind.get(i).getActualpremium();//实际保费
+//			BigDecimal unitamount = guPolicyItemKind.get(i).getUnitamount();//每人责任限额（取“每人保额”）
+			//格式转换
+//			BigDecimal amountToDou = new BigDecimal(0.00);
+//			double amountToDouToStr = amountToDou.doubleValue();
+			String Samount = String.valueOf(amount);
+			String Srate = String.valueOf(rate);
+			String Sactualpremium2 = String.valueOf(actualpremium2);
+//			String Sunitamount = String.valueOf(unitamount);						
+			itemKindEhm.setKindCode(kindcode);//险别代码
+			itemKindEhm.setKindName(kindname);//险别名称
+			itemKindEhm.setAmount(Samount);//保额
+			itemKindEhm.setPremium(Sactualpremium2);//保费
+			itemKindEhm.setRate(Srate);//费率
+			itemKindEhm.setDeductible("");//免赔额
+			itemKindEhm.setEachtimelimit(String.valueOf(guPolicyItemKind.get(i).getAmount()));//每次事故责任限额
+			if("0901002".equals(guPolicyItemKind.get(i).getKindcode())) {
+				itemKindEhm.setEchLimitAmount(mainUnitAmount);//每人责任限额
+			}else {
+				itemKindEhm.setEchLimitAmount(String.valueOf(guPolicyItemKind.get(i).getUnitamount()));//每人责任限额
+			}
+			itemKindEhm.setSumAmountlimit(String.valueOf(guPolicyItemKind.get(i).getAmount()));//累计赔偿限额
+			itemKindEhmArray[i] = itemKindEhm;
+			
+		}
+		insurance.setItemKindEhmArray(itemKindEhmArray);
+		/*************************************************************************************************/
+		GuPolicyEmployee guPolicyEmployee = new GuPolicyEmployee();
+		guPolicyEmployee.setBusinessNo(businessnos);
+		List<GuPolicyEmployee> findEmployeeList = insurePolicyService.findEmployeeList(guPolicyEmployee);
+			//标的人模块
+		insuredSubjectArray = new InsuredSubjectEhm[findEmployeeList.size()];	
+			for (int j = 0; j < findEmployeeList.size(); j++) {
+				insuredSubject = new InsuredSubjectEhm();
+				insuredSubject.setInsuredObjectPerNo(findEmployeeList.get(j).getPepNo());//标的人序号
+				insuredSubject.setInsuredObjectPerName(findEmployeeList.get(j).getPepName());//标的人名称
+				insuredSubject.setInsuredObjectPerIdentifyType("01");//标的人证件类型
+				insuredSubject.setInsuredObjectPerIdentifyNumber(findEmployeeList.get(j).getPepIdentityNo());//标的人证件号
+				insuredSubjectArray[j] = insuredSubject;
+				
+			}
+			insurance.setInsuredSubjectArray(insuredSubjectArray);
+		
+/**********						处理接口数据结束								**********/
+			
+			
+			
+		/*************			处理回参数据	更新数据库			**************************/
+			AZXInsuranceSingleServicePortType sp = new AZXInsuranceSingleServicePortTypeProxy();
+			
+			InsuranceSingleResponse service = new InsuranceSingleResponse();
+			try {
+				service = sp.service(insurance);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			//String primaryKey = service.getPrimaryKey();//业务唯一标识
+			String proposalNo = service.getProposalNo();//投保单号
+			String policyNo = service.getPolicyNo();//保单号
+			String responseCode = service.getResponseCode();//应答标志（0成功，1失败）
+			String eleDownloadArr = service.getEleDownloadArr();//电子保单下载地址						
+			Date outdate = new Date();	
+			try {
+				if (("0".equals(responseCode))) {
+					//根据业务号（业务唯一标识）查询一条投保数据
+					GuPolicyMain OutRequest = mainMapper.selectByPrimaryKey(businessnos);
+					
+					//OutRequest.setBusinessNo(primaryKey);//业务号
+					OutRequest.setSignDate(outdate);//发送时间是我这里的签单日期  
+					OutRequest.setProposalNo(proposalNo);//投保单号
+					OutRequest.setPolicyNo(policyNo);//保单号
+					OutRequest.setPayBillNo(eleDownloadArr);//把数据库中的“支付号”用来存储电子保单地址
+					mainMapper.updateByPrimaryKeySelective(OutRequest);
+					detailService.updatePolicyMain(businessnos);//修改支付状态为"1"
+					flag = 1;
+					
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			return flag;
+	}
+
+	/**
+	 * 提交核保出单请求,成功返回1 并且更新保单号和电子保单地址,失败返回0
+	 * @param businessnos
+	 * @return 0:失敗 1:成功
+	 */
+	public int underWriteAfter(String businessnos) {
+		
+		int flag = 0 ;
+		
+		GuPolicyMain m = mainMapper.selectByPrimaryKey(businessnos);
+		
+		/**
+		 * 缴费完后有投保单号的组织人工核保出单请求
+		 */
+		ManualUnderwriteAfterSingleRequest unserWriter = new ManualUnderwriteAfterSingleRequest();
+		com.dsib.webService.AZX.manualUnderwriteAfterSingle.dto.common.xsd.MainEhm unserMainEhm = new com.dsib.webService.AZX.manualUnderwriteAfterSingle.dto.common.xsd.MainEhm();
+		unserWriter.setRequestType("11");
+		unserWriter.setPrimaryKey(businessnos);
+		unserWriter.setInsurerCode(m.getInsurerCode());
+		unserMainEhm.setSystemCode("AZBX");
+		unserMainEhm.setProposalNo(m.getProposalNo());
+		unserMainEhm.setOperateDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(m.getOperateDate()));
+		unserMainEhm.setActualPremium(StringUtils.isEmpty(m.getActualPremium()) == 
+				true ? m.getSpreadsheetPremium().toString() : m.getActualPremium().toString());
+		unserMainEhm.setPrimaryKey(businessnos);
+		unserMainEhm.setSumAmount(m.getSumAmount().toString());
+		unserWriter.setMainEhm(unserMainEhm);
+		//创建接口对象
+		AZXManualUnderwriteAfterSingleServicePortType sp = new AZXManualUnderwriteAfterSingleServicePortTypeProxy();
+		ManualUnderwriteAfterSingleResponse service = new ManualUnderwriteAfterSingleResponse();
+		try {
+			//发送请求
+			service = sp.service(unserWriter);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		
+		String ResponseCode = service.getResponseCode();
+		if("Y".equals(ResponseCode)){
+			SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			
+			String SendDateTime = StringUtils.isEmpty(service.getSendDateTime()) == 
+					true ? sim.format(new Date()) : service.getSendDateTime();
+					
+			String EleDownloadArr = StringUtils.isEmpty(service.getEleDownloadArr()) == 
+					true ? "null" : service.getEleDownloadArr();
+			
+			String PolicyNo = service.getPolicyNo();
+			
+			String PrimaryKey = service.getPrimaryKey();
+			
+			Map<String,Object> condition = new HashMap<String,Object>();
+			try {
+				condition.put("SendDateTime",sim.parse(SendDateTime));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			condition.put("EleDownloadArr", EleDownloadArr);
+			condition.put("PolicyNo", PolicyNo);
+			condition.put("PrimaryKey", PrimaryKey);
+			client.updaterbPolicy(condition);
+			detailService.updatePolicyMain(businessnos);//修改支付状态为"1"
+			flag = 1;
+		}
+		return flag;
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsib.dao.GgSubscribeMapper">
+	<!-- 企业排查记录 -->
+	<select id="selectCheckWrite" parameterType="Pagination"
+		resultType="map">
+		SELECT (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE)
+		USERCODE,
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.USERCODE) EVALUATOR,
+		GE."ID",GE."CONTENT",
+		GE.EVALUATDATE,GE.COMPLETEDATE,GE.USERIND,GE.DOCADDRESS,GE.STATUSCONTENT
+		FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			AND GE.USERCODE=#{queryCondition.userCode}
+			AND GE.EVALUATOR=#{queryCondition.userCode}
+			AND GE.REMARK IS NULL
+			ORDER BY GE.EVALUATDATE DESC
+		</where>
+	</select>
+	<select id="selectCheckDetails" parameterType="GgEvaluateDangers"
+		resultType="GgEvaluateDangers">
+		SELECT (SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE)
+		USERCODE,
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE
+		USERCODE=GE.USERCODE) EVALUATOR,
+		GE."ID",GE."CONTENT",
+		GE.EVALUATDATE,GE.COMPLETEDATE,GE.USERIND,GE.DOCADDRESS,GE.STATUSCONTENT
+		FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			AND ID=#{id}
+		</where>
+	</select>
+	<select id="selectChecking" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE) USERCODE,
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE)
+		EVALUATOR,
+		GE."ID",GE."CONTENT",
+		GE.EVALUATDATE,GE.COMPLETEDATE,GE.USERIND,GE.DOCADDRESS,GE.STATUSCONTENT
+		FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			<if test="queryCondition.status != null and queryCondition.status != ''">
+				AND GE.STATUS = #{queryCondition.status}
+			</if>
+			<if
+				test="queryCondition.startDate != null and queryCondition.startDate != ''">
+				AND TO_CHAR (GE.EVALUATDATE,'yyyy-MM-dd') &gt; =
+				#{queryCondition.startDate}
+			</if>
+			<!-- 结束日期要比评估日期大 &lt; 代表小于号 -->
+			<if test="queryCondition.endDate != null and queryCondition.endDate != ''">
+				AND TO_CHAR (GE.EVALUATDATE,'yyyy-MM-dd') &lt; =
+				#{queryCondition.endDate}
+			</if>
+			AND GE.USERCODE=#{queryCondition.userCode}
+			AND GE.EVALUATOR=#{queryCondition.userCode}
+			AND GE.REMARK IS NULL
+			ORDER BY GE.EVALUATDATE DESC
+		</where>
+	</select>
+
+	<insert id="insertEvaDangerChecking" parameterType="GgEvaluateDangers">
+		INSERT INTO GGEVALUATEDANGERS
+		(ID,USERCODE,CONTENT,EVALUATOR ,EVALUATDATE,USERIND,STATUSCONTENT,STATUS,DOCADDRESS,COMPLETEDATE)
+		VALUES
+		(#{id},#{userCode},#{content},#{evaluator},#{evaluatDate},#{userInd},#{statusContent},#{status},#{docAddress},#{completeDate})
+	</insert>
+
+	<select id="selectEva" parameterType="Pagination" resultMap="feedbackMap"><!-- 
+			resultType="map" -->
+		SELECT * FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			AND GE."EVALUATION"='1'
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND GE.USERCODE = #{queryCondition.userCode}
+			</if>
+			<if test="queryCondition.userInd != null and queryCondition.userInd != ''">
+				AND GE.USERIND != #{queryCondition.userInd}
+			</if>
+			ORDER BY GE.EVALUATDATE DESC
+		</where>
+	</select>
+	<resultMap type="com.dsib.entity.GgEvaluateDangers" id="feedbackMap">
+		<id property="id" column="ID" />
+		<result property="userCode" column="USERCODE" />
+		<result property="content" column="CONTENT" />
+		<result property="evaluator" column="EVALUATOR" />
+		<result property="evaluatDate" column="EVALUATDATE" />
+		<result property="completeDate" column="COMPLETEDATE" />
+		<result property="userInd" column="USERIND" />
+		<result property="status" column="STATUS" />
+		<result property="docAddress" column="DOCADDRESS" />
+		<result property="evaluaTion" column="EVALUATION" />
+		<result property="source" column="SOURCE" />
+		<result property="checkMan" column="CHECKMAN" />
+		<result property="checkDate" column="CHECKDATE" />
+		<result property="dangersCondition" column="DANGERSCONDITION" />
+		<result property="statusContent" column="STATUSCONTENT" />
+		<result property="endEvaluatDate" column="ENDEVALUATDATE" />
+		<result property="remark" column="REMARK" />
+		<result property="flag" column="FLAG" />
+		<association property="list" column="ID" select="getFeedback" />
+	</resultMap>
+	<select id="getFeedback" parameterType="string" resultType="GgEvaluateDangers">
+		SELECT * FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			AND GE.REMARK = #{ID}
+			ORDER BY GE.EVALUATDATE DESC
+		</where>
+	</select>
+	<!-- 整改时，更新原来数据的整改状态 -->
+	<update id="updateEvaStatus" parameterType="GgEvaluateDangers">
+		UPDATE
+		GGEVALUATEDANGERS SET STATUS = #{status} WHERE ID=#{id}
+	</update>
+	<insert id="insertEvaStatus" parameterType="GgEvaluateDangers">
+		INSERT INTO
+		GGEVALUATEDANGERS
+		(ID,USERCODE,EVALUATOR
+		,USERIND,STATUSCONTENT,DOCADDRESS,STATUS,CHECKMAN,COMPLETEDATE,REMARK)
+		VALUES
+		(#{id},#{userCode},#{evaluator},#{userInd},#{statusContent},#{docAddress},#{status},#{checkMan},#{completeDate},#{remark})
+	</insert>
+	<!-- 查询按钮 -->
+	<select id="selectEvaChecking" parameterType="Pagination"
+		resultType="map">
+		SELECT
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE) USERCODE,
+		(SELECT COMPANYNAME FROM GGUSERCORP WHERE USERCODE=GE.USERCODE)
+		EVALUATOR,
+		GE."ID",GE."CONTENT",GE.STATUS,
+		GE.EVALUATDATE,GE.COMPLETEDATE,GE.USERIND,GE.DOCADDRESS,GE.STATUSCONTENT
+		FROM GGEVALUATEDANGERS GE
+		<where>
+			1=1
+			<if test="queryCondition.userInd != null and queryCondition.userInd != ''">
+				AND GE.USERIND = #{queryCondition.userInd}
+			</if>
+			<if
+				test="queryCondition.userCode != null and queryCondition.userCode != ''">
+				AND GE.USERCODE=#{queryCondition.userCode}
+			</if>
+			AND GE.REMARK IS NULL
+			ORDER BY GE.EVALUATDATE DESC
+		</where>
+	</select>
+	<insert id="insertInveStigate" parameterType="com.dsib.entity.GgSubscribe">
+		INSERT INTO
+		GGSUBSCRIBE (ID,USERCODE,USERNAME,PROVINCE,CITY,COUNTY,ADDRESS,
+		LINKNAME,TELEPHONE,MOBILE,ORGCODE,ORGNAME,
+		SUBSCRIBEDATE,EVALUATDATA,EVALUATTION,FLAG)
+
+		VALUES(#{id},#{userCode},#{userName},#{province},#{city},#{county},#{address},
+		#{linkName},#{telePhone},#{mobile},#{orgCode},#{orgName},
+		#{subScribeDate}, #{evaluatDate},#{evaluatTion},#{flag})
+
+	</insert>
+
+	<select id="selectSubscribe" parameterType="com.dsib.entity.GgSubscribe"
+		resultType="com.dsib.entity.GgSubscribe">
+		SELECT
+		GS."ID",
+		GS.USERCODE,GS.USERNAME,
+		GS.PROVINCE,GS.CITY,GS.COUNTY,GS.ADDRESS,
+		GS.LINKNAME,GS.TELEPHONE,GS.MOBILE,
+		GS.ORGCODE,GS.ORGNAME,GS.SUBSCRIBEDATE,
+		GS.EVALUATDATA,GS.EVALUATTION
+		FROM GGSUBSCRIBE GS
+		<where>
+			1=1
+			AND FLAG = #{flag}
+			AND GS.USERCODE=#{userCode}
+		</where>
+	</select>
+</mapper>

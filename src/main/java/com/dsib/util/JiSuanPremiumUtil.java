@@ -1,0 +1,394 @@
+package com.dsib.util;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+
+import com.dsib.entity.GgAmountRate;
+import com.dsib.entity.GgKind;
+import com.dsib.entity.GgKindPrice;
+import com.dsib.entity.GgKindPriceKey;
+import com.dsib.entity.GgRisk;
+import com.dsib.entity.GgUser;
+import com.dsib.entity.PolicyManager;
+import com.dsib.service.InsurePolicyService;
+
+
+/**
+ *  计算每人主险保费 , 获取基础保费  ,<br> <br> 
+ *  计算三者的总保费 , 计算救援保险总保费 , 计算附加医疗保险总保费 , 计算法律保险总保费<br><br> 
+ *  获取优惠系数 <br><br> 
+ *  获取安全标准化等级费率 , 获取每人限额费率  , 获取短期基准费率
+ *  
+ * @author zhaoqianchao
+ *
+ */
+@Component
+public class JiSuanPremiumUtil {
+	
+	
+	@Resource(name = "insurePolicyService")
+	private InsurePolicyService insurePolicyService;
+
+
+	/**
+	 * 计算法律保险总保费
+	 * @param mainSumAmount : 主险总限额
+	 * @param adjust : 优惠系数
+	 * @param ggKind 
+	 * @return
+	 */
+	public double getFaLvPremium(String mainSumAmount, double adjust,GgKind ggKind) {
+		double tempPrice;
+		tempPrice = BigDecimal.valueOf(Double.valueOf(mainSumAmount)).multiply(new BigDecimal(ggKind.getDescription()))
+				.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		tempPrice = tempPrice*adjust*0.05;
+		tempPrice = new BigDecimal(tempPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return tempPrice;
+	}
+	/**
+	 * 计算法律保险总保费
+	 * @param mainSumAmount : 主险总限额
+	 * @param adjust : 优惠系数
+	 * @param ggKind 
+	 * @return
+	 */
+	public BigDecimal getFaLvPremium2(String mainSumAmount, double adjust,GgKind ggKind) {
+		double tempPrice;
+		tempPrice = BigDecimal.valueOf(Double.valueOf(mainSumAmount)).multiply(new BigDecimal(ggKind.getDescription()))
+				.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		tempPrice = tempPrice*adjust*0.05;
+		return new BigDecimal(tempPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	/**
+	 * 计算法律费率
+	 * @param adjust
+	 * @param ggKind
+	 * @return
+	 */
+	public double getFaLvRate( double adjust,GgKind ggKind) {
+		double faLvRate = adjust * Double.valueOf(ggKind.getDescription());
+		return faLvRate;
+	}
+
+	/**
+	 * 计算救援保险总保费
+	 * @param mainSumAmount : 主险总限额
+	 * @param adjust : 优惠系数
+	 * @param ggKind 
+	 * @return
+	 */
+	public double getJiuYuanPremium(String mainSumAmount, double adjust,GgKind ggKind) {
+		double tempPrice;
+		tempPrice = BigDecimal.valueOf(Double.valueOf(mainSumAmount)).multiply(new BigDecimal(ggKind.getDescription())).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		tempPrice = tempPrice*adjust*0.3;
+		tempPrice = new BigDecimal(tempPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return tempPrice;
+	}
+	/**
+	 * 救援的费率
+	 * @param adjust
+	 * @param ggKind
+	 * @return
+	 */
+	public double getJiuYuanRate(double adjust,GgKind ggKind) {
+		double jiuYuanRate = adjust * Double.valueOf(ggKind.getDescription());
+		return jiuYuanRate;
+	}
+
+	/**
+	 * 计算附加医疗保险总保费
+	 * @param mainSumAmount : 主险总限额
+	 * @param adjust : 优惠系数
+	 * @param ggKind 
+	 * @return
+	 */
+	public double getYiLiaoPremium(String mainSumAmount, double adjust,GgKind ggKind) {
+		BigDecimal yiLiaoPremium2 = getYiLiaoPremium2(mainSumAmount, adjust, ggKind);
+		return yiLiaoPremium2.doubleValue();
+	}
+	/**
+	 * 计算附加医疗保险总保费
+	 * @param mainSumAmount : 主险总限额
+	 * @param adjust : 优惠系数
+	 * @param ggKind 
+	 * @return
+	 */
+	public BigDecimal getYiLiaoPremium2(String mainSumAmount, double adjust,GgKind ggKind) {
+		double yiLiaoRate = getYiLiaoRate(adjust, ggKind);
+		
+		Double mainSumAmount2 = Double.valueOf(mainSumAmount);
+		double yiLiaoPrice = mainSumAmount2 * yiLiaoRate * 0.3;
+		
+		return new BigDecimal(yiLiaoPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+	}
+	/**
+	 * 计算附加医疗保险费率
+	 * @param adjust
+	 * @param ggKind
+	 * @return
+	 */
+	public double getYiLiaoRate( double adjust,GgKind ggKind) {
+		double yiLiaoRate = adjust * Double.valueOf(ggKind.getDescription());
+		return yiLiaoRate;
+	}
+	
+	/**
+	 * 计算三者的费率
+	 * @param adjust
+	 * @param ggKind
+	 * @return
+	 */
+	public double getSanZheRate(double adjust, GgKind ggKind) {
+		double sanZheRate = adjust * Double.valueOf(ggKind.getDescription());
+		return sanZheRate;
+	}
+
+	/**
+	 * 计算三者的总保费
+	 * @param adjust : 优惠系数
+	 * @param ggKind :  
+	 * @param sanamount : 三者总保额
+	 * @return
+	 */
+	public double getSanZhePremium(Double sanamount,double adjust, GgKind ggKind) {
+		double sanZheRate = getSanZheRate(adjust, ggKind);
+		double tempPrice = sanamount * sanZheRate;
+		tempPrice = new BigDecimal(tempPrice).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		return tempPrice;
+	}
+	/**
+	 * 计算三者的总保费
+	 * @param adjust : 优惠系数
+	 * @param ggKind :  
+	 * @param sanamount : 三者总保额
+	 * @return
+	 */
+	public BigDecimal getSanZhePremium2(Double sanamount,double adjust, GgKind ggKind) {
+		double sanZhePremium = getSanZhePremium(sanamount, adjust, ggKind);
+		return BigDecimal.valueOf(sanZhePremium);
+	}
+
+	/**
+	 * 计算每人主险保费(各种系数都已乘),返回BigDcimal类型的
+	 * @param policyManager 需要有:<p> province ,city , county , standardLevel , amount , insureCode , businessClss<br>
+	 *                           startDate , endDate 值</p> 
+	 * @throws Exception
+	 */
+	public BigDecimal getEveryoneMainPremium(PolicyManager policyManager)
+			throws Exception {
+		// 获取险别费率
+		GgUser tempU = new GgUser();
+		tempU.setProvince(policyManager.getProvince());
+		tempU.setCity(policyManager.getCity());
+		tempU.setCounty(policyManager.getCounty());
+		List<GgRisk> ggRisks = insurePolicyService.findKind4Aera(tempU);
+	
+		//保费计算start
+		BigDecimal premium = new BigDecimal("0.00");// 主险保费
+		
+		//主险基础保费
+		BigDecimal price = getPrice(policyManager, ggRisks.get(0).getAreacode());
+		
+		//总费率 
+		double sumRate = getMainSumRate(policyManager);
+		
+		//每人主险保费 = 每人基础保费 * 总费率
+		premium = price.multiply(BigDecimal.valueOf(sumRate)).setScale(2,BigDecimal.ROUND_HALF_UP);
+		
+		return premium;
+	}
+	
+	/**
+	 * 计算主险的总费率（%）
+	 * @param policyManager
+	 * @return
+	 * @throws Exception
+	 */
+	public double getMainSumRate(PolicyManager policyManager)
+			throws Exception {
+		//优惠系数
+		double adjust = getAdjust(policyManager.getStandardLevel());
+		
+		//主险费率 = 每人限额费率 * 短期费率
+		Double amountRate = getEveryoneRate(policyManager.getAmount(),policyManager.getInsureCode());
+		double shortRate = 1.0;
+		if("630003".equals(policyManager.getBusinessClass())){
+			shortRate = getShortRate(policyManager.getStartDate(),policyManager.getEndDate());
+		}
+		Double mainRate = amountRate * shortRate;
+		
+		//总费率 = 主险费率 * 优惠系数 
+		Double sumRate = mainRate * adjust;
+		return sumRate;
+	}
+	
+	/**
+	 * 计算每人主险保费(各种系数都已乘),返回Double类型的
+	 * @param policyManager 需要有:<p> province ,city , county , standardLevel , amount , insureCode , businessClss<br>
+	 *                           startDate , endDate 值</p> 
+	 * @return Double类型的每人主险保费                         
+	 * @throws Exception
+	 */
+	public Double getEveryoneMainPremium2(PolicyManager policyManager){
+		double sumMainPremium = 0.00;
+		try {
+			sumMainPremium = this.getEveryoneMainPremium(policyManager).doubleValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sumMainPremium;
+	}
+	
+	/**
+	 * 计算主险总保费,返回double类型
+	 * @param policyManager
+	 * @return
+	 */
+	public Double getSumMainPremium(PolicyManager policyManager) {
+		BigDecimal sumMainPremium2 = this.getSumMainPremium2(policyManager);
+		return sumMainPremium2.doubleValue();
+	}
+	/**
+	 * 计算主险总保费
+	 * @param policyManager
+	 * @return
+	 */
+	public BigDecimal getSumMainPremium2(PolicyManager policyManager) {
+		BigDecimal everyoneMainPremium = null;
+		try {
+			everyoneMainPremium = getEveryoneMainPremium(policyManager);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		BigDecimal multiply = everyoneMainPremium.multiply(
+				BigDecimal.valueOf(Double.valueOf(policyManager.getPepSum())));
+		return multiply;
+	}
+
+	/**
+	 * 获取优惠系数
+	 * @param safeLevel :安全标准化等级
+	 * @return
+	 */
+	public double getAdjust(String safeLevel) {
+		//优惠系数 = 安全标准化等级费率 * 企业事故折扣率 * 续保折扣率
+		Double standardLevelRate = getSafeLevelRate(safeLevel);// 安全标准化等级费率
+		Double lossRate = 1.00;// 企业事故率折扣
+		Double renewalRate = 1.00;// 续保折扣
+		double adjust = standardLevelRate * lossRate * renewalRate;//优惠系数
+		
+		//计算优惠系数,且大于1.2按1.2计算 ,小于0.8按0.8计算
+		adjust = new BigDecimal(adjust).setScale(4, BigDecimal.ROUND_HALF_UP)
+				.doubleValue();
+		if (adjust > 1.2)adjust = 1.2;
+		if (adjust < 0.8)adjust = 0.8;
+		return adjust;
+	}
+
+	/**
+	 * 获取安全标准化等级费率
+	 * @param safeLevelCode : 安全标准化等级代码
+	 * @return
+	 */
+	public Double getSafeLevelRate(String safeLevelCode) {
+		GgAmountRate ggAmountRateTemp = null;
+		// 安全标准化等级费率
+		GgAmountRate ggAmountRate2 = new GgAmountRate();
+		ggAmountRate2.setAmounttype("安全标准化等级");
+		ggAmountRate2.setScale(safeLevelCode);
+		ggAmountRateTemp = insurePolicyService.selectByType(ggAmountRate2);
+		Double standardLevelRate = Double.valueOf(ggAmountRateTemp.getRate());// 安全标准化费率
+		return standardLevelRate;
+	}
+
+	/**
+	 * 获取基础保费
+	 * @param policyManager : 里面必须包含: 险种代码,保险公司代码,经营范围 
+	 * @param areaCode : 地区代码
+	 * @return
+	 */
+	public BigDecimal getPrice(PolicyManager policyManager, String areaCode) {
+		// 基本保费
+		GgKindPriceKey ggKindPriceKey = new GgKindPriceKey();
+		ggKindPriceKey.setAreacode(areaCode);//地区代码
+		ggKindPriceKey.setRiskcode(policyManager.getRiskCode());//险种代码
+		ggKindPriceKey.setInsurecode(policyManager.getInsureCode());//保险公司代码
+		ggKindPriceKey.setIndustrycode(policyManager.getBusinessClass());//经营范围
+		ggKindPriceKey.setScalecode("0");
+		GgKindPrice ggKindPrice = insurePolicyService
+				.selectByPrimaryKey(ggKindPriceKey);
+		BigDecimal price = ggKindPrice.getPrice();
+		return price;
+	}
+
+	/**
+	 * 获取每人限额费率
+	 * @param amount:每人限额 ,<br>insureCode:保险公司代码
+	 * @return 
+	 */
+	public Double getEveryoneRate(String amount , String insureCode) {
+		// 获取每人限额费率
+		GgAmountRate ggAmountRate = new GgAmountRate();
+		ggAmountRate.setAmount(amount);
+		ggAmountRate.setAmounttype("amount");
+		ggAmountRate.setInsurecode(insureCode);
+		
+		GgAmountRate ggAmountRateTemp = insurePolicyService
+				.selectByType(ggAmountRate);
+		
+		Double amountRate = Double.valueOf(ggAmountRateTemp.getRate());// 每人费率
+		
+		return amountRate;
+	}
+
+	/**
+	 * 获取短期基准费率
+	 * @param sDate , eDate
+	 * @return
+	 * @throws Exception
+	 */
+	public double getShortRate(Date sDate ,Date eDate) throws Exception {
+		// 短期费率
+		double shortRate = 1.0;
+		String startDate = DateUtils.format(sDate,
+				"yyyy-MM-dd");
+		String endDate = DateUtils.format(eDate,
+				"yyyy-MM-dd");
+		
+		int dayFlag = getDaydiff(startDate, endDate);
+		double[] shortArray = { 0, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75,
+				0.80, 0.85, 0.90, 0.95 };
+		shortRate = Math.floor(dayFlag / 12) + shortArray[dayFlag % 12]; // 短期费率
+		
+		return shortRate;
+	}
+	
+	/**
+	 * 计算月数工具
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public int getDaydiff(String startDate, String endDate) {
+		int startD = Integer.valueOf(startDate.substring(8, 10));
+		int startM = Integer.valueOf(startDate.substring(5, 7));
+		int startY = Integer.valueOf(startDate.substring(0, 4));
+		int endD = Integer.valueOf(endDate.substring(8, 10));
+		int endM = Integer.valueOf(endDate.substring(5, 7));
+		int endY = Integer.valueOf(endDate.substring(0, 4));
+		if (endD >= startD) {
+			return (endY - startY) * 12 + (endM - startM) + 1;
+		} else {
+			return (endY - startY) * 12 + (endM - startM);
+		}
+	}
+	
+	
+}
